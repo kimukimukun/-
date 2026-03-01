@@ -1,0 +1,2395 @@
+<!DOCTYPE html>
+
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>ナンパ師 Trophy System</title>
+<meta property="og:title" content="ナンパ師 Trophy System">
+<meta property="og:description" content="ストリートナンパの実績を解除してXでシェア！">
+<meta name="twitter:card" content="summary_large_image">
+<link href="https://fonts.googleapis.com/css2?family=Noto+Sans+JP:wght@300;400;700;900&family=Bebas+Neue&family=Rajdhani:wght@400;600;700&display=swap" rel="stylesheet">
+
+<style>
+  :root {
+    --bg: #080c14;
+    --surface: #0e1520;
+    --surface2: #162030;
+    --border: rgba(255,255,255,0.06);
+    --text: #e8ecf5;
+    --muted: #5a6a88;
+    --accent: #ff3c6e;
+    --accent2: #ff7eb3;
+    --glow: rgba(255,60,110,0.4);
+
+    --bronze: #cd7f32;
+    --silver: #b8c0cc;
+    --gold: #ffd700;
+    --platinum: #c8e6ff;
+
+    --bronze-glow: rgba(205,127,50,0.5);
+    --silver-glow: rgba(184,192,204,0.5);
+    --gold-glow: rgba(255,215,0,0.5);
+    --platinum-glow: rgba(200,230,255,0.7);
+  }
+
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+
+  body {
+    background: var(--bg);
+    color: var(--text);
+    font-family: 'Noto Sans JP', sans-serif;
+    min-height: 100vh;
+    overflow-x: hidden;
+  }
+
+  body::before {
+    content: '';
+    position: fixed;
+    inset: 0;
+    background:
+      radial-gradient(ellipse 50% 40% at 15% 15%, rgba(255,60,110,0.07) 0%, transparent 60%),
+      radial-gradient(ellipse 40% 50% at 85% 85%, rgba(255,126,179,0.04) 0%, transparent 60%);
+    pointer-events: none;
+    z-index: 0;
+  }
+
+  .container {
+    position: relative;
+    z-index: 1;
+    max-width: 960px;
+    margin: 0 auto;
+    padding: 36px 16px 100px;
+  }
+
+  /* ===== HEADER ===== */
+  .header {
+    display: flex;
+    align-items: center;
+    gap: 20px;
+    margin-bottom: 32px;
+  }
+
+  .header-icon {
+    width: 68px; height: 68px;
+    background: linear-gradient(135deg, var(--accent), #cc2255);
+    border-radius: 18px;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 34px;
+    box-shadow: 0 0 36px var(--glow);
+    flex-shrink: 0;
+  }
+
+  .header-text h1 {
+    font-family: 'Bebas Neue', sans-serif;
+    font-size: clamp(28px, 6vw, 52px);
+    letter-spacing: 0.06em;
+    line-height: 1;
+    color: #fff;
+  }
+
+  .header-text p { color: var(--muted); font-size: 13px; margin-top: 5px; }
+
+  /* ===== TABS ===== */
+  .tabs {
+    display: flex;
+    gap: 8px;
+    margin-bottom: 28px;
+    overflow-x: auto;
+    padding-bottom: 4px;
+    scrollbar-width: none;
+  }
+
+  .tabs::-webkit-scrollbar { display: none; }
+
+  .tab {
+    flex-shrink: 0;
+    padding: 8px 20px;
+    border-radius: 100px;
+    border: 1px solid var(--border);
+    background: var(--surface);
+    color: var(--muted);
+    font-family: 'Rajdhani', sans-serif;
+    font-size: 14px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.2s;
+    letter-spacing: 0.05em;
+    white-space: nowrap;
+  }
+
+  .tab.active {
+    background: var(--accent);
+    border-color: var(--accent);
+    color: #fff;
+    box-shadow: 0 0 16px var(--glow);
+  }
+
+  /* ===== STATS ===== */
+  .stats-bar {
+    display: flex;
+    gap: 10px;
+    margin-bottom: 24px;
+    flex-wrap: wrap;
+  }
+
+  .stat-chip {
+    display: flex; align-items: center; gap: 8px;
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 100px;
+    padding: 7px 14px;
+    font-size: 13px;
+    font-family: 'Rajdhani', sans-serif;
+    font-weight: 600;
+  }
+
+  .stat-dot { width: 9px; height: 9px; border-radius: 50%; }
+  .stat-dot.bronze  { background: var(--bronze);   box-shadow: 0 0 6px var(--bronze-glow); }
+  .stat-dot.silver  { background: var(--silver);   box-shadow: 0 0 6px var(--silver-glow); }
+  .stat-dot.gold    { background: var(--gold);     box-shadow: 0 0 6px var(--gold-glow); }
+  .stat-dot.plat    { background: var(--platinum); box-shadow: 0 0 6px var(--platinum-glow); }
+
+  /* ===== PROGRESS ===== */
+  .progress-section {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 14px;
+    padding: 18px 22px;
+    margin-bottom: 28px;
+  }
+
+  .progress-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 10px;
+  }
+
+  .progress-label {
+    font-size: 12px;
+    color: var(--muted);
+    font-family: 'Rajdhani', sans-serif;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+  }
+
+  .progress-count {
+    font-family: 'Bebas Neue', sans-serif;
+    font-size: 22px;
+    color: var(--accent2);
+    letter-spacing: 0.05em;
+  }
+
+  .progress-bar-outer {
+    height: 5px;
+    background: var(--surface2);
+    border-radius: 100px;
+    overflow: hidden;
+  }
+
+  .progress-bar-inner {
+    height: 100%;
+    background: linear-gradient(90deg, var(--accent), var(--accent2));
+    border-radius: 100px;
+    transition: width 0.9s cubic-bezier(0.4,0,0.2,1);
+    box-shadow: 0 0 10px var(--glow);
+  }
+
+  /* ===== YAMANOTE SECTION ===== */
+  .yamanote-section {
+    background: var(--surface);
+    border: 1px solid rgba(255,215,0,0.2);
+    border-radius: 16px;
+    padding: 22px;
+    margin-bottom: 28px;
+    position: relative;
+    overflow: hidden;
+  }
+
+  .yamanote-section::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background: radial-gradient(ellipse at 100% 0%, rgba(255,215,0,0.06), transparent 60%);
+    pointer-events: none;
+  }
+
+  .yamanote-header {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    margin-bottom: 18px;
+  }
+
+  .yamanote-badge {
+    background: rgba(255,215,0,0.15);
+    border: 1px solid rgba(255,215,0,0.4);
+    border-radius: 8px;
+    padding: 6px 12px;
+    font-family: 'Bebas Neue', sans-serif;
+    font-size: 13px;
+    letter-spacing: 0.1em;
+    color: var(--gold);
+  }
+
+  .yamanote-title {
+    font-family: 'Bebas Neue', sans-serif;
+    font-size: 22px;
+    letter-spacing: 0.06em;
+  }
+
+  .station-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(120px, 1fr));
+    gap: 8px;
+  }
+
+  .station-chip {
+    background: var(--surface2);
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    padding: 10px 8px;
+    text-align: center;
+    cursor: pointer;
+    transition: all 0.2s;
+    position: relative;
+  }
+
+  .station-chip:hover { border-color: rgba(255,255,255,0.15); transform: translateY(-1px); }
+
+  /* difficulty border colors */
+  .station-chip.diff-bronze { border-color: rgba(205,127,50,0.25); }
+  .station-chip.diff-silver { border-color: rgba(184,192,204,0.25); }
+  .station-chip.diff-gold   { border-color: rgba(255,215,0,0.25); }
+
+  .station-chip.done.diff-bronze { background: rgba(205,127,50,0.1);  border-color: rgba(205,127,50,0.5); }
+  .station-chip.done.diff-silver { background: rgba(184,192,204,0.1); border-color: rgba(184,192,204,0.5); }
+  .station-chip.done.diff-gold   { background: rgba(255,215,0,0.1);   border-color: rgba(255,215,0,0.5); }
+
+  .station-chip.done.diff-bronze .station-name { color: var(--bronze); }
+  .station-chip.done.diff-silver .station-name { color: var(--silver); }
+  .station-chip.done.diff-gold   .station-name { color: var(--gold); }
+
+  .station-icon { font-size: 18px; display: block; margin-bottom: 3px; }
+
+  .station-name {
+    font-size: 11px;
+    color: var(--muted);
+    font-weight: 700;
+    transition: color 0.2s;
+  }
+
+  .station-diff-badge {
+    display: inline-block;
+    font-size: 8px;
+    font-family: 'Rajdhani', sans-serif;
+    font-weight: 700;
+    letter-spacing: 0.05em;
+    padding: 1px 5px;
+    border-radius: 4px;
+    margin-top: 3px;
+  }
+
+  .diff-bronze .station-diff-badge { background: rgba(205,127,50,0.2);  color: var(--bronze); }
+  .diff-silver .station-diff-badge { background: rgba(184,192,204,0.2); color: var(--silver); }
+  .diff-gold   .station-diff-badge { background: rgba(255,215,0,0.2);   color: var(--gold); }
+
+  .station-check {
+    position: absolute;
+    top: 5px; right: 5px;
+    font-size: 10px;
+    opacity: 0;
+    transition: opacity 0.2s;
+  }
+
+  .station-chip.done .station-check { opacity: 1; }
+
+  .yamanote-progress {
+    margin-top: 16px;
+    display: flex;
+    align-items: center;
+    gap: 12px;
+  }
+
+  .yamanote-bar-outer {
+    flex: 1;
+    height: 4px;
+    background: var(--surface2);
+    border-radius: 100px;
+    overflow: hidden;
+  }
+
+  .yamanote-bar-inner {
+    height: 100%;
+    background: linear-gradient(90deg, var(--gold), #ffec80);
+    border-radius: 100px;
+    transition: width 0.6s ease;
+    box-shadow: 0 0 8px var(--gold-glow);
+  }
+
+  .yamanote-count {
+    font-family: 'Rajdhani', sans-serif;
+    font-size: 14px;
+    font-weight: 700;
+    color: var(--gold);
+    white-space: nowrap;
+  }
+
+  /* ===== SECTION TITLE ===== */
+  .section-title {
+    font-family: 'Rajdhani', sans-serif;
+    font-size: 12px;
+    letter-spacing: 0.15em;
+    text-transform: uppercase;
+    color: var(--muted);
+    margin-bottom: 14px;
+    padding-left: 2px;
+  }
+
+  /* ===== TROPHY GRID ===== */
+  .trophy-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(272px, 1fr));
+    gap: 10px;
+    margin-bottom: 28px;
+  }
+
+  .trophy-card {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 14px;
+    padding: 16px;
+    display: flex;
+    gap: 14px;
+    align-items: flex-start;
+    cursor: pointer;
+    transition: all 0.22s cubic-bezier(0.4,0,0.2,1);
+    position: relative;
+    overflow: hidden;
+    user-select: none;
+  }
+
+  .trophy-card::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    opacity: 0;
+    transition: opacity 0.22s;
+    border-radius: 14px;
+  }
+
+  .trophy-card.bronze::before  { background: radial-gradient(ellipse at 0 0, rgba(205,127,50,0.12), transparent 55%); }
+  .trophy-card.silver::before  { background: radial-gradient(ellipse at 0 0, rgba(184,192,204,0.12), transparent 55%); }
+  .trophy-card.gold::before    { background: radial-gradient(ellipse at 0 0, rgba(255,215,0,0.12), transparent 55%); }
+  .trophy-card.platinum::before{ background: radial-gradient(ellipse at 0 0, rgba(200,230,255,0.14), transparent 55%); }
+
+  .trophy-card:hover { transform: translateY(-2px); border-color: rgba(255,255,255,0.13); }
+  .trophy-card:hover::before { opacity: 1; }
+  .trophy-card.unlocked { border-color: rgba(255,255,255,0.1); }
+  .trophy-card.locked   { opacity: 0.38; filter: grayscale(0.65); }
+
+  .trophy-icon-wrap {
+    flex-shrink: 0;
+    width: 50px; height: 50px;
+    border-radius: 12px;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 24px;
+    position: relative;
+  }
+
+  .trophy-card.bronze .trophy-icon-wrap   { background: rgba(205,127,50,0.14); box-shadow: 0 0 0 1px rgba(205,127,50,0.3); }
+  .trophy-card.silver .trophy-icon-wrap   { background: rgba(184,192,204,0.14); box-shadow: 0 0 0 1px rgba(184,192,204,0.3); }
+  .trophy-card.gold .trophy-icon-wrap     { background: rgba(255,215,0,0.14);   box-shadow: 0 0 0 1px rgba(255,215,0,0.35); }
+  .trophy-card.platinum .trophy-icon-wrap { background: rgba(200,230,255,0.12); box-shadow: 0 0 0 1px rgba(200,230,255,0.35); }
+
+  .trophy-card.unlocked.bronze .trophy-icon-wrap   { box-shadow: 0 0 18px var(--bronze-glow),   0 0 0 1px rgba(205,127,50,0.5); }
+  .trophy-card.unlocked.silver .trophy-icon-wrap   { box-shadow: 0 0 18px var(--silver-glow),   0 0 0 1px rgba(184,192,204,0.5); }
+  .trophy-card.unlocked.gold .trophy-icon-wrap     { box-shadow: 0 0 18px var(--gold-glow),     0 0 0 1px rgba(255,215,0,0.6); }
+  .trophy-card.unlocked.platinum .trophy-icon-wrap { box-shadow: 0 0 28px var(--platinum-glow), 0 0 0 1px rgba(200,230,255,0.7); }
+
+  .trophy-type-badge {
+    position: absolute;
+    bottom: -4px; right: -4px;
+    width: 17px; height: 17px;
+    border-radius: 50%;
+    font-size: 8px;
+    display: flex; align-items: center; justify-content: center;
+    font-family: 'Rajdhani', sans-serif;
+    font-weight: 700;
+    border: 2px solid var(--surface);
+  }
+
+  .bronze  .trophy-type-badge { background: var(--bronze);   color: #000; }
+  .silver  .trophy-type-badge { background: var(--silver);   color: #000; }
+  .gold    .trophy-type-badge { background: var(--gold);     color: #000; }
+  .platinum.trophy-type-badge { background: var(--platinum); color: #000; }
+
+  .trophy-info { flex: 1; min-width: 0; }
+
+  .trophy-name {
+    font-size: 14px;
+    font-weight: 700;
+    margin-bottom: 3px;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+
+  .trophy-desc {
+    font-size: 11px;
+    color: var(--muted);
+    line-height: 1.5;
+  }
+
+  .trophy-time {
+    font-size: 10px;
+    color: var(--accent2);
+    margin-top: 5px;
+    font-family: 'Rajdhani', sans-serif;
+    opacity: 0.8;
+  }
+
+  .trophy-lock-icon {
+    position: absolute;
+    top: 11px; right: 11px;
+    font-size: 12px;
+    opacity: 0.3;
+  }
+
+  /* ===== BUTTONS ===== */
+  .bottom-actions { max-width: 420px; margin: 0 auto; }
+
+  .unlock-btn {
+    display: block; width: 100%;
+    padding: 15px;
+    background: linear-gradient(135deg, var(--accent), #cc1144);
+    border: none; border-radius: 12px;
+    color: white;
+    font-family: 'Bebas Neue', sans-serif;
+    font-size: 20px;
+    letter-spacing: 0.1em;
+    cursor: pointer;
+    transition: all 0.2s;
+    box-shadow: 0 4px 24px var(--glow);
+    margin-bottom: 12px;
+  }
+
+  .unlock-btn:hover { transform: translateY(-1px); box-shadow: 0 8px 32px var(--glow); }
+
+  .share-btn {
+    display: flex; align-items: center; justify-content: center; gap: 10px;
+    width: 100%;
+    padding: 13px;
+    background: var(--surface);
+    border: 1px solid rgba(255,255,255,0.1);
+    border-radius: 12px;
+    color: var(--text);
+    font-family: 'Rajdhani', sans-serif;
+    font-size: 16px; font-weight: 600;
+    cursor: pointer;
+    transition: all 0.2s;
+    margin-bottom: 10px;
+    text-decoration: none;
+  }
+
+  .share-btn:hover { background: var(--surface2); border-color: rgba(255,255,255,0.18); }
+
+  /* ===== TOAST ===== */
+  .toast {
+    position: fixed;
+    bottom: 28px;
+    left: 50%;
+    transform: translateX(-50%) translateY(130px);
+    background: var(--surface);
+    border: 1px solid rgba(255,255,255,0.1);
+    border-radius: 16px;
+    padding: 14px 20px;
+    display: flex;
+    align-items: center;
+    gap: 14px;
+    z-index: 1000;
+    transition: transform 0.38s cubic-bezier(0.34,1.56,0.64,1);
+    min-width: 290px;
+    max-width: 90vw;
+    box-shadow: 0 16px 48px rgba(0,0,0,0.5);
+  }
+
+  .toast.show { transform: translateX(-50%) translateY(0); }
+
+  .toast-icon  { font-size: 32px; flex-shrink: 0; }
+  .toast-text strong { display: block; font-size: 15px; margin-bottom: 2px; }
+  .toast-text small  { font-size: 11px; color: var(--muted); }
+
+  .toast-type {
+    font-family: 'Rajdhani', sans-serif;
+    font-size: 10px;
+    letter-spacing: 0.15em;
+    text-transform: uppercase;
+    padding: 3px 8px;
+    border-radius: 6px;
+    font-weight: 700;
+    margin-left: auto;
+    flex-shrink: 0;
+  }
+
+  .toast.bronze-toast   { border-color: rgba(205,127,50,0.4); }
+  .toast.silver-toast   { border-color: rgba(184,192,204,0.4); }
+  .toast.gold-toast     { border-color: rgba(255,215,0,0.4); }
+  .toast.platinum-toast { border-color: rgba(200,230,255,0.5); }
+
+  .toast.bronze-toast   .toast-type { background: rgba(205,127,50,0.2);   color: var(--bronze); }
+  .toast.silver-toast   .toast-type { background: rgba(184,192,204,0.2);  color: var(--silver); }
+  .toast.gold-toast     .toast-type { background: rgba(255,215,0,0.2);    color: var(--gold); }
+  .toast.platinum-toast .toast-type { background: rgba(200,230,255,0.2);  color: var(--platinum); }
+
+  @keyframes unlockPulse {
+    0%  { transform: scale(1); }
+    35% { transform: scale(1.04); }
+    65% { transform: scale(0.98); }
+    100%{ transform: scale(1); }
+  }
+
+  .just-unlocked { animation: unlockPulse 0.7s ease; }
+
+  .trophy-card.unlocked.platinum .trophy-icon-wrap {
+    animation: platGlow 2.2s ease-in-out infinite alternate;
+  }
+
+  @keyframes platGlow {
+    from { box-shadow: 0 0 18px var(--platinum-glow), 0 0 0 1px rgba(200,230,255,0.45); }
+    to   { box-shadow: 0 0 44px rgba(200,230,255,0.9), 0 0 0 1px rgba(200,230,255,0.8); }
+  }
+
+  /* ===== PASSWORD LOCK ===== */
+  .lock-overlay {
+    position: fixed;
+    inset: 0;
+    background: var(--bg);
+    z-index: 9999;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-direction: column;
+    padding: 24px;
+    transition: opacity 0.4s ease, transform 0.4s ease;
+  }
+
+  .lock-overlay.unlocking {
+    opacity: 0;
+    transform: scale(1.04);
+    pointer-events: none;
+  }
+
+  .lock-overlay::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background:
+      radial-gradient(ellipse 60% 50% at 50% 30%, rgba(255,60,110,0.1) 0%, transparent 60%);
+    pointer-events: none;
+  }
+
+  .lock-box {
+    position: relative;
+    background: var(--surface);
+    border: 1px solid rgba(255,255,255,0.08);
+    border-radius: 24px;
+    padding: 40px 36px;
+    max-width: 380px;
+    width: 100%;
+    text-align: center;
+    box-shadow: 0 32px 80px rgba(0,0,0,0.6);
+  }
+
+  .lock-icon-big {
+    font-size: 56px;
+    margin-bottom: 16px;
+    display: block;
+    animation: lockFloat 3s ease-in-out infinite;
+  }
+
+  @keyframes lockFloat {
+    0%, 100% { transform: translateY(0); }
+    50%       { transform: translateY(-8px); }
+  }
+
+  .lock-title {
+    font-family: 'Bebas Neue', sans-serif;
+    font-size: 32px;
+    letter-spacing: 0.06em;
+    color: #fff;
+    margin-bottom: 6px;
+  }
+
+  .lock-subtitle {
+    font-size: 13px;
+    color: var(--muted);
+    margin-bottom: 28px;
+    line-height: 1.6;
+  }
+
+  .lock-input-wrap {
+    position: relative;
+    margin-bottom: 16px;
+  }
+
+  .lock-input {
+    width: 100%;
+    padding: 14px 50px 14px 18px;
+    background: var(--surface2);
+    border: 1px solid rgba(255,255,255,0.1);
+    border-radius: 12px;
+    color: var(--text);
+    font-size: 20px;
+    letter-spacing: 0.3em;
+    font-family: 'Rajdhani', sans-serif;
+    font-weight: 700;
+    text-align: center;
+    outline: none;
+    transition: border-color 0.2s;
+  }
+
+  .lock-input:focus { border-color: var(--accent); box-shadow: 0 0 0 3px rgba(255,60,110,0.15); }
+  .lock-input.error { border-color: #ff4444; animation: shake 0.4s ease; }
+  .lock-input.success { border-color: #44ff88; }
+
+  @keyframes shake {
+    0%, 100% { transform: translateX(0); }
+    20%       { transform: translateX(-8px); }
+    40%       { transform: translateX(8px); }
+    60%       { transform: translateX(-5px); }
+    80%       { transform: translateX(5px); }
+  }
+
+  .lock-eye-btn {
+    position: absolute;
+    right: 14px;
+    top: 50%;
+    transform: translateY(-50%);
+    background: none;
+    border: none;
+    color: var(--muted);
+    cursor: pointer;
+    font-size: 18px;
+    padding: 4px;
+    transition: color 0.2s;
+  }
+
+  .lock-eye-btn:hover { color: var(--text); }
+
+  .lock-btn {
+    width: 100%;
+    padding: 14px;
+    background: linear-gradient(135deg, var(--accent), #cc1144);
+    border: none;
+    border-radius: 12px;
+    color: #fff;
+    font-family: 'Bebas Neue', sans-serif;
+    font-size: 20px;
+    letter-spacing: 0.1em;
+    cursor: pointer;
+    transition: all 0.2s;
+    box-shadow: 0 4px 24px var(--glow);
+    margin-bottom: 16px;
+  }
+
+  .lock-btn:hover { transform: translateY(-1px); box-shadow: 0 8px 32px var(--glow); }
+  .lock-btn:active { transform: translateY(0); }
+
+  .lock-hint {
+    font-size: 11px;
+    color: var(--muted);
+    margin-top: 4px;
+  }
+
+  .lock-attempt-bar {
+    display: flex;
+    justify-content: center;
+    gap: 6px;
+    margin-top: 14px;
+  }
+
+  .attempt-dot {
+    width: 8px; height: 8px;
+    border-radius: 50%;
+    background: rgba(255,255,255,0.15);
+    transition: all 0.3s;
+  }
+
+  .attempt-dot.used { background: var(--accent); box-shadow: 0 0 6px var(--glow); }
+  .attempt-dot.fail { background: #ff4444; box-shadow: 0 0 6px rgba(255,68,68,0.5); animation: dotPulse 0.5s ease; }
+
+  @keyframes dotPulse {
+    0%, 100% { transform: scale(1); }
+    50%       { transform: scale(1.4); }
+  }
+
+  .lock-mode-badge {
+    position: absolute;
+    top: 14px; right: 14px;
+    background: rgba(255,60,110,0.15);
+    border: 1px solid rgba(255,60,110,0.3);
+    border-radius: 8px;
+    padding: 3px 10px;
+    font-family: 'Rajdhani', sans-serif;
+    font-size: 11px;
+    font-weight: 700;
+    letter-spacing: 0.1em;
+    color: var(--accent2);
+  }
+
+  /* 閲覧モード表示 */
+  .view-mode-banner {
+    display: none;
+    background: rgba(255,215,0,0.08);
+    border: 1px solid rgba(255,215,0,0.25);
+    border-radius: 12px;
+    padding: 10px 16px;
+    margin-bottom: 20px;
+    font-size: 13px;
+    color: var(--gold);
+    text-align: center;
+    cursor: pointer;
+    transition: background 0.2s;
+  }
+  .view-mode-banner:hover { background: rgba(255,215,0,0.14); }
+  .view-mode-banner.visible { display: block; }
+
+  /* locked状態のボタン無効化 */
+  body.view-mode .unlock-btn,
+  body.view-mode .sync-btn.primary,
+  body.view-mode .station-chip,
+  body.view-mode .trophy-card {
+    pointer-events: none;
+    cursor: default;
+  }
+
+  body.view-mode .trophy-card { opacity: 0.55; filter: grayscale(0.5); }
+  body.view-mode .trophy-card.unlocked { opacity: 1; filter: none; }
+
+  body.view-mode .unlock-btn {
+    opacity: 0.3;
+    background: var(--surface2);
+    box-shadow: none;
+  }
+
+  body.view-mode .station-chip { opacity: 0.6; }
+  body.view-mode .station-chip.done { opacity: 1; }
+
+  /* ===== RANK / 称号 ===== */
+  .rank-section {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 16px;
+    padding: 20px 22px;
+    margin-bottom: 24px;
+    position: relative;
+    overflow: hidden;
+    transition: border-color 0.5s;
+  }
+
+  .rank-section.bronze-rank  { border-color: rgba(205,127,50,0.4); }
+  .rank-section.silver-rank  { border-color: rgba(184,192,204,0.4); }
+  .rank-section.gold-rank    { border-color: rgba(255,215,0,0.45); }
+  .rank-section.platinum-rank{ border-color: rgba(200,230,255,0.55); }
+
+  .rank-section::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    opacity: 0;
+    transition: opacity 0.5s;
+    pointer-events: none;
+  }
+
+  .rank-section.bronze-rank::before   { background: radial-gradient(ellipse at 0% 50%, rgba(205,127,50,0.08), transparent 60%); opacity: 1; }
+  .rank-section.silver-rank::before   { background: radial-gradient(ellipse at 0% 50%, rgba(184,192,204,0.08), transparent 60%); opacity: 1; }
+  .rank-section.gold-rank::before     { background: radial-gradient(ellipse at 0% 50%, rgba(255,215,0,0.09), transparent 60%); opacity: 1; }
+  .rank-section.platinum-rank::before { background: radial-gradient(ellipse at 0% 50%, rgba(200,230,255,0.12), transparent 60%); opacity: 1; }
+
+  .rank-row {
+    display: flex;
+    align-items: center;
+    gap: 16px;
+  }
+
+  .rank-emblem {
+    flex-shrink: 0;
+    width: 56px; height: 56px;
+    border-radius: 14px;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 28px;
+    transition: all 0.5s;
+  }
+
+  .rank-section.bronze-rank   .rank-emblem { background: rgba(205,127,50,0.15); box-shadow: 0 0 20px rgba(205,127,50,0.4); }
+  .rank-section.silver-rank   .rank-emblem { background: rgba(184,192,204,0.15); box-shadow: 0 0 20px rgba(184,192,204,0.4); }
+  .rank-section.gold-rank     .rank-emblem { background: rgba(255,215,0,0.15);   box-shadow: 0 0 24px rgba(255,215,0,0.5); }
+  .rank-section.platinum-rank .rank-emblem { background: rgba(200,230,255,0.15); box-shadow: 0 0 30px rgba(200,230,255,0.6); animation: platEmblemGlow 2s ease-in-out infinite alternate; }
+
+  @keyframes platEmblemGlow {
+    from { box-shadow: 0 0 20px rgba(200,230,255,0.5); }
+    to   { box-shadow: 0 0 44px rgba(200,230,255,0.9); }
+  }
+
+  .rank-info { flex: 1; min-width: 0; }
+
+  .rank-label {
+    font-family: 'Rajdhani', sans-serif;
+    font-size: 11px;
+    letter-spacing: 0.15em;
+    text-transform: uppercase;
+    color: var(--muted);
+    margin-bottom: 2px;
+  }
+
+  .rank-title {
+    font-family: 'Bebas Neue', sans-serif;
+    font-size: 26px;
+    letter-spacing: 0.06em;
+    line-height: 1;
+    transition: color 0.5s;
+  }
+
+  .rank-section.bronze-rank   .rank-title { color: var(--bronze); }
+  .rank-section.silver-rank   .rank-title { color: var(--silver); }
+  .rank-section.gold-rank     .rank-title { color: var(--gold); }
+  .rank-section.platinum-rank .rank-title { color: var(--platinum); }
+
+  .rank-subtitle {
+    font-size: 11px;
+    color: var(--muted);
+    margin-top: 4px;
+  }
+
+  .rank-next {
+    font-size: 11px;
+    color: var(--muted);
+    margin-top: 6px;
+    padding-top: 6px;
+    border-top: 1px solid var(--border);
+  }
+
+  .rank-next span {
+    font-weight: 700;
+    color: var(--text);
+  }
+
+  /* 称号獲得モーダル */
+  .rank-modal-overlay {
+    position: fixed;
+    inset: 0;
+    background: rgba(0,0,0,0.75);
+    z-index: 8000;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    opacity: 0;
+    pointer-events: none;
+    transition: opacity 0.3s;
+  }
+
+  .rank-modal-overlay.show {
+    opacity: 1;
+    pointer-events: all;
+  }
+
+  .rank-modal {
+    background: var(--surface);
+    border-radius: 24px;
+    padding: 44px 36px;
+    text-align: center;
+    max-width: 340px;
+    width: 90%;
+    transform: scale(0.85);
+    transition: transform 0.4s cubic-bezier(0.34,1.56,0.64,1);
+    position: relative;
+    overflow: hidden;
+  }
+
+  .rank-modal-overlay.show .rank-modal { transform: scale(1); }
+
+  .rank-modal::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    pointer-events: none;
+  }
+
+  .rank-modal.bronze-modal  { border: 1px solid rgba(205,127,50,0.5); }
+  .rank-modal.bronze-modal::before  { background: radial-gradient(ellipse at 50% 0%, rgba(205,127,50,0.15), transparent 60%); }
+  .rank-modal.silver-modal  { border: 1px solid rgba(184,192,204,0.5); }
+  .rank-modal.silver-modal::before  { background: radial-gradient(ellipse at 50% 0%, rgba(184,192,204,0.15), transparent 60%); }
+  .rank-modal.gold-modal    { border: 1px solid rgba(255,215,0,0.55); }
+  .rank-modal.gold-modal::before    { background: radial-gradient(ellipse at 50% 0%, rgba(255,215,0,0.18), transparent 60%); }
+  .rank-modal.platinum-modal{ border: 1px solid rgba(200,230,255,0.6); }
+  .rank-modal.platinum-modal::before{ background: radial-gradient(ellipse at 50% 0%, rgba(200,230,255,0.2), transparent 60%); }
+
+  .rank-modal-emoji {
+    font-size: 64px;
+    display: block;
+    margin-bottom: 12px;
+    animation: rankEmojiBounce 0.6s ease;
+  }
+
+  @keyframes rankEmojiBounce {
+    0%   { transform: scale(0.3) rotate(-10deg); }
+    60%  { transform: scale(1.2) rotate(4deg); }
+    100% { transform: scale(1) rotate(0deg); }
+  }
+
+  .rank-modal-label {
+    font-family: 'Rajdhani', sans-serif;
+    font-size: 12px;
+    letter-spacing: 0.2em;
+    text-transform: uppercase;
+    color: var(--muted);
+    margin-bottom: 8px;
+  }
+
+  .rank-modal-title {
+    font-family: 'Bebas Neue', sans-serif;
+    font-size: 36px;
+    letter-spacing: 0.06em;
+    margin-bottom: 8px;
+  }
+
+  .rank-modal.bronze-modal   .rank-modal-title { color: var(--bronze); }
+  .rank-modal.silver-modal   .rank-modal-title { color: var(--silver); }
+  .rank-modal.gold-modal     .rank-modal-title { color: var(--gold); }
+  .rank-modal.platinum-modal .rank-modal-title { color: var(--platinum); }
+
+  .rank-modal-desc {
+    font-size: 13px;
+    color: var(--muted);
+    line-height: 1.6;
+    margin-bottom: 24px;
+  }
+
+  .rank-modal-close {
+    padding: 12px 32px;
+    border-radius: 10px;
+    border: none;
+    background: var(--surface2);
+    color: var(--text);
+    font-family: 'Rajdhani', sans-serif;
+    font-size: 15px;
+    font-weight: 700;
+    cursor: pointer;
+    letter-spacing: 0.05em;
+    transition: background 0.2s;
+  }
+
+  .rank-modal-close:hover { background: rgba(255,255,255,0.1); }
+
+  /* パーティクル */
+  @keyframes particleFly {
+    0%   { transform: translateY(0) scale(1); opacity: 1; }
+    100% { transform: translateY(-120px) scale(0); opacity: 0; }
+  }
+
+  .particle {
+    position: absolute;
+    width: 6px; height: 6px;
+    border-radius: 50%;
+    pointer-events: none;
+    animation: particleFly 1s ease forwards;
+  }
+
+  /* ===== CHAOS RANK ===== */
+  .chaos-rank-section {
+    background: var(--surface);
+    border: 1px solid rgba(255,60,60,0.2);
+    border-radius: 16px;
+    padding: 20px 22px;
+    margin-bottom: 24px;
+    position: relative;
+    overflow: hidden;
+    transition: border-color 0.5s;
+  }
+
+  .chaos-rank-section::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background: radial-gradient(ellipse at 0% 50%, rgba(255,40,40,0.06), transparent 60%);
+    pointer-events: none;
+  }
+
+  .chaos-rank-section.chaos-active {
+    border-color: rgba(255,60,60,0.5);
+  }
+
+  .chaos-rank-section.chaos-active::before {
+    background: radial-gradient(ellipse at 0% 50%, rgba(255,40,40,0.1), transparent 60%);
+  }
+
+  .chaos-rank-row {
+    display: flex;
+    align-items: center;
+    gap: 16px;
+  }
+
+  .chaos-rank-emblem {
+    flex-shrink: 0;
+    width: 56px; height: 56px;
+    border-radius: 14px;
+    background: rgba(255,60,60,0.1);
+    display: flex; align-items: center; justify-content: center;
+    font-size: 28px;
+    transition: all 0.5s;
+  }
+
+  .chaos-rank-section.chaos-active .chaos-rank-emblem {
+    box-shadow: 0 0 24px rgba(255,40,40,0.5);
+    animation: chaosEmblemPulse 2s ease-in-out infinite alternate;
+  }
+
+  @keyframes chaosEmblemPulse {
+    from { box-shadow: 0 0 12px rgba(255,40,40,0.4); }
+    to   { box-shadow: 0 0 36px rgba(255,40,40,0.8); }
+  }
+
+  .chaos-rank-info { flex: 1; min-width: 0; }
+
+  .chaos-rank-label {
+    font-family: 'Rajdhani', sans-serif;
+    font-size: 11px;
+    letter-spacing: 0.15em;
+    text-transform: uppercase;
+    color: var(--muted);
+    margin-bottom: 2px;
+  }
+
+  .chaos-rank-title {
+    font-family: 'Bebas Neue', sans-serif;
+    font-size: 26px;
+    letter-spacing: 0.06em;
+    line-height: 1;
+    color: var(--muted);
+    transition: color 0.5s;
+  }
+
+  .chaos-rank-section.chaos-active .chaos-rank-title {
+    color: #ff5555;
+  }
+
+  .chaos-rank-subtitle {
+    font-size: 11px;
+    color: var(--muted);
+    margin-top: 4px;
+  }
+
+  .chaos-progress-wrap {
+    margin-top: 10px;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+  }
+
+  .chaos-progress-bar-outer {
+    flex: 1;
+    height: 4px;
+    background: var(--surface2);
+    border-radius: 100px;
+    overflow: hidden;
+  }
+
+  .chaos-progress-bar-inner {
+    height: 100%;
+    background: linear-gradient(90deg, #cc2222, #ff5555);
+    border-radius: 100px;
+    transition: width 0.6s ease;
+    box-shadow: 0 0 8px rgba(255,60,60,0.5);
+  }
+
+  .chaos-progress-label {
+    font-family: 'Rajdhani', sans-serif;
+    font-size: 12px;
+    font-weight: 700;
+    color: #ff5555;
+    white-space: nowrap;
+  }
+
+  .chaos-rank-next {
+    font-size: 11px;
+    color: var(--muted);
+    margin-top: 8px;
+    padding-top: 8px;
+    border-top: 1px solid var(--border);
+  }
+
+  .chaos-rank-next span { font-weight: 700; color: #ff7777; }
+
+  /* カオス称号モーダル（ダークver） */
+  .chaos-modal-overlay {
+    position: fixed;
+    inset: 0;
+    background: rgba(0,0,0,0.85);
+    z-index: 8500;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    opacity: 0;
+    pointer-events: none;
+    transition: opacity 0.3s;
+  }
+
+  .chaos-modal-overlay.show {
+    opacity: 1;
+    pointer-events: all;
+  }
+
+  .chaos-modal {
+    background: #0c0808;
+    border: 1px solid rgba(255,60,60,0.5);
+    border-radius: 24px;
+    padding: 44px 36px;
+    text-align: center;
+    max-width: 340px;
+    width: 90%;
+    transform: scale(0.85);
+    transition: transform 0.4s cubic-bezier(0.34,1.56,0.64,1);
+    position: relative;
+    overflow: hidden;
+    box-shadow: 0 0 60px rgba(255,40,40,0.3);
+  }
+
+  .chaos-modal-overlay.show .chaos-modal { transform: scale(1); }
+
+  .chaos-modal::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background: radial-gradient(ellipse at 50% 0%, rgba(255,40,40,0.15), transparent 60%);
+    pointer-events: none;
+  }
+
+  .chaos-modal-emoji {
+    font-size: 64px;
+    display: block;
+    margin-bottom: 12px;
+    animation: chaosEmojiBounce 0.5s cubic-bezier(0.34,1.56,0.64,1);
+  }
+
+  @keyframes chaosEmojiBounce {
+    0%   { transform: scale(0.2) rotate(20deg); opacity: 0; }
+    100% { transform: scale(1) rotate(0deg);   opacity: 1; }
+  }
+
+  .chaos-modal-label {
+    font-family: 'Rajdhani', sans-serif;
+    font-size: 11px;
+    letter-spacing: 0.25em;
+    text-transform: uppercase;
+    color: #ff4444;
+    margin-bottom: 8px;
+  }
+
+  .chaos-modal-title {
+    font-family: 'Bebas Neue', sans-serif;
+    font-size: 34px;
+    letter-spacing: 0.06em;
+    color: #ff5555;
+    margin-bottom: 10px;
+    text-shadow: 0 0 20px rgba(255,60,60,0.6);
+  }
+
+  .chaos-modal-desc {
+    font-size: 13px;
+    color: #886666;
+    line-height: 1.7;
+    margin-bottom: 24px;
+  }
+
+  .chaos-modal-close {
+    padding: 12px 32px;
+    border-radius: 10px;
+    border: 1px solid rgba(255,60,60,0.3);
+    background: rgba(255,40,40,0.1);
+    color: #ff7777;
+    font-family: 'Rajdhani', sans-serif;
+    font-size: 15px;
+    font-weight: 700;
+    cursor: pointer;
+    letter-spacing: 0.05em;
+    transition: all 0.2s;
+  }
+
+  .chaos-modal-close:hover { background: rgba(255,40,40,0.2); }
+
+  @keyframes chaosParticleFly {
+    0%   { transform: translateY(0) translateX(0) scale(1); opacity: 1; }
+    100% { transform: translateY(-100px) translateX(var(--dx)) scale(0); opacity: 0; }
+  }
+
+  .chaos-particle {
+    position: absolute;
+    width: 5px; height: 5px;
+    border-radius: 2px;
+    pointer-events: none;
+    animation: chaosParticleFly 0.9s ease forwards;
+  }
+
+  /* ===== SYNC PANEL ===== */
+  .sync-panel {
+    background: var(--surface);
+    border: 1px solid rgba(255,255,255,0.08);
+    border-radius: 16px;
+    padding: 20px 22px;
+    margin-bottom: 28px;
+  }
+
+  .sync-title {
+    font-family: 'Bebas Neue', sans-serif;
+    font-size: 16px;
+    letter-spacing: 0.08em;
+    color: var(--text);
+    margin-bottom: 6px;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+  }
+
+  .sync-desc {
+    font-size: 12px;
+    color: var(--muted);
+    margin-bottom: 14px;
+    line-height: 1.6;
+  }
+
+  .sync-buttons {
+    display: flex;
+    gap: 10px;
+    flex-wrap: wrap;
+  }
+
+  .sync-btn {
+    flex: 1;
+    min-width: 120px;
+    padding: 10px 16px;
+    border-radius: 10px;
+    border: 1px solid rgba(255,255,255,0.1);
+    background: var(--surface2);
+    color: var(--text);
+    font-family: 'Rajdhani', sans-serif;
+    font-size: 14px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.2s;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 6px;
+  }
+
+  .sync-btn:hover { background: rgba(255,255,255,0.07); border-color: rgba(255,255,255,0.2); }
+  .sync-btn.primary { background: rgba(255,60,110,0.15); border-color: rgba(255,60,110,0.4); color: var(--accent2); }
+  .sync-btn.primary:hover { background: rgba(255,60,110,0.25); }
+
+  .sync-code-wrap {
+    margin-top: 14px;
+    display: none;
+  }
+
+  .sync-code-wrap.open { display: block; }
+
+  .sync-code {
+    width: 100%;
+    background: #060a10;
+    border: 1px solid rgba(255,255,255,0.1);
+    border-radius: 8px;
+    color: var(--accent2);
+    font-family: monospace;
+    font-size: 11px;
+    padding: 10px 12px;
+    resize: vertical;
+    min-height: 60px;
+    word-break: break-all;
+  }
+
+  .sync-code-actions {
+    display: flex;
+    gap: 8px;
+    margin-top: 8px;
+  }
+
+  /* ===== CHAOS SPECIAL STYLING ===== */
+  .trophy-card.chaos-special {
+    border-color: rgba(255, 80, 80, 0.25) !important;
+  }
+  .trophy-card.chaos-special.unlocked {
+    border-color: rgba(255, 80, 80, 0.5) !important;
+  }
+  .trophy-card.chaos-special::before {
+    background: radial-gradient(ellipse at 0 0, rgba(255,60,60,0.1), transparent 55%) !important;
+  }
+
+  .trophy-card.platinum .trophy-type-badge { background: var(--platinum); color: #000; }
+
+  .hidden { display: none !important; }
+
+  @media (max-width: 480px) {
+    .trophy-grid { grid-template-columns: 1fr; }
+    .station-grid { grid-template-columns: repeat(auto-fill, minmax(90px, 1fr)); }
+  }
+</style>
+
+</head>
+<body>
+
+<!-- Chaos Rank Modal -->
+
+<div class="chaos-modal-overlay" id="chaos-modal-overlay">
+  <div class="chaos-modal" id="chaos-modal">
+    <span class="chaos-modal-emoji" id="chaos-modal-emoji">💀</span>
+    <div class="chaos-modal-label">⚠️ カオス称号 獲得</div>
+    <div class="chaos-modal-title" id="chaos-modal-title"></div>
+    <div class="chaos-modal-desc" id="chaos-modal-desc"></div>
+    <button class="chaos-modal-close" id="chaos-modal-close">…なるほどな</button>
+  </div>
+</div>
+
+<!-- Rank Modal -->
+
+<div class="rank-modal-overlay" id="rank-modal-overlay">
+  <div class="rank-modal" id="rank-modal">
+    <span class="rank-modal-emoji" id="rank-modal-emoji">🏆</span>
+    <div class="rank-modal-label">称号獲得</div>
+    <div class="rank-modal-title" id="rank-modal-title"></div>
+    <div class="rank-modal-desc" id="rank-modal-desc"></div>
+    <button class="rank-modal-close" id="rank-modal-close">かっこいい！</button>
+  </div>
+</div>
+
+<!-- Password Lock Overlay -->
+
+<div class="lock-overlay" id="lock-overlay">
+  <div class="lock-box">
+    <div class="lock-mode-badge">🔐 OWNER ONLY</div>
+    <span class="lock-icon-big">🔒</span>
+    <div class="lock-title">TROPHY SYSTEM</div>
+    <p class="lock-subtitle">これは俺の戦績ページ。<br>オーナーのみ実績を操作できます。<br><span style="color:var(--text);font-weight:700;">閲覧だけなら「見るだけ」</span></p>
+    <div class="lock-input-wrap">
+      <input class="lock-input" type="password" id="lock-input" placeholder="••••••" maxlength="20" autocomplete="off">
+      <button class="lock-eye-btn" id="eye-btn">👁</button>
+    </div>
+    <button class="lock-btn" id="unlock-btn">🔓 UNLOCK</button>
+    <div class="lock-attempt-bar" id="attempt-bar">
+      <div class="attempt-dot" id="dot-1"></div>
+      <div class="attempt-dot" id="dot-2"></div>
+      <div class="attempt-dot" id="dot-3"></div>
+      <div class="attempt-dot" id="dot-4"></div>
+      <div class="attempt-dot" id="dot-5"></div>
+    </div>
+    <div class="lock-hint" id="lock-hint">パスワードを入力してください</div>
+    <div style="margin-top:20px;padding-top:16px;border-top:1px solid var(--border);">
+      <button id="view-mode-btn" style="background:none;border:none;color:var(--muted);font-size:12px;cursor:pointer;font-family:'Noto Sans JP',sans-serif;text-decoration:underline;">
+        👀 実績を見るだけ（操作不可）
+      </button>
+    </div>
+  </div>
+</div>
+
+<div class="container">
+
+  <!-- Header -->
+
+  <div class="header">
+    <div class="header-icon">⚔️</div>
+    <div class="header-text">
+      <h1>ナンパ師 TROPHY</h1>
+    </div>
+  </div>
+
+  <!-- View Mode Banner -->
+
+  <div class="view-mode-banner" id="view-banner">
+    👀 閲覧モード（操作不可）— タップしてログイン
+  </div>
+
+  <!-- Tabs -->
+
+  <div class="tabs">
+    <div class="tab active" onclick="switchTab('all')">すべて</div>
+    <div class="tab" onclick="switchTab('voice')">🗣️ 声かけ</div>
+    <div class="tab" onclick="switchTab('contact')">📱 連絡先</div>
+    <div class="tab" onclick="switchTab('date')">☕ デート</div>
+    <div class="tab" onclick="switchTab('place')">📍 場所</div>
+    <div class="tab" onclick="switchTab('yamanote')">🚃 山手線</div>
+    <div class="tab" onclick="switchTab('chaos')">💀 カオス</div>
+    <div class="tab" onclick="switchTab('legend')">👑 伝説</div>
+  </div>
+
+  <!-- Stats -->
+
+  <div class="stats-bar">
+    <div class="stat-chip"><div class="stat-dot plat"></div><span id="stat-plat">0</span> プラチナ</div>
+    <div class="stat-chip"><div class="stat-dot gold"></div><span id="stat-gold">0</span> ゴールド</div>
+    <div class="stat-chip"><div class="stat-dot silver"></div><span id="stat-silver">0</span> シルバー</div>
+    <div class="stat-chip"><div class="stat-dot bronze"></div><span id="stat-bronze">0</span> ブロンズ</div>
+  </div>
+
+  <!-- Rank / 称号 -->
+
+  <div class="rank-section" id="rank-section">
+    <div class="rank-row">
+      <div class="rank-emblem" id="rank-emblem">🌱</div>
+      <div class="rank-info">
+        <div class="rank-label">現在の称号</div>
+        <div class="rank-title" id="rank-title">ナンパ未経験者</div>
+        <div class="rank-subtitle" id="rank-subtitle">まずは一歩踏み出せ</div>
+      </div>
+    </div>
+    <div class="rank-next" id="rank-next"></div>
+  </div>
+
+  <!-- Chaos Rank / カオス称号 -->
+
+  <div class="chaos-rank-section" id="chaos-rank-section">
+    <div class="chaos-rank-row">
+      <div class="chaos-rank-emblem" id="chaos-rank-emblem">💀</div>
+      <div class="chaos-rank-info">
+        <div class="chaos-rank-label">💀 カオス称号</div>
+        <div class="chaos-rank-title" id="chaos-rank-title">修羅場未経験</div>
+        <div class="chaos-rank-subtitle" id="chaos-rank-subtitle">カオス実績を解除すると称号が変わる</div>
+      </div>
+    </div>
+    <div class="chaos-progress-wrap">
+      <div class="chaos-progress-bar-outer">
+        <div class="chaos-progress-bar-inner" id="chaos-progress-bar" style="width:0%"></div>
+      </div>
+      <div class="chaos-progress-label" id="chaos-progress-label">0 / 36</div>
+    </div>
+    <div class="chaos-rank-next" id="chaos-rank-next"></div>
+  </div>
+
+  <!-- Progress -->
+
+  <div class="progress-section">
+    <div class="progress-header">
+      <span class="progress-label">コンプリート率</span>
+      <span class="progress-count" id="progress-text">0 / 0</span>
+    </div>
+    <div class="progress-bar-outer">
+      <div class="progress-bar-inner" id="progress-bar" style="width:0%"></div>
+    </div>
+  </div>
+
+  <!-- Yamanote Challenge -->
+
+  <div class="yamanote-section" id="yamanote-section">
+    <div class="yamanote-header">
+      <span class="yamanote-badge">🚃 SPECIAL</span>
+      <span class="yamanote-title">山手線一周ナンパ企画</span>
+    </div>
+    <p style="font-size:12px;color:var(--muted);margin-bottom:12px;">29駅すべてでナンパを敢行！タップして完了をマーク</p>
+    <div style="display:flex;gap:10px;flex-wrap:wrap;margin-bottom:14px;">
+      <span style="font-size:11px;font-family:'Rajdhani',sans-serif;font-weight:700;padding:3px 10px;border-radius:6px;background:rgba(255,215,0,0.12);color:var(--gold);border:1px solid rgba(255,215,0,0.3);">🥇 GOLD 激戦区</span>
+      <span style="font-size:11px;font-family:'Rajdhani',sans-serif;font-weight:700;padding:3px 10px;border-radius:6px;background:rgba(184,192,204,0.12);color:var(--silver);border:1px solid rgba(184,192,204,0.3);">🥈 SILVER 中級</span>
+      <span style="font-size:11px;font-family:'Rajdhani',sans-serif;font-weight:700;padding:3px 10px;border-radius:6px;background:rgba(205,127,50,0.12);color:var(--bronze);border:1px solid rgba(205,127,50,0.3);">🥉 BRONZE 穴場</span>
+    </div>
+    <div class="station-grid" id="station-grid"></div>
+    <div class="yamanote-progress">
+      <div class="yamanote-bar-outer">
+        <div class="yamanote-bar-inner" id="yamanote-bar" style="width:0%"></div>
+      </div>
+      <div class="yamanote-count" id="yamanote-count">0 / 29駅</div>
+    </div>
+  </div>
+
+  <!-- Sync Panel -->
+
+  <div class="sync-panel">
+    <div class="sync-title">📲 データ同期・バックアップ</div>
+    <p class="sync-desc">スマホ⇔PCでデータを共有できます。「コードを出力」してコピーし、別デバイスで「コードを読み込む」に貼り付けてください。</p>
+    <div class="sync-buttons">
+      <button class="sync-btn primary" onclick="exportData()">📤 コードを出力</button>
+      <button class="sync-btn" onclick="openImport()">📥 コードを読み込む</button>
+    </div>
+    <div class="sync-code-wrap" id="export-wrap">
+      <textarea class="sync-code" id="export-code" readonly></textarea>
+      <div class="sync-code-actions">
+        <button class="sync-btn primary" onclick="copyCode()" style="flex:none;padding:8px 20px;">📋 コピー</button>
+        <button class="sync-btn" onclick="closeExport()" style="flex:none;padding:8px 16px;font-size:12px;">✕ 閉じる</button>
+      </div>
+    </div>
+    <div class="sync-code-wrap" id="import-wrap">
+      <textarea class="sync-code" id="import-code" placeholder="別デバイスで出力したコードをここに貼り付け..."></textarea>
+      <div class="sync-code-actions">
+        <button class="sync-btn primary" onclick="importData()" style="flex:none;padding:8px 20px;">✅ 読み込む</button>
+        <button class="sync-btn" onclick="closeImport()" style="flex:none;padding:8px 16px;font-size:12px;">✕ 閉じる</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Trophy Grid -->
+
+  <div class="section-title">トロフィーリスト</div>
+  <div class="trophy-grid" id="trophy-grid"></div>
+
+  <!-- Actions -->
+
+  <div class="bottom-actions">
+    <button class="share-btn" onclick="shareToX()">
+      <span style="font-weight:900;font-size:18px;">𝕏</span> Xにシェアする
+    </button>
+  </div>
+</div>
+
+<!-- Toast -->
+
+<div class="toast" id="toast">
+  <div class="toast-icon" id="toast-icon">🏆</div>
+  <div class="toast-text">
+    <strong id="toast-name"></strong>
+    <small id="toast-desc"></small>
+  </div>
+  <div class="toast-type" id="toast-type"></div>
+</div>
+
+<script>
+// ========== DATA ==========
+
+// ===== パスワード設定 ここを変更してください =====
+const OWNER_PASSWORD = '1102';
+// ================================================
+
+const SESSION_KEY = 'nanpa-auth-session';
+let isOwner = false;
+let failCount = 0;
+const MAX_FAIL = 5;
+
+function initLock() {
+  const session = sessionStorage.getItem(SESSION_KEY);
+  if(session === hashPass(OWNER_PASSWORD)) {
+    unlockApp(false);
+  } else {
+    // ロック画面のまま表示
+    const inp = document.getElementById('lock-input');
+    if(inp) inp.focus();
+  }
+}
+
+function hashPass(pw) {
+  let h = 0;
+  for(let i=0; i<pw.length; i++) { h = ((h<<5)-h)+pw.charCodeAt(i); h|=0; }
+  return 'np_' + Math.abs(h).toString(36) + '_' + pw.length;
+}
+
+function tryUnlock() {
+  if(failCount >= MAX_FAIL) return;
+  const input = document.getElementById('lock-input').value;
+  if(input === OWNER_PASSWORD) {
+    sessionStorage.setItem(SESSION_KEY, hashPass(OWNER_PASSWORD));
+    unlockApp(true);
+  } else {
+    failCount++;
+    const input_el = document.getElementById('lock-input');
+    input_el.classList.add('error');
+    input_el.value = '';
+    for(let i=1; i<=5; i++) {
+      const dot = document.getElementById('dot-'+i);
+      if(dot && i <= failCount) { dot.classList.remove('used'); dot.classList.add('fail'); }
+    }
+    setTimeout(()=> {
+      input_el.classList.remove('error');
+      input_el.placeholder = failCount >= MAX_FAIL ? '🔒 ロックされました' : '••••••';
+    }, 400);
+    if(failCount >= MAX_FAIL) {
+      document.getElementById('lock-hint').textContent = '試行回数超過。ページを再読み込みしてください';
+      document.getElementById('lock-input').disabled = true;
+      document.querySelector('.lock-btn').disabled = true;
+    } else {
+      document.getElementById('lock-hint').textContent = `パスワードが違います（残り${MAX_FAIL - failCount}回）`;
+    }
+  }
+}
+
+function unlockApp(animate) {
+  isOwner = true;
+  document.body.classList.remove('view-mode');
+  const banner = document.getElementById('view-banner');
+  if(banner) banner.classList.remove('visible');
+  const overlay = document.getElementById('lock-overlay');
+  if(overlay) {
+    if(animate) {
+      overlay.classList.add('unlocking');
+      setTimeout(()=> { overlay.style.display='none'; }, 420);
+    } else {
+      overlay.style.display = 'none';
+    }
+  }
+}
+
+function enterViewMode() {
+  isOwner = false;
+  document.body.classList.add('view-mode');
+  const overlay = document.getElementById('lock-overlay');
+  if(overlay) overlay.style.display = 'none';
+  const banner = document.getElementById('view-banner');
+  if(banner) banner.classList.add('visible');
+}
+
+function showLock() {
+  const overlay = document.getElementById('lock-overlay');
+  if(!overlay) return;
+  overlay.style.display = 'flex';
+  overlay.classList.remove('unlocking');
+  document.getElementById('lock-input').value = '';
+  document.getElementById('lock-input').focus();
+}
+
+function toggleEye() {
+  const input = document.getElementById('lock-input');
+  const btn = document.getElementById('eye-btn');
+  if(input.type === 'password') {
+    input.type = 'text';
+    btn.textContent = '🙈';
+  } else {
+    input.type = 'password';
+    btn.textContent = '👁';
+  }
+}
+
+// difficulty: 'gold'=激戦区, 'silver'=中級, 'bronze'=穴場
+const STATIONS = [
+  {id:'osaki',       name:'大崎',     icon:'🌆', diff:'bronze', reason:'乗換客中心。落ち着いた雰囲気で話しかけやすい'},
+  {id:'gotanda',     name:'五反田',   icon:'🏙️', diff:'silver', reason:'オフィス街×歓楽街。夜は会社員女性が多い'},
+  {id:'meguro',      name:'目黒',     icon:'🌸', diff:'silver', reason:'おしゃれな街。女性多めだが警戒心高め'},
+  {id:'ebisu',       name:'恵比寿',   icon:'🍺', diff:'gold',   reason:'高感度エリア。オシャレ女性が多く競争率も高い'},
+  {id:'shibuya',     name:'渋谷',     icon:'🔀', diff:'gold',   reason:'最激戦区。人は多いが動きが速くペース制御が鍵'},
+  {id:'harajuku',    name:'原宿',     icon:'👗', diff:'gold',   reason:'若い女性の聖地。外国人も多く個性派揃い'},
+  {id:'yoyogi',      name:'代々木',   icon:'🌿', diff:'bronze', reason:'公園や学校が近く穏やか。急ぎ足が少ない'},
+  {id:'shinjuku',    name:'新宿',     icon:'🌃', diff:'gold',   reason:'日本最大の激戦区。場所・時間帯の読みが重要'},
+  {id:'shin_okubo',  name:'新大久保', icon:'🌶️', diff:'silver', reason:'多国籍エリア。韓流好き女子が集まる独特の空気'},
+  {id:'takadanobaba',name:'高田馬場', icon:'🎓', diff:'silver', reason:'学生街。若い女性多め・ノリは軽め'},
+  {id:'mejiro',      name:'目白',     icon:'🏛️', diff:'bronze', reason:'閑静な高級住宅街。人通りが少なく1本1本が勝負'},
+  {id:'ikebukuro',   name:'池袋',     icon:'🎡', diff:'gold',   reason:'東西の文化が交差する激戦区。人の流れが速い'},
+  {id:'otsuka',      name:'大塚',     icon:'🏪', diff:'bronze', reason:'ローカルな下町感。居酒屋帰りの夜が狙い目'},
+  {id:'sugamo',      name:'巣鴨',     icon:'👘', diff:'bronze', reason:'おばあちゃんの原宿。若い女性は希少で価値あり'},
+  {id:'komagome',    name:'駒込',     icon:'🌺', diff:'bronze', reason:'落ち着いた住宅街。人が少ない分刺さると強い'},
+  {id:'tabata',      name:'田端',     icon:'🌳', diff:'bronze', reason:'ほぼ通過駅。人通りが少なく高難度の穴場'},
+  {id:'nishi_nippori',name:'西日暮里',icon:'🎶', diff:'bronze', reason:'学生・通勤者の乗換駅。慌ただしいが若い層も'},
+  {id:'nippori',     name:'日暮里',   icon:'✈️', diff:'silver', reason:'成田行きの玄関口。旅行客や外国人女性も多め'},
+  {id:'uguisudani',  name:'鶯谷',     icon:'🦜', diff:'silver', reason:'独特の雰囲気。ニッチだが刺さればインパクト大'},
+  {id:'ueno',        name:'上野',     icon:'🐼', diff:'gold',   reason:'観光客×地元客が交差する激戦区。国際ナンパも可'},
+  {id:'okachimachi', name:'御徒町',   icon:'💍', diff:'silver', reason:'ショッピング女子が多い。アクセサリー話題が鉄板'},
+  {id:'akihabara',   name:'秋葉原',   icon:'⚡', diff:'gold',   reason:'独自文化圏の激戦区。オタク女子への特化トークが必要'},
+  {id:'kanda',       name:'神田',     icon:'⛩️', diff:'silver', reason:'サラリーマンの街。ランチ・仕事終わりが勝負'},
+  {id:'tokyo',       name:'東京',     icon:'🗼', diff:'gold',   reason:'日本の玄関口。人の密度が高くスピード勝負'},
+  {id:'yurakucho',   name:'有楽町',   icon:'🎭', diff:'silver', reason:'映画・ショッピング帰りの女性が多く話題豊富'},
+  {id:'shimbashi',   name:'新橋',     icon:'🍶', diff:'silver', reason:'サラリーマンの聖地。夜の酔い客リサーチが熱い'},
+  {id:'hamamatsucho',name:'浜松町',   icon:'🌊', diff:'bronze', reason:'ビジネス特化エリア。若い女性は少なめで難度高'},
+  {id:'tamachi',     name:'田町',     icon:'🏢', diff:'bronze', reason:'オフィス街。朝夕の通勤ラッシュ時間帯が唯一の好機'},
+  {id:'shinagawa',   name:'品川',     icon:'🚄', diff:'silver', reason:'新幹線・空港アクセス。旅行・出張女性が狙い目'},
+];
+
+const TROPHIES = [
+  // 声かけ系
+  {id:1,  cat:'voice',   icon:'🗣️', name:'はじめの声かけ',      desc:'初めて女性に声をかけた',              type:'bronze', pts:15},
+  {id:2,  cat:'voice',   icon:'🔥', name:'10本連続',            desc:'1日で10人に声をかけた',               type:'bronze', pts:15},
+  {id:3,  cat:'voice',   icon:'⚡', name:'秒速アタック',         desc:'出会って5秒以内に声かけ成功',          type:'bronze', pts:15},
+  {id:4,  cat:'voice',   icon:'💪', name:'即切り耐性',           desc:'即切りされても3回立て続けに声かけ',     type:'bronze', pts:15},
+  {id:5,  cat:'voice',   icon:'🌊', name:'50本達成',            desc:'合計50人に声をかけた',                type:'silver', pts:30},
+  {id:6,  cat:'voice',   icon:'💯', name:'100本の壁',           desc:'累計100人に声をかけた',               type:'silver', pts:30},
+  {id:7,  cat:'voice',   icon:'🎯', name:'会話継続',            desc:'10分以上の会話を繋いだ',              type:'silver', pts:30},
+  {id:8,  cat:'voice',   icon:'😎', name:'笑わせた！',           desc:'声かけ中に相手を笑顔にさせた',         type:'bronze', pts:15},
+  {id:9,  cat:'voice',   icon:'🌙', name:'夜戦デビュー',         desc:'初めて夜のナンパに挑戦した',           type:'bronze', pts:15},
+  {id:10, cat:'voice',   icon:'☀️', name:'昼ナン制覇',          desc:'昼間に5人連続で声かけ成功',            type:'silver', pts:30},
+  {id:11, cat:'voice',   icon:'🚶', name:'歩きながら',           desc:'歩行中の女性を止めて会話した',          type:'bronze', pts:15},
+  {id:12, cat:'voice',   icon:'🏃', name:'追いかけた',           desc:'通り過ぎた女性を追いかけて声かけ',      type:'bronze', pts:15},
+  {id:13, cat:'voice',   icon:'👥', name:'グループ崩し',          desc:'2人組以上のグループへの声かけ成功',     type:'gold', pts:90},
+  {id:14, cat:'voice',   icon:'🎤', name:'300本レジェンド',       desc:'累計300人に声をかけた',               type:'gold', pts:90},
+
+  // 連絡先系
+  {id:15, cat:'contact', icon:'📱', name:'初LINE',              desc:'初めてLINEを交換した',                type:'bronze', pts:15},
+  {id:16, cat:'contact', icon:'💬', name:'即レス女神',           desc:'LINE交換後5分以内に返信が来た',         type:'silver', pts:30},
+  {id:17, cat:'contact', icon:'🔟', name:'10人コレクター',        desc:'10人分の連絡先を獲得した',             type:'silver', pts:30},
+  {id:18, cat:'contact', icon:'👻', name:'既読無視克服',          desc:'1週間後に既読スルーから返信を引き出した', type:'silver', pts:30},
+  {id:19, cat:'contact', icon:'📞', name:'電話番号ゲット',        desc:'LINEではなく電話番号をゲットした',      type:'silver', pts:30},
+  {id:20, cat:'contact', icon:'🌹', name:'30人コレクター',        desc:'累計30人の連絡先を獲得した',            type:'gold', pts:90},
+  {id:21, cat:'contact', icon:'💌', name:'インスタも同時に',       desc:'LINEとInstagramを同時ゲット',          type:'gold', pts:90},
+
+  // デート系
+  {id:22, cat:'date',    icon:'☕', name:'初デート',             desc:'初めてデートに成功した',               type:'silver', pts:30},
+  {id:23, cat:'date',    icon:'🎬', name:'映画デート',           desc:'映画デートに誘い成功',                 type:'silver', pts:30},
+  {id:24, cat:'date',    icon:'🍣', name:'ディナーデート',        desc:'夜のディナーデートに成功',              type:'gold', pts:90},
+  {id:25, cat:'date',    icon:'🏠', name:'連れ込み成功',          desc:'自宅・ホテルへの誘導に成功',            type:'gold', pts:90},
+  {id:26, cat:'date',    icon:'🎡', name:'遠出デート',           desc:'日帰り旅行デートに成功',               type:'gold', pts:90},
+  {id:27, cat:'date',    icon:'🌅', name:'朝まで',              desc:'朝まで一緒に過ごした',                 type:'gold', pts:90},
+
+  // 場所系
+  {id:28, cat:'place',   icon:'🏙️', name:'渋谷マスター',         desc:'渋谷で3人の連絡先をゲット',            type:'bronze', pts:15},
+  {id:29, cat:'place',   icon:'🌃', name:'新宿の帝王',           desc:'新宿歌舞伎町エリアで声かけ成功',         type:'silver', pts:30},
+  {id:30, cat:'place',   icon:'🌸', name:'代官山スタイル',         desc:'代官山エリアでナンパ成功',             type:'silver', pts:30},
+  {id:31, cat:'place',   icon:'🏖️', name:'夏の海辺',            desc:'海やプールでナンパ成功',               type:'silver', pts:30},
+  {id:32, cat:'place',   icon:'🎆', name:'イベントハンター',       desc:'お祭り・イベントでの声かけ成功',         type:'bronze', pts:15},
+  {id:33, cat:'place',   icon:'🚉', name:'駅前スナイパー',         desc:'駅前ロータリーで5人に声かけ',           type:'bronze', pts:15},
+  {id:34, cat:'place',   icon:'🏬', name:'ショッピングモール制覇',  desc:'ショッピングモールで声かけ成功',          type:'bronze', pts:15},
+  {id:35, cat:'place',   icon:'🌆', name:'5区コンプリート',        desc:'5つの異なる区でナンパ成功',             type:'gold', pts:90},
+
+  // 山手線 マイルストーン
+  {id:36, cat:'yamanote',icon:'🚃', name:'山手線デビュー',        desc:'山手線企画の最初の駅でナンパ成功',                  type:'bronze',   pts:15,  stationTrigger:1},
+  {id:37, cat:'yamanote',icon:'🌀', name:'渋谷・新宿ダブル',       desc:'渋谷と新宿の両方をクリア',                         type:'silver',   pts:30,  stationTrigger:['shibuya','shinjuku']},
+  {id:38, cat:'yamanote',icon:'⚡', name:'半周達成',              desc:'山手線14駅以上でナンパ成功',                        type:'gold',     pts:90,  stationTrigger:14},
+  {id:39, cat:'yamanote',icon:'🏆', name:'山手線一周完走',         desc:'29駅すべてでナンパを敢行した伝説！',                 type:'platinum', pts:300, stationTrigger:29},
+
+  // 山手線 各駅トロフィー（ブロンズ）
+  {id:101,cat:'yamanote',icon:'🌆',stationId:'osaki',       name:'大崎クリア',       desc:'大崎でナンパ成功。乗換客の多い穴場をモノにした', type:'bronze', pts:15},
+  {id:102,cat:'yamanote',icon:'🏪',stationId:'otsuka',      name:'大塚クリア',       desc:'大塚でナンパ成功。下町ローカルな雰囲気を攻略',  type:'bronze', pts:15},
+  {id:103,cat:'yamanote',icon:'👘',stationId:'sugamo',       name:'巣鴨クリア',       desc:'巣鴨でナンパ成功。若い女性レアな難所を突破！',  type:'bronze', pts:15},
+  {id:104,cat:'yamanote',icon:'🌺',stationId:'komagome',    name:'駒込クリア',       desc:'駒込でナンパ成功。閑静な住宅街を制した',        type:'bronze', pts:15},
+  {id:105,cat:'yamanote',icon:'🌳',stationId:'tabata',       name:'田端クリア',       desc:'田端でナンパ成功。人通り最少クラスの難所攻略！',type:'bronze', pts:15},
+  {id:106,cat:'yamanote',icon:'🎶',stationId:'nishi_nippori',name:'西日暮里クリア',   desc:'西日暮里でナンパ成功。通過駅での声かけを制した',type:'bronze', pts:15},
+  {id:107,cat:'yamanote',icon:'🌿',stationId:'yoyogi',       name:'代々木クリア',     desc:'代々木でナンパ成功。公園前の穏やか空間を攻略', type:'bronze', pts:15},
+  {id:108,cat:'yamanote',icon:'🌊',stationId:'hamamatsucho', name:'浜松町クリア',     desc:'浜松町でナンパ成功。ビジネス街の難所を突破',   type:'bronze', pts:15},
+  {id:109,cat:'yamanote',icon:'🏢',stationId:'tamachi',      name:'田町クリア',       desc:'田町でナンパ成功。オフィス街で奇跡を起こした', type:'bronze', pts:15},
+
+  // 山手線 各駅トロフィー（シルバー）
+  {id:110,cat:'yamanote',icon:'🏙️',stationId:'gotanda',     name:'五反田クリア',     desc:'五反田でナンパ成功。オフィス×歓楽街の猛者エリア制覇',  type:'silver', pts:30},
+  {id:111,cat:'yamanote',icon:'🌸',stationId:'meguro',       name:'目黒クリア',       desc:'目黒でナンパ成功。おしゃれ女性の警戒を突破した',         type:'silver', pts:30},
+  {id:112,cat:'yamanote',icon:'🌶️',stationId:'shin_okubo',  name:'新大久保クリア',   desc:'新大久保でナンパ成功。多国籍エリアを攻略',               type:'silver', pts:30},
+  {id:113,cat:'yamanote',icon:'🎓',stationId:'takadanobaba',name:'高田馬場クリア',   desc:'高田馬場でナンパ成功。学生街のノリを掴んだ',             type:'silver', pts:30},
+  {id:114,cat:'yamanote',icon:'✈️',stationId:'nippori',     name:'日暮里クリア',     desc:'日暮里でナンパ成功。旅女子をゲットする猛者',             type:'silver', pts:30},
+  {id:115,cat:'yamanote',icon:'🦜',stationId:'uguisudani',  name:'鶯谷クリア',       desc:'鶯谷でナンパ成功。独特の雰囲気エリアをクリア',           type:'silver', pts:30},
+  {id:116,cat:'yamanote',icon:'💍',stationId:'okachimachi', name:'御徒町クリア',     desc:'御徒町でナンパ成功。買い物女子の財布と心を掴んだ',        type:'silver', pts:30},
+  {id:117,cat:'yamanote',icon:'⛩️',stationId:'kanda',       name:'神田クリア',       desc:'神田でナンパ成功。サラリーマン街でアウェーを制した',      type:'silver', pts:30},
+  {id:118,cat:'yamanote',icon:'🎭',stationId:'yurakucho',   name:'有楽町クリア',     desc:'有楽町でナンパ成功。映画帰り女子との共鳴に成功',          type:'silver', pts:30},
+  {id:119,cat:'yamanote',icon:'🍶',stationId:'shimbashi',   name:'新橋クリア',       desc:'新橋でナンパ成功。酔いサラリーマン地帯で女性を発見',      type:'silver', pts:30},
+  {id:120,cat:'yamanote',icon:'🚄',stationId:'shinagawa',   name:'品川クリア',       desc:'品川でナンパ成功。旅・出張女性を捕まえた',               type:'silver', pts:30},
+
+  // 山手線 各駅トロフィー（ゴールド）
+  {id:121,cat:'yamanote',icon:'🍺',stationId:'ebisu',        name:'恵比寿クリア',     desc:'恵比寿でナンパ成功。激戦おしゃれエリアを征服した！',      type:'gold', pts:90},
+  {id:122,cat:'yamanote',icon:'🔀',stationId:'shibuya',      name:'渋谷クリア',       desc:'渋谷でナンパ成功。日本最大の激戦区を制した猛者！',        type:'gold', pts:90},
+  {id:123,cat:'yamanote',icon:'👗',stationId:'harajuku',     name:'原宿クリア',       desc:'原宿でナンパ成功。個性派女子の聖地を攻略した！',          type:'gold', pts:90},
+  {id:124,cat:'yamanote',icon:'🌃',stationId:'shinjuku',     name:'新宿クリア',       desc:'新宿でナンパ成功。伝説の激戦区を制した真の猛者！',        type:'gold', pts:90},
+  {id:125,cat:'yamanote',icon:'🎡',stationId:'ikebukuro',    name:'池袋クリア',       desc:'池袋でナンパ成功。東西文化交差する激戦地を攻略！',        type:'gold', pts:90},
+  {id:126,cat:'yamanote',icon:'🏛️',stationId:'mejiro',      name:'目白クリア',       desc:'目白でナンパ成功。高級住宅街の静寂で女性を口説いた！',    type:'gold', pts:90},
+  {id:127,cat:'yamanote',icon:'🐼',stationId:'ueno',         name:'上野クリア',       desc:'上野でナンパ成功。観光客混じりの激戦区を征服！',          type:'gold', pts:90},
+  {id:128,cat:'yamanote',icon:'⚡',stationId:'akihabara',    name:'秋葉原クリア',     desc:'秋葉原でナンパ成功。独自文化圏の最難関エリアを突破！',    type:'gold', pts:90},
+  {id:129,cat:'yamanote',icon:'🗼',stationId:'tokyo',        name:'東京クリア',       desc:'東京駅でナンパ成功。日本の玄関口でスピード勝負を制した！', type:'gold', pts:90},
+
+  // ===== カオス・エンタメ系 =====
+  // 暴言・撃沈系
+  {id:50, cat:'chaos', icon:'🤬', name:'初・暴言受領',           desc:'「キモい」「消えて」など暴言をくらった。これが洗礼だ',                        type:'bronze', pts:15},
+  {id:51, cat:'chaos', icon:'💢', name:'フルコース暴言',          desc:'「気持ち悪い・近寄るな・通報するぞ」の三段コンボを食らった',                   type:'silver', pts:30},
+  {id:52, cat:'chaos', icon:'📵', name:'通報予告',               desc:'「警察呼びますよ」と言われた。逃げ切り成功',                                  type:'silver', pts:30},
+  {id:53, cat:'chaos', icon:'👮', name:'実際に囲まれた',          desc:'警察に事情聴取された。本物の洗礼を受けた戦士',                                type:'gold', pts:90},
+  {id:54, cat:'chaos', icon:'🖕', name:'指を立てられた',          desc:'中指を立てられた。外国人女性からが多い説',                                    type:'bronze', pts:15},
+  {id:55, cat:'chaos', icon:'👜', name:'バッグで叩かれた',         desc:'カバンでスマックされた。ある意味ボディタッチ成功',                             type:'silver', pts:30},
+  {id:56, cat:'chaos', icon:'🥤', name:'飲み物かけられた',         desc:'飲み物をぶっかけられた。伝説の失敗談として語り継げ',                            type:'gold', pts:90},
+  {id:57, cat:'chaos', icon:'📸', name:'晒し写真を撮られた',       desc:'勝手に写真を撮られてSNSに上げると脅された',                                   type:'silver', pts:30},
+  {id:58, cat:'chaos', icon:'😤', name:'彼氏が登場',              desc:'彼氏が現れた。しかし動じなかったという記録',                                   type:'bronze', pts:15},
+  {id:59, cat:'chaos', icon:'👊', name:'彼氏に怒鳴られた',         desc:'彼氏に本気でガン飛ばされた。生きてるだけで丸儲け',                             type:'silver', pts:30},
+  {id:60, cat:'chaos', icon:'🏃', name:'逃げられた',              desc:'猛ダッシュで逃げられた。あの背中は忘れない',                                   type:'bronze', pts:15},
+  {id:61, cat:'chaos', icon:'🙅', name:'無視コンプリート',          desc:'声かけ→無視→追いかけ→さらに無視の完全スルーを体験',                         type:'bronze', pts:15},
+  {id:62, cat:'chaos', icon:'😭', name:'泣かせてしまった',          desc:'声かけで相手を泣かせてしまった。深く反省しろ',                                 type:'gold', pts:90},
+  {id:63, cat:'chaos', icon:'🤣', name:'爆笑された',              desc:'声かけが爆笑ネタになった。笑いを取ったなら半分成功',                            type:'bronze', pts:15},
+
+  // 貢がれ・逆転系
+  {id:64, cat:'chaos', icon:'💰', name:'奢ってもらった',           desc:'なぜか相手に飲み物・ご飯を奢ってもらった。下剋上',                             type:'silver', pts:30},
+  {id:65, cat:'chaos', icon:'💳', name:'課金された',              desc:'声かけ相手にAmazonギフト券などを貢いでもらった。逆ナンパ成立',                  type:'gold', pts:90},
+  {id:66, cat:'chaos', icon:'👑', name:'女王様に変身した',          desc:'相手が急に上から目線になり完全に支配された。気持ちよかったか？',                type:'gold', pts:90},
+  {id:67, cat:'chaos', icon:'🎁', name:'プレゼントされた',          desc:'初対面なのにプレゼントをもらった。お前は一体何をした',                         type:'gold', pts:90},
+  {id:68, cat:'chaos', icon:'💸', name:'割り勘を要求された',         desc:'声かけして喫茶店に入ったら「割り勘で」と言われた。現実は甘くない',             type:'bronze', pts:15},
+  {id:69, cat:'chaos', icon:'🥺', name:'逆に相談された',           desc:'ナンパしたら相手の恋愛相談が始まった。お前は何しに来た',                       type:'bronze', pts:15},
+  {id:70, cat:'chaos', icon:'💒', name:'結婚を申し込まれた',        desc:'声かけ10分以内にプロポーズされた。どっちがナンパしてるんだ',                   type:'platinum', pts:300},
+
+  // 珍事件系
+  {id:71, cat:'chaos', icon:'🐕', name:'犬に吠えられた',           desc:'相手の犬に本気で吠えられて撤退を余儀なくされた',                               type:'bronze', pts:15},
+  {id:72, cat:'chaos', icon:'🛒', name:'お使いを頼まれた',          desc:'道を聞かれたと思ったらコンビニのお使いを頼まれた',                             type:'bronze', pts:15},
+  {id:73, cat:'chaos', icon:'👴', name:'おじさんに絡まれた',          desc:'ナンパ中におじさんに「兄ちゃんナンパか？コツ教えたろか」と乱入された',        type:'silver', pts:30},
+  {id:74, cat:'chaos', icon:'🎤', name:'路上ライブに巻き込まれた',   desc:'ナンパ中に路上ライブが始まり相手が歌い出した',                                 type:'silver', pts:30},
+  {id:75, cat:'chaos', icon:'📺', name:'テレビカメラに映った',        desc:'ナンパ中に街頭取材のカメラが回っていた。どんな顔してた？',                    type:'gold', pts:90},
+  {id:76, cat:'chaos', icon:'🌧️', name:'土砂降りデビュー',          desc:'声かけ中に突然の土砂降り。2人で軒下に避難してLINEゲット',                     type:'silver', pts:30},
+  {id:77, cat:'chaos', icon:'🕊️', name:'ハトに妨害された',           desc:'ハトの群れが突撃してきてムードをぶち壊された',                                 type:'bronze', pts:15},
+  {id:78, cat:'chaos', icon:'🎰', name:'なぜか金を借りられた',        desc:'声かけ相手に「1000円貸して」と言われた。渡したかどうかはお前次第',             type:'silver', pts:30},
+  {id:79, cat:'chaos', icon:'🔮', name:'占いを始められた',           desc:'声かけたら相手が手相を読み始めた。主導権を奪われた',                            type:'bronze', pts:15},
+  {id:80, cat:'chaos', icon:'🥊', name:'連れの友達に怒られた',        desc:'相手の友達に「やめてあげてください！」と庇われた。弱く見られている証拠',       type:'bronze', pts:15},
+
+  // 超レア・伝説カオス
+  {id:81, cat:'chaos', icon:'🤯', name:'相手もナンパ師だった',        desc:'声かけたら相手も同じ本を持つナンパ師だった。魂の邂逅',                        type:'gold', pts:90},
+  {id:82, cat:'chaos', icon:'🌈', name:'相手が外国語しか話せなかった', desc:'日本語が通じなかったがなぜか盛り上がった',                                    type:'silver', pts:30},
+  {id:83, cat:'chaos', icon:'💍', name:'既婚者だったけどLINEゲット',  desc:'指輪を見逃さなかったがLINEはもらえた。詳細は語らない',                        type:'platinum', pts:300},
+  {id:84, cat:'chaos', icon:'🎭', name:'芸能人だった',               desc:'声かけ相手が芸能人・インフルエンサーだった。名前は伏せる',                     type:'platinum', pts:300},
+  {id:85, cat:'chaos', icon:'😈', name:'カオスの申し子',              desc:'カオス系トロフィーを10個以上解除した伝説のトラブルメーカー',                   type:'platinum', pts:300},
+
+  // 伝説
+  {id:41, cat:'legend',  icon:'👑', name:'ストリートキング',        desc:'すべての基本トロフィーを解除',           type:'platinum', pts:300},
+  {id:42, cat:'legend',  icon:'💫', name:'無双状態',              desc:'1日でLINE3人以上ゲット',               type:'gold', pts:90},
+  {id:43, cat:'legend',  icon:'🌟', name:'外国人ナンパ',           desc:'外国人女性との会話に成功',              type:'silver', pts:30},
+  {id:44, cat:'legend',  icon:'🎖️', name:'雨でも行く',            desc:'雨の日にもナンパを決行した',             type:'bronze', pts:15},
+  {id:45, cat:'legend',  icon:'❄️', name:'真冬の戦士',             desc:'気温5度以下でナンパを決行',             type:'bronze', pts:15},
+  {id:46, cat:'legend',  icon:'🎉', name:'年越しナンパ',           desc:'年越しカウントダウン中に声かけ成功',       type:'gold', pts:90},
+  {id:47, cat:'legend',  icon:'✨', name:'神話の始まり',            desc:'全トロフィーを解除した真の伝説',          type:'platinum', pts:500},
+];
+
+const TYPE_LABELS = { bronze:'ブロンズ', silver:'シルバー', gold:'ゴールド', platinum:'プラチナ' };
+const DIFF_NAMES  = { bronze:'穴場', silver:'中級', gold:'激戦区' };
+
+let unlocked = new Set(JSON.parse(localStorage.getItem('nanpa-trophies') || '[]'));
+let stationsDone = new Set(JSON.parse(localStorage.getItem('nanpa-stations') || '[]'));
+let trophyTimes = JSON.parse(localStorage.getItem('nanpa-trophy-times') || '{}');
+let currentTab = 'all';
+
+function TOTAL() { return TROPHIES.length; }
+
+function save() {
+  localStorage.setItem('nanpa-trophies', JSON.stringify([...unlocked]));
+  localStorage.setItem('nanpa-stations', JSON.stringify([...stationsDone]));
+  localStorage.setItem('nanpa-trophy-times', JSON.stringify(trophyTimes));
+}
+
+function fmt(ts) {
+  const d = new Date(ts);
+  return `${d.getFullYear()}/${String(d.getMonth()+1).padStart(2,'0')}/${String(d.getDate()).padStart(2,'0')} ${String(d.getHours()).padStart(2,'0')}:${String(d.getMinutes()).padStart(2,'0')}`;
+}
+
+function switchTab(tab) {
+  currentTab = tab;
+  document.querySelectorAll('.tab').forEach((el, i) => {
+    const tabs = ['all','voice','contact','date','place','yamanote','chaos','legend'];
+    el.classList.toggle('active', tabs[i] === tab);
+  });
+
+  const ym = document.getElementById('yamanote-section');
+  ym.classList.toggle('hidden', tab !== 'all' && tab !== 'yamanote');
+
+  renderTrophies();
+}
+
+function renderTrophies() {
+  const filtered = currentTab === 'all' ? TROPHIES : TROPHIES.filter(t => t.cat === currentTab);
+  const grid = document.getElementById('trophy-grid');
+  grid.innerHTML = filtered.map(t => {
+    const isUnlocked = unlocked.has(t.id);
+    return `
+      <div class="trophy-card ${t.type} ${isUnlocked ? 'unlocked' : 'locked'}" id="card-${t.id}" onclick="toggleTrophy(${t.id})">
+        <div class="trophy-icon-wrap">
+          ${t.icon}
+          <div class="trophy-type-badge">${t.type[0].toUpperCase()}</div>
+        </div>
+        <div class="trophy-info">
+          <div class="trophy-name">${t.name}</div>
+          <div class="trophy-desc">${isUnlocked ? t.desc : '???'}</div>
+          ${isUnlocked && trophyTimes[t.id] ? `<div class="trophy-time">🕐 ${fmt(trophyTimes[t.id])}</div>` : ''}
+        </div>
+        ${!isUnlocked ? '<div class="trophy-lock-icon">🔒</div>' : ''}
+      </div>
+    `;
+  }).join('');
+}
+
+function renderStations() {
+  const grid = document.getElementById('station-grid');
+  const DIFF_LABEL = {bronze:'BRONZE', silver:'SILVER', gold:'GOLD'};
+  grid.innerHTML = STATIONS.map(s => `
+    <div class="station-chip diff-${s.diff} ${stationsDone.has(s.id) ? 'done' : ''}"
+         onclick="toggleStation('${s.id}')"
+         title="${s.reason}">
+      <span class="station-icon">${s.icon}</span>
+      <div class="station-name">${s.name}</div>
+      <div class="station-diff-badge">${DIFF_LABEL[s.diff]}</div>
+      <span class="station-check">✅</span>
+    </div>
+  `).join('');
+
+  const pct = (stationsDone.size / STATIONS.length) * 100;
+  document.getElementById('yamanote-bar').style.width = pct + '%';
+  document.getElementById('yamanote-count').textContent = `${stationsDone.size} / ${STATIONS.length}駅`;
+}
+
+function checkMilestoneTrophies() {
+  const count = stationsDone.size;
+  const done = [...stationsDone];
+
+  // デビュー（初駅）
+  if(count >= 1 && !unlocked.has(36)) {
+    unlocked.add(36); trophyTimes[36] = Date.now();
+    setTimeout(()=>showToast(TROPHIES.find(t=>t.id===36)), 400);
+  }
+  // 渋谷・新宿ダブル
+  if(done.includes('shibuya') && done.includes('shinjuku') && !unlocked.has(37)) {
+    unlocked.add(37); trophyTimes[37] = Date.now();
+    setTimeout(()=>showToast(TROPHIES.find(t=>t.id===37)), 800);
+  }
+  // 半周
+  if(count >= 14 && !unlocked.has(38)) {
+    unlocked.add(38); trophyTimes[38] = Date.now();
+    setTimeout(()=>showToast(TROPHIES.find(t=>t.id===38)), 400);
+  }
+  // 一周完走
+  if(count >= 29 && !unlocked.has(39)) {
+    unlocked.add(39); trophyTimes[39] = Date.now();
+    setTimeout(()=>showToast(TROPHIES.find(t=>t.id===39)), 1200);
+  }
+}
+
+function toggleStation(id) {
+  if(!isOwner) return; // 閲覧モードは操作不可
+  if(stationsDone.has(id)) {
+    stationsDone.delete(id);
+  } else {
+    stationsDone.add(id);
+
+    // 各駅トロフィー自動解除
+    const stTrophy = TROPHIES.find(t => t.stationId === id);
+    if(stTrophy && !unlocked.has(stTrophy.id)) {
+      unlocked.add(stTrophy.id);
+      trophyTimes[stTrophy.id] = Date.now();
+      showToast(stTrophy);
+    }
+
+    // マイルストーン
+    checkMilestoneTrophies();
+  }
+  save();
+  renderStations();
+  renderTrophies();
+  renderStats();
+}
+
+// ===== 称号システム =====
+// 条件: { bronze: 最低ブロンズ数, silver: 最低シルバー数, gold: 最低ゴールド数, platinum: 最低プラチナ数 }
+const RANKS = [
+  // 無称号
+  { id:'none',      tier:'none',     emoji:'🌱', title:'ナンパ未経験者',     sub:'まずは一歩踏み出せ',                   bronze:0,  silver:0, gold:0, platinum:0 },
+  // ブロンズ称号
+  { id:'rookie',    tier:'bronze',   emoji:'🥉', title:'ストリートルーキー',  sub:'初めての声かけ、始まりの一歩',          bronze:1,  silver:0, gold:0, platinum:0 },
+  { id:'soldier',   tier:'bronze',   emoji:'⚔️', title:'路上の兵士',          sub:'場数を踏み始めた男',                   bronze:5,  silver:0, gold:0, platinum:0 },
+  { id:'hunter',    tier:'bronze',   emoji:'🎯', title:'ナンパハンター',       sub:'声かけが習慣になってきた',              bronze:10, silver:0, gold:0, platinum:0 },
+  // シルバー称号
+  { id:'fighter',   tier:'silver',   emoji:'🥈', title:'ストリートファイター', sub:'会話を繋げる技術が身につき始めた',      bronze:5,  silver:3, gold:0, platinum:0 },
+  { id:'connect',   tier:'silver',   emoji:'📱', title:'LINE ゲッター',       sub:'連絡先をモノにする男',                  bronze:8,  silver:5, gold:0, platinum:0 },
+  { id:'charmer',   tier:'silver',   emoji:'😏', title:'チャーマー',           sub:'女性を笑顔にできる余裕が出てきた',      bronze:10, silver:8, gold:0, platinum:0 },
+  // ゴールド称号
+  { id:'veteran',   tier:'gold',     emoji:'🥇', title:'ベテランナンパ師',     sub:'一流の域に近づいてきた猛者',            bronze:10, silver:8, gold:3, platinum:0 },
+  { id:'king',      tier:'gold',     emoji:'👑', title:'ストリートキング',      sub:'街を我が物にする実力者',                bronze:12, silver:10, gold:6, platinum:0 },
+  { id:'ace',       tier:'gold',     emoji:'🃏', title:'ナンパ師のエース',      sub:'誰もが認める実力の持ち主',              bronze:14, silver:12, gold:9, platinum:0 },
+  // プラチナ称号
+  { id:'legend',    tier:'platinum', emoji:'💎', title:'レジェンドナンパ師',    sub:'その名は路上に刻まれた',                bronze:14, silver:12, gold:9,  platinum:1 },
+  { id:'emperor',   tier:'platinum', emoji:'🌟', title:'ナンパ皇帝',            sub:'街に君臨する絶対王者',                  bronze:14, silver:12, gold:9,  platinum:3 },
+  { id:'god',       tier:'platinum', emoji:'✨', title:'ナンパの神',             sub:'もはや神の領域。伝説にして頂点',        bronze:14, silver:12, gold:9,  platinum:5 },
+];
+
+// ===== カオス称号データ =====
+const CHAOS_RANKS = [
+  { id:'c0', emoji:'💀', title:'修羅場未経験',     sub:'カオスへの扉はまだ閉じている',                       need:0  },
+  { id:'c1', emoji:'😬', title:'トラブル見習い',    sub:'洗礼の一撃を受けた。これが現実だ',                   need:1  },
+  { id:'c2', emoji:'🤕', title:'暴言コレクター',    sub:'罵倒を集め始めた男。メンタルは鍛えられている',        need:3  },
+  { id:'c3', emoji:'🌀', title:'修羅場常連',        sub:'もはやトラブルが日常になってきた',                   need:5  },
+  { id:'c4', emoji:'🔥', title:'カオスの申し子',    sub:'炎上上等。どんな状況でも動じない男',                 need:8  },
+  { id:'c5', emoji:'☠️', title:'伝説の問題児',      sub:'警察・彼氏・暴言・貢ぎ全制覇。もはや一種の才能',     need:12 },
+  { id:'c6', emoji:'👹', title:'修羅場マイスター',  sub:'トラブルを笑いに変える境地に達した',                 need:16 },
+  { id:'c7', emoji:'🌋', title:'カオスの化身',       sub:'存在自体がカオス。お前の周りだけ時空が歪む',         need:22 },
+  { id:'c8', emoji:'🎪', title:'カオスサーカス団長', sub:'全36のカオスを制覇した唯一無二の伝説。もはや芸術', need:36 },
+];
+
+let currentChaosRankId = 'c0';
+
+function calcChaosRank(chaosCount) {
+  let best = CHAOS_RANKS[0];
+  for(const r of CHAOS_RANKS) {
+    if(chaosCount >= r.need) best = r;
+  }
+  return best;
+}
+
+function updateChaosRank(chaosCount, animate) {
+  const rank    = calcChaosRank(chaosCount);
+  const section = document.getElementById('chaos-rank-section');
+  const emblem  = document.getElementById('chaos-rank-emblem');
+  const title   = document.getElementById('chaos-rank-title');
+  const sub     = document.getElementById('chaos-rank-subtitle');
+  const nextEl  = document.getElementById('chaos-rank-next');
+  const bar     = document.getElementById('chaos-progress-bar');
+  const label   = document.getElementById('chaos-progress-label');
+
+  const totalChaos = TROPHIES.filter(t => t.cat === 'chaos').length;
+
+  // 称号アップ演出
+  if(animate && rank.id !== currentChaosRankId && chaosCount > 0) {
+    setTimeout(() => showChaosModal(rank), 900);
+  }
+  currentChaosRankId = rank.id;
+
+  // 見た目
+  section.classList.toggle('chaos-active', chaosCount > 0);
+  emblem.textContent = rank.emoji;
+  title.textContent  = rank.title;
+  sub.textContent    = rank.sub;
+
+  // プログレスバー
+  const pct = Math.round((chaosCount / totalChaos) * 100);
+  bar.style.width = pct + '%';
+  label.textContent = `${chaosCount} / ${totalChaos}`;
+
+  // 次の称号ヒント
+  const idx = CHAOS_RANKS.findIndex(r => r.id === rank.id);
+  const next = CHAOS_RANKS[idx + 1];
+  if(next) {
+    const left = next.need - chaosCount;
+    nextEl.innerHTML = `次「<span>${next.emoji} ${next.title}</span>」まで あと${left}個`;
+  } else {
+    nextEl.innerHTML = '🎪 最高カオス称号に到達。お前は一体何者だ';
+  }
+}
+
+function showChaosModal(rank) {
+  const overlay = document.getElementById('chaos-modal-overlay');
+  const modal   = document.getElementById('chaos-modal');
+  document.getElementById('chaos-modal-emoji').textContent = rank.emoji;
+  document.getElementById('chaos-modal-title').textContent = rank.title;
+  document.getElementById('chaos-modal-desc').textContent  = rank.sub;
+  overlay.classList.add('show');
+  spawnChaosParticles(modal);
+  document.getElementById('chaos-modal-close').onclick = () => {
+    overlay.classList.remove('show');
+  };
+}
+
+function spawnChaosParticles(container) {
+  const colors = ['#ff3333','#ff6644','#cc2222','#ff8855','#881111'];
+  for(let i=0; i<20; i++) {
+    const p = document.createElement('div');
+    p.className = 'chaos-particle';
+    p.style.left = (10 + Math.random()*80) + '%';
+    p.style.bottom = '25%';
+    p.style.background = colors[Math.floor(Math.random()*colors.length)];
+    p.style.setProperty('--dx', (Math.random()*60-30)+'px');
+    p.style.animationDelay = (Math.random()*0.5)+'s';
+    p.style.animationDuration = (0.6 + Math.random()*0.5)+'s';
+    container.appendChild(p);
+    setTimeout(() => p.remove(), 1600);
+  }
+}
+
+let currentRankId = 'none';
+
+function calcRank(counts) {
+  // 条件を満たす最高ランクを返す
+  let best = RANKS[0];
+  for(const r of RANKS) {
+    if(counts.bronze >= r.bronze && counts.silver >= r.silver &&
+       counts.gold >= r.gold && counts.platinum >= r.platinum) {
+      best = r;
+    }
+  }
+  return best;
+}
+
+function getNextRank(current, counts) {
+  const idx = RANKS.findIndex(r => r.id === current.id);
+  if(idx < 0 || idx >= RANKS.length - 1) return null;
+  return RANKS[idx + 1];
+}
+
+function updateRank(counts, animate) {
+  const rank = calcRank(counts);
+  const section = document.getElementById('rank-section');
+  const emblem  = document.getElementById('rank-emblem');
+  const title   = document.getElementById('rank-title');
+  const sub     = document.getElementById('rank-subtitle');
+  const next    = document.getElementById('rank-next');
+
+  // 称号が変わったら演出
+  if(animate && rank.id !== currentRankId && rank.id !== 'none') {
+    setTimeout(() => showRankModal(rank), 600);
+  }
+  currentRankId = rank.id;
+
+  // 見た目更新
+  section.className = `rank-section ${rank.tier !== 'none' ? rank.tier+'-rank' : ''}`;
+  emblem.textContent = rank.emoji;
+  title.textContent  = rank.title;
+  sub.textContent    = rank.sub;
+
+  // 次の称号へのヒント
+  const nextRank = getNextRank(rank, counts);
+  if(nextRank) {
+    const diff = [];
+    if(nextRank.bronze  > counts.bronze)   diff.push(`🥉ブロンズ あと${nextRank.bronze  - counts.bronze}個`);
+    if(nextRank.silver  > counts.silver)   diff.push(`🥈シルバー あと${nextRank.silver  - counts.silver}個`);
+    if(nextRank.gold    > counts.gold)     diff.push(`🥇ゴールド あと${nextRank.gold    - counts.gold}個`);
+    if(nextRank.platinum> counts.platinum) diff.push(`💎プラチナ あと${nextRank.platinum- counts.platinum}個`);
+    next.innerHTML = diff.length
+      ? `次の称号「<span>${nextRank.title}</span>」まで：${diff.join(' / ')}`
+      : '';
+  } else {
+    next.innerHTML = '🏆 最高称号に到達した伝説の男';
+  }
+}
+
+function showRankModal(rank) {
+  const overlay = document.getElementById('rank-modal-overlay');
+  const modal   = document.getElementById('rank-modal');
+  document.getElementById('rank-modal-emoji').textContent = rank.emoji;
+  document.getElementById('rank-modal-title').textContent = rank.title;
+  document.getElementById('rank-modal-desc').textContent  = rank.sub;
+
+  modal.className = `rank-modal ${rank.tier}-modal`;
+  overlay.classList.add('show');
+
+  // パーティクル生成
+  spawnParticles(modal, rank.tier);
+
+  document.getElementById('rank-modal-close').onclick = () => {
+    overlay.classList.remove('show');
+  };
+}
+
+function spawnParticles(container, tier) {
+  const colors = {
+    bronze: ['#cd7f32','#e8a040','#b86020'],
+    silver: ['#b8c0cc','#d0d8e8','#8090a8'],
+    gold:   ['#ffd700','#ffe840','#ffb800'],
+    platinum:['#c8e6ff','#e0f0ff','#a0c8f0'],
+  };
+  const cols = colors[tier] || colors.gold;
+  for(let i=0; i<16; i++) {
+    const p = document.createElement('div');
+    p.className = 'particle';
+    p.style.left = (20 + Math.random()*60) + '%';
+    p.style.bottom = '30%';
+    p.style.background = cols[Math.floor(Math.random()*cols.length)];
+    p.style.animationDelay = (Math.random()*0.4) + 's';
+    p.style.animationDuration = (0.7 + Math.random()*0.6) + 's';
+    container.appendChild(p);
+    setTimeout(() => p.remove(), 1400);
+  }
+}
+
+function renderStats() {
+  let counts = {bronze:0, silver:0, gold:0, platinum:0};
+  unlocked.forEach(id => {
+    const t = TROPHIES.find(x=>x.id===id);
+    if(t) counts[t.type]++;
+  });
+  document.getElementById('stat-bronze').textContent = counts.bronze;
+  document.getElementById('stat-silver').textContent = counts.silver;
+  document.getElementById('stat-gold').textContent = counts.gold;
+  document.getElementById('stat-plat').textContent = counts.platinum;
+
+  const pct = Math.round((unlocked.size / TOTAL()) * 100);
+  document.getElementById('progress-text').textContent = `${unlocked.size} / ${TOTAL()}`;
+  document.getElementById('progress-bar').style.width = pct + '%';
+
+  // 称号更新（animate=trueで演出ON）
+  updateRank(counts, true);
+
+  // カオス称号更新
+  const chaosCount = [...unlocked].filter(uid => {
+    const tr = TROPHIES.find(x => x.id === uid);
+    return tr && tr.cat === 'chaos';
+  }).length;
+  updateChaosRank(chaosCount, true);
+}
+
+function render(animate) {
+  renderTrophies();
+  renderStations();
+  // 初回ロード時はアニメなし
+  if(animate === false) {
+    let counts = {bronze:0,silver:0,gold:0,platinum:0};
+    unlocked.forEach(id => { const t=TROPHIES.find(x=>x.id===id); if(t) counts[t.type]++; });
+    document.getElementById('stat-bronze').textContent = counts.bronze;
+    document.getElementById('stat-silver').textContent = counts.silver;
+    document.getElementById('stat-gold').textContent   = counts.gold;
+    document.getElementById('stat-plat').textContent   = counts.platinum;
+    const pct = Math.round((unlocked.size/TOTAL())*100);
+    document.getElementById('progress-text').textContent = `${unlocked.size} / ${TOTAL()}`;
+    document.getElementById('progress-bar').style.width = pct+'%';
+    updateRank(counts, false);
+    currentRankId = calcRank(counts).id;
+    // カオス称号初期化
+    const chaosCount0 = [...unlocked].filter(uid => { const tr=TROPHIES.find(x=>x.id===uid); return tr && tr.cat==='chaos'; }).length;
+    updateChaosRank(chaosCount0, false);
+    currentChaosRankId = calcChaosRank(chaosCount0).id;
+  } else {
+    renderStats();
+  }
+}
+
+let toastTimer;
+function showToast(trophy) {
+  if(!trophy) return;
+  const toast = document.getElementById('toast');
+  toast.className = `toast ${trophy.type}-toast`;
+  document.getElementById('toast-icon').textContent = trophy.icon;
+  document.getElementById('toast-name').textContent = trophy.name;
+  document.getElementById('toast-desc').textContent = trophy.desc;
+  document.getElementById('toast-type').textContent = TYPE_LABELS[trophy.type];
+  clearTimeout(toastTimer);
+  toast.classList.remove('show');
+  requestAnimationFrame(() => requestAnimationFrame(() => toast.classList.add('show')));
+  toastTimer = setTimeout(() => toast.classList.remove('show'), 3800);
+}
+
+function toggleTrophy(id) {
+  if(!isOwner) return; // 閲覧モードは操作不可
+  const t = TROPHIES.find(x=>x.id===id);
+  if(unlocked.has(id)) {
+    unlocked.delete(id);
+    delete trophyTimes[id];
+  } else {
+    unlocked.add(id);
+    trophyTimes[id] = Date.now();
+    showToast(t);
+    const card = document.getElementById(`card-${id}`);
+    if(card) { card.classList.add('just-unlocked'); setTimeout(()=>card.classList.remove('just-unlocked'),700); }
+
+    // カオスの申し子 自動解除チェック（id:85）
+    const chaosCount = [...unlocked].filter(uid => {
+      const tr = TROPHIES.find(x=>x.id===uid);
+      return tr && tr.cat === 'chaos' && uid !== 85;
+    }).length;
+    if(chaosCount >= 10 && !unlocked.has(85)) {
+      setTimeout(() => {
+        unlocked.add(85);
+        trophyTimes[85] = Date.now();
+        save();
+        showToast(TROPHIES.find(x=>x.id===85));
+        renderStats();
+        renderTrophies();
+      }, 1500);
+    }
+  }
+  save();
+  render(true);
+}
+
+function unlockRandom() {
+  if(!isOwner) return;
+  const locked = TROPHIES.filter(t => !unlocked.has(t.id));
+  if(!locked.length) { alert('🎉 すべての実績を解除しました！'); return; }
+  const t = locked[Math.floor(Math.random()*locked.length)];
+  unlocked.add(t.id);
+  trophyTimes[t.id] = Date.now();
+  save();
+  render(true);
+  showToast(t);
+  const card = document.getElementById(`card-${t.id}`);
+  if(card) { card.scrollIntoView({behavior:'smooth',block:'center'}); card.classList.add('just-unlocked'); setTimeout(()=>card.classList.remove('just-unlocked'),700); }
+}
+
+function shareToX() {
+  let counts = {bronze:0,silver:0,gold:0,platinum:0};
+  unlocked.forEach(id => { const t=TROPHIES.find(x=>x.id===id); if(t) counts[t.type]++; });
+  const pct = Math.round((unlocked.size/TOTAL())*100);
+  const sCount = stationsDone.size;
+
+  // 難易度別駅クリア数
+  const goldDone   = STATIONS.filter(s=>s.diff==='gold'   && stationsDone.has(s.id)).length;
+  const silverDone = STATIONS.filter(s=>s.diff==='silver' && stationsDone.has(s.id)).length;
+  const bronzeDone = STATIONS.filter(s=>s.diff==='bronze' && stationsDone.has(s.id)).length;
+
+  const chaosCount = [...unlocked].filter(uid => { const tr=TROPHIES.find(x=>x.id===uid); return tr && tr.cat==='chaos'; }).length;
+
+  const currentRank = calcRank(counts);
+  let text = `⚔️ ナンパ師トロフィー ${unlocked.size}/${TOTAL()}個解除！\n`;
+  text += `称号：「${currentRank.title}」${currentRank.emoji}\n`;
+  text += `✨ プラチナ:${counts.platinum} 🥇ゴールド:${counts.gold} 🥈シルバー:${counts.silver} 🥉ブロンズ:${counts.bronze}\n`;
+  if(chaosCount > 0) text += `💀 カオス実績: ${chaosCount}個（修羅場くぐり数）\n`;
+  if(sCount > 0) {
+    text += `🚃 山手線一周企画: ${sCount}/29駅\n`;
+    text += `  🥇激戦区:${goldDone} 🥈中級:${silverDone} 🥉穴場:${bronzeDone}\n`;
+  }
+  text += `📊 コンプリート率: ${pct}%\n\n#ナンパ師Trophy #山手線ナンパ #ストリートナンパ #カオスナンパ`;
+
+  const url = window.location.href;
+  window.open(`https://x.com/intent/tweet?text=${encodeURIComponent(text)}&url=${encodeURIComponent(url)}`,'_blank','width=600,height=500');
+}
+
+function resetAll() {
+  if(confirm('本当にすべてリセットしますか？')) {
+    unlocked.clear(); stationsDone.clear(); trophyTimes={};
+    localStorage.removeItem('nanpa-trophies');
+    localStorage.removeItem('nanpa-stations');
+    localStorage.removeItem('nanpa-trophy-times');
+    render(true);
+  }
+}
+
+// ===== データ同期 =====
+function exportData() {
+  const data = { v:2, t:[...unlocked], s:[...stationsDone], tt:trophyTimes };
+  const code = btoa(encodeURIComponent(JSON.stringify(data)));
+  document.getElementById('export-code').value = code;
+  document.getElementById('export-wrap').classList.add('open');
+  document.getElementById('import-wrap').classList.remove('open');
+}
+
+function openImport() {
+  document.getElementById('import-wrap').classList.add('open');
+  document.getElementById('export-wrap').classList.remove('open');
+  document.getElementById('import-code').value = '';
+  setTimeout(()=>document.getElementById('import-code').focus(), 100);
+}
+
+function closeExport() { document.getElementById('export-wrap').classList.remove('open'); }
+function closeImport() { document.getElementById('import-wrap').classList.remove('open'); }
+
+function copyCode() {
+  const code = document.getElementById('export-code').value;
+  navigator.clipboard.writeText(code).then(()=>{
+    showInfoToast('📋 コピー完了！別デバイスで貼り付けて');
+  }).catch(()=>{
+    document.getElementById('export-code').select();
+    document.execCommand('copy');
+    showInfoToast('📋 コピー完了！');
+  });
+}
+
+function importData() {
+  const raw = document.getElementById('import-code').value.trim();
+  if(!raw) { showInfoToast('⚠️ コードを貼り付けてください'); return; }
+  try {
+    const data = JSON.parse(decodeURIComponent(atob(raw)));
+    if(!Array.isArray(data.t) || !Array.isArray(data.s)) throw new Error();
+    unlocked = new Set(data.t.map(Number));
+    stationsDone = new Set(data.s);
+    trophyTimes = data.tt || {};
+    save();
+    render(true);
+    closeImport();
+    showInfoToast('✅ データを読み込みました！');
+  } catch(e) {
+    showInfoToast('❌ コードが正しくありません');
+  }
+}
+
+let infoToastTimer;
+function showInfoToast(msg) {
+  const toast = document.getElementById('toast');
+  toast.className = 'toast silver-toast';
+  document.getElementById('toast-icon').textContent = '💾';
+  document.getElementById('toast-name').textContent = msg;
+  document.getElementById('toast-desc').textContent = '';
+  document.getElementById('toast-type').textContent = 'SYNC';
+  clearTimeout(infoToastTimer);
+  toast.classList.remove('show');
+  requestAnimationFrame(()=>requestAnimationFrame(()=>toast.classList.add('show')));
+  infoToastTimer = setTimeout(()=>toast.classList.remove('show'), 2800);
+}
+
+document.addEventListener('DOMContentLoaded', () => {
+  render(false);
+  initLock();
+
+  document.getElementById('unlock-btn').addEventListener('click', tryUnlock);
+  document.getElementById('eye-btn').addEventListener('click', toggleEye);
+  document.getElementById('view-mode-btn').addEventListener('click', enterViewMode);
+  document.getElementById('lock-input').addEventListener('keydown', (e) => {
+    if(e.key === 'Enter') tryUnlock();
+  });
+  document.getElementById('view-banner').addEventListener('click', showLock);
+
+  // カオスモーダルは動的にonclick設定するため初期リスナー不要
+  // （showChaosModal内で毎回設定）
+});
+</script>
+
+</body>
+</html>
