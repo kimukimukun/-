@@ -1,0 +1,1719 @@
+<!DOCTYPE html>
+
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>ナンパ師 Trophy System</title>
+<link href="https://fonts.googleapis.com/css2?family=Noto+Sans+JP:wght@300;400;700;900&family=Bebas+Neue&family=Rajdhani:wght@400;600;700&display=swap" rel="stylesheet">
+<style>
+:root {
+  --bg:#080c14; --surface:#0e1520; --surface2:#162030;
+  --border:rgba(255,255,255,0.06); --text:#e8ecf5; --muted:#5a6a88;
+  --accent:#ff3c6e; --accent2:#ff7eb3; --glow:rgba(255,60,110,0.4);
+  --bronze:#cd7f32; --silver:#b8c0cc; --gold:#ffd700; --platinum:#c8e6ff;
+  --bronze-glow:rgba(205,127,50,0.5); --silver-glow:rgba(184,192,204,0.5);
+  --gold-glow:rgba(255,215,0,0.5); --platinum-glow:rgba(200,230,255,0.7);
+}
+*{box-sizing:border-box;margin:0;padding:0;}
+body{background:var(--bg);color:var(--text);font-family:'Noto Sans JP',sans-serif;min-height:100vh;overflow-x:hidden;}
+body::before{content:'';position:fixed;inset:0;background:radial-gradient(ellipse 50% 40% at 15% 15%,rgba(255,60,110,0.07) 0%,transparent 60%),radial-gradient(ellipse 40% 50% at 85% 85%,rgba(255,126,179,0.04) 0%,transparent 60%);pointer-events:none;z-index:0;}
+.container{position:relative;z-index:1;max-width:960px;margin:0 auto;padding:36px 16px 100px;}
+
+/* HEADER */
+.header{position:relative;margin-bottom:32px;padding:28px 24px 24px;background:rgba(8,10,18,0.95);border:1px solid rgba(255,60,110,0.2);border-radius:24px;overflow:hidden;}
+.header::before{content:’’;position:absolute;inset:0;background:radial-gradient(ellipse 80% 60% at 0% 50%,rgba(255,60,110,0.09),transparent 60%),radial-gradient(ellipse 50% 80% at 100% 0%,rgba(255,126,179,0.06),transparent 60%);pointer-events:none;}
+.header::after{content:’’;position:absolute;top:0;left:0;right:0;height:1px;background:linear-gradient(90deg,transparent,rgba(255,60,110,0.5),rgba(255,126,179,0.3),transparent);}
+.header-inner{position:relative;display:flex;align-items:center;gap:18px;}
+.header-icon{width:62px;height:62px;background:linear-gradient(135deg,#ff1a4e,#cc1140);border-radius:16px;display:flex;align-items:center;justify-content:center;font-size:30px;box-shadow:0 0 32px rgba(255,40,80,0.6),inset 0 1px 0 rgba(255,255,255,0.15);flex-shrink:0;}
+.header-text{flex:1;}
+.header-eyebrow{font-family:‘Rajdhani’,sans-serif;font-size:9px;letter-spacing:0.35em;text-transform:uppercase;color:rgba(255,80,110,0.7);margin-bottom:3px;}
+.header-text h1{font-family:‘Bebas Neue’,sans-serif;font-size:clamp(30px,7vw,56px);letter-spacing:0.08em;line-height:0.9;background:linear-gradient(135deg,#fff 30%,rgba(255,180,200,0.8));-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;}
+.header-tagline{font-family:‘Rajdhani’,sans-serif;font-size:10px;letter-spacing:0.2em;color:rgba(255,255,255,0.2);text-transform:uppercase;margin-top:4px;}
+.header-badge{flex-shrink:0;text-align:right;}
+.header-badge-inner{display:inline-block;background:rgba(255,60,110,0.12);border:1px solid rgba(255,60,110,0.3);border-radius:8px;padding:4px 10px;}
+.header-badge-label{font-family:‘Rajdhani’,sans-serif;font-size:8px;letter-spacing:0.2em;color:rgba(255,100,130,0.7);display:block;}
+.header-badge-val{font-family:‘Bebas Neue’,sans-serif;font-size:22px;color:var(--accent);letter-spacing:0.05em;line-height:1;}
+
+/* VIEW MODE */
+.view-mode-banner{display:none;background:rgba(255,215,0,0.08);border:1px solid rgba(255,215,0,0.25);border-radius:12px;padding:10px 16px;margin-bottom:20px;font-size:13px;color:var(--gold);text-align:center;cursor:pointer;transition:background 0.2s;}
+.view-mode-banner:hover{background:rgba(255,215,0,0.14);}
+.view-mode-banner.visible{display:block;}
+body.view-mode input,body.view-mode button:not(#view-banner *){pointer-events:none;}
+body.view-mode .stat-input{opacity:0.5;}
+body.view-mode .chaos-chip{pointer-events:none;opacity:0.6;}
+body.view-mode .chaos-chip.done{opacity:1;}
+
+/* TABS */
+.tabs{display:flex;gap:8px;margin-bottom:28px;overflow-x:auto;padding-bottom:4px;scrollbar-width:none;}
+.tabs::-webkit-scrollbar{display:none;}
+.tab{flex-shrink:0;padding:8px 20px;border-radius:100px;border:1px solid var(--border);background:var(--surface);color:var(--muted);font-family:‘Rajdhani’,sans-serif;font-size:14px;font-weight:600;cursor:pointer;transition:all 0.2s;letter-spacing:0.05em;white-space:nowrap;}
+.tab.active{background:var(--accent);border-color:var(--accent);color:#fff;box-shadow:0 0 16px var(--glow);}
+
+/* STATS BAR */
+.stats-bar{display:flex;gap:10px;margin-bottom:20px;flex-wrap:wrap;}
+.stat-chip{display:flex;align-items:center;gap:8px;background:var(--surface);border:1px solid var(--border);border-radius:100px;padding:7px 14px;font-size:13px;font-family:‘Rajdhani’,sans-serif;font-weight:600;}
+.stat-dot{width:9px;height:9px;border-radius:50%;}
+.stat-dot.bronze{background:var(--bronze);box-shadow:0 0 6px var(--bronze-glow);}
+.stat-dot.silver{background:var(--silver);box-shadow:0 0 6px var(--silver-glow);}
+.stat-dot.gold{background:var(--gold);box-shadow:0 0 6px var(--gold-glow);}
+.stat-dot.plat{background:var(--platinum);box-shadow:0 0 6px var(--platinum-glow);}
+
+/* RANK SECTION */
+.rank-section{background:var(--surface);border:1px solid var(--border);border-radius:16px;padding:20px 22px;margin-bottom:16px;position:relative;overflow:hidden;transition:border-color 0.5s;}
+.rank-section.bronze-rank{border-color:rgba(205,127,50,0.4);}
+.rank-section.silver-rank{border-color:rgba(184,192,204,0.4);}
+.rank-section.gold-rank{border-color:rgba(255,215,0,0.45);}
+.rank-section.platinum-rank{border-color:rgba(200,230,255,0.55);}
+.rank-section::before{content:’’;position:absolute;inset:0;opacity:0;transition:opacity 0.5s;pointer-events:none;}
+.rank-section.bronze-rank::before{background:radial-gradient(ellipse at 0% 50%,rgba(205,127,50,0.08),transparent 60%);opacity:1;}
+.rank-section.silver-rank::before{background:radial-gradient(ellipse at 0% 50%,rgba(184,192,204,0.08),transparent 60%);opacity:1;}
+.rank-section.gold-rank::before{background:radial-gradient(ellipse at 0% 50%,rgba(255,215,0,0.09),transparent 60%);opacity:1;}
+.rank-section.platinum-rank::before{background:radial-gradient(ellipse at 0% 50%,rgba(200,230,255,0.12),transparent 60%);opacity:1;}
+.rank-row{display:flex;align-items:center;gap:16px;}
+.rank-emblem{flex-shrink:0;width:56px;height:56px;border-radius:14px;display:flex;align-items:center;justify-content:center;font-size:28px;transition:all 0.5s;}
+.rank-section.bronze-rank .rank-emblem{background:rgba(205,127,50,0.15);box-shadow:0 0 20px rgba(205,127,50,0.4);}
+.rank-section.silver-rank .rank-emblem{background:rgba(184,192,204,0.15);box-shadow:0 0 20px rgba(184,192,204,0.4);}
+.rank-section.gold-rank .rank-emblem{background:rgba(255,215,0,0.15);box-shadow:0 0 24px rgba(255,215,0,0.5);}
+.rank-section.platinum-rank .rank-emblem{background:rgba(200,230,255,0.15);box-shadow:0 0 30px rgba(200,230,255,0.6);animation:platEmblemGlow 2s ease-in-out infinite alternate;}
+@keyframes platEmblemGlow{from{box-shadow:0 0 20px rgba(200,230,255,0.5);}to{box-shadow:0 0 44px rgba(200,230,255,0.9);}}
+.rank-info{flex:1;min-width:0;}
+.rank-label{font-family:‘Rajdhani’,sans-serif;font-size:11px;letter-spacing:0.15em;text-transform:uppercase;color:var(--muted);margin-bottom:2px;}
+.rank-title{font-family:‘Bebas Neue’,sans-serif;font-size:26px;letter-spacing:0.06em;line-height:1;transition:color 0.5s;}
+.rank-section.bronze-rank .rank-title{color:var(--bronze);}
+.rank-section.silver-rank .rank-title{color:var(--silver);}
+.rank-section.gold-rank .rank-title{color:var(--gold);}
+.rank-section.platinum-rank .rank-title{color:var(--platinum);}
+.rank-subtitle{font-size:11px;color:var(--muted);margin-top:4px;}
+.rank-next{font-size:11px;color:var(--muted);margin-top:8px;padding-top:8px;border-top:1px solid var(--border);}
+.rank-next span{font-weight:700;color:var(--text);}
+
+/* CHAOS RANK */
+.chaos-rank-section{background:var(--surface);border:1px solid rgba(255,60,60,0.2);border-radius:16px;padding:20px 22px;margin-bottom:24px;position:relative;overflow:hidden;transition:border-color 0.5s;}
+.chaos-rank-section::before{content:’’;position:absolute;inset:0;background:radial-gradient(ellipse at 0% 50%,rgba(255,40,40,0.06),transparent 60%);pointer-events:none;}
+.chaos-rank-section.chaos-active{border-color:rgba(255,60,60,0.5);}
+.chaos-rank-row{display:flex;align-items:center;gap:16px;}
+.chaos-rank-emblem{flex-shrink:0;width:56px;height:56px;border-radius:14px;background:rgba(255,60,60,0.1);display:flex;align-items:center;justify-content:center;font-size:28px;transition:all 0.5s;}
+.chaos-rank-section.chaos-active .chaos-rank-emblem{box-shadow:0 0 24px rgba(255,40,40,0.5);animation:chaosEmblemPulse 2s ease-in-out infinite alternate;}
+@keyframes chaosEmblemPulse{from{box-shadow:0 0 12px rgba(255,40,40,0.4);}to{box-shadow:0 0 36px rgba(255,40,40,0.8);}}
+.chaos-rank-info{flex:1;min-width:0;}
+.chaos-rank-label{font-family:‘Rajdhani’,sans-serif;font-size:11px;letter-spacing:0.15em;text-transform:uppercase;color:var(--muted);margin-bottom:2px;}
+.chaos-rank-title{font-family:‘Bebas Neue’,sans-serif;font-size:26px;letter-spacing:0.06em;line-height:1;color:var(--muted);transition:color 0.5s;}
+.chaos-rank-section.chaos-active .chaos-rank-title{color:#ff5555;}
+.chaos-rank-subtitle{font-size:11px;color:var(--muted);margin-top:4px;}
+.chaos-progress-wrap{margin-top:10px;display:flex;align-items:center;gap:10px;}
+.chaos-progress-bar-outer{flex:1;height:4px;background:var(--surface2);border-radius:100px;overflow:hidden;}
+.chaos-progress-bar-inner{height:100%;background:linear-gradient(90deg,#cc2222,#ff5555);border-radius:100px;transition:width 0.6s ease;box-shadow:0 0 8px rgba(255,60,60,0.5);}
+.chaos-progress-label{font-family:‘Rajdhani’,sans-serif;font-size:12px;font-weight:700;color:#ff5555;white-space:nowrap;}
+.chaos-rank-next{font-size:11px;color:var(--muted);margin-top:8px;padding-top:8px;border-top:1px solid var(--border);}
+.chaos-rank-next span{font-weight:700;color:#ff7777;}
+
+/* PROGRESS */
+.progress-section{background:var(--surface);border:1px solid var(--border);border-radius:14px;padding:18px 22px;margin-bottom:28px;}
+.progress-header{display:flex;justify-content:space-between;align-items:center;margin-bottom:10px;}
+.progress-label{font-size:12px;color:var(--muted);font-family:‘Rajdhani’,sans-serif;letter-spacing:0.12em;text-transform:uppercase;}
+.progress-count{font-family:‘Bebas Neue’,sans-serif;font-size:22px;color:var(--accent2);letter-spacing:0.05em;}
+.progress-bar-outer{height:5px;background:var(--surface2);border-radius:100px;overflow:hidden;}
+.progress-bar-inner{height:100%;background:linear-gradient(90deg,var(--accent),var(--accent2));border-radius:100px;transition:width 0.9s cubic-bezier(0.4,0,0.2,1);box-shadow:0 0 10px var(--glow);}
+
+/* ===== STAT INPUT PANEL ===== */
+.stat-input-panel{background:var(--surface);border:1px solid var(--border);border-radius:16px;padding:22px;margin-bottom:28px;}
+.stat-input-panel-title{font-family:‘Bebas Neue’,sans-serif;font-size:18px;letter-spacing:0.08em;margin-bottom:4px;}
+.stat-input-panel-sub{font-size:12px;color:var(--muted);margin-bottom:20px;}
+.stat-input-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(200px,1fr));gap:14px;}
+.stat-input-item{background:var(--surface2);border:1px solid var(--border);border-radius:12px;padding:14px 16px;}
+.stat-input-label{font-size:11px;color:var(--muted);font-family:‘Rajdhani’,sans-serif;letter-spacing:0.1em;text-transform:uppercase;margin-bottom:6px;display:flex;align-items:center;gap:6px;}
+.stat-total-row{display:flex;align-items:baseline;gap:6px;margin-bottom:8px;}
+.stat-total-val{font-family:‘Bebas Neue’,sans-serif;font-size:32px;letter-spacing:0.04em;color:var(--text);}
+.stat-total-unit{font-size:11px;color:var(--muted);}
+.stat-total-label{font-size:10px;color:var(--muted);font-family:‘Rajdhani’,sans-serif;margin-left:auto;}
+.stat-today-label{font-size:10px;color:var(--muted);font-family:‘Rajdhani’,sans-serif;letter-spacing:0.08em;text-transform:uppercase;margin-bottom:4px;}
+.stat-input-row{display:flex;align-items:center;gap:6px;}
+.stat-input{flex:1;background:var(--bg);border:1px solid rgba(255,255,255,0.1);border-radius:8px;color:var(--text);font-family:‘Bebas Neue’,sans-serif;font-size:22px;padding:4px 10px;outline:none;text-align:center;width:100%;transition:border-color 0.2s;}
+.stat-input:focus{border-color:var(--accent);}
+.stat-input-unit{font-size:12px;color:var(--muted);white-space:nowrap;}
+.stat-btn{width:30px;height:30px;border-radius:7px;border:1px solid rgba(255,255,255,0.1);background:var(--surface);color:var(--text);font-size:16px;cursor:pointer;display:flex;align-items:center;justify-content:center;transition:all 0.15s;flex-shrink:0;}
+.stat-btn:hover{background:rgba(255,255,255,0.1);}
+.stat-btn:active{transform:scale(0.92);}
+.stat-add-btn{margin-top:8px;width:100%;padding:7px;border-radius:8px;border:1px solid rgba(255,60,110,0.3);background:rgba(255,60,110,0.1);color:var(--accent2);font-family:‘Rajdhani’,sans-serif;font-size:13px;font-weight:700;cursor:pointer;transition:all 0.2s;letter-spacing:0.05em;}
+.stat-add-btn:hover{background:rgba(255,60,110,0.2);border-color:rgba(255,60,110,0.5);}
+.stat-add-btn:active{transform:scale(0.97);}
+.stat-input-item{background:var(--surface2);border:1px solid var(--border);border-radius:12px;padding:14px 16px;}
+.stat-input-label{font-size:11px;color:var(--muted);font-family:‘Rajdhani’,sans-serif;letter-spacing:0.1em;text-transform:uppercase;margin-bottom:8px;display:flex;align-items:center;gap:6px;}
+.stat-input-row{display:flex;align-items:center;gap:8px;}
+.stat-input{flex:1;background:var(--bg);border:1px solid rgba(255,255,255,0.1);border-radius:8px;color:var(--text);font-family:‘Bebas Neue’,sans-serif;font-size:28px;padding:6px 12px;outline:none;text-align:center;width:100%;transition:border-color 0.2s;}
+.stat-input:focus{border-color:var(--accent);}
+.stat-input-unit{font-size:12px;color:var(--muted);white-space:nowrap;}
+.stat-btn{width:32px;height:32px;border-radius:8px;border:1px solid rgba(255,255,255,0.1);background:var(--surface);color:var(--text);font-size:18px;cursor:pointer;display:flex;align-items:center;justify-content:center;transition:all 0.15s;flex-shrink:0;}
+.stat-btn:hover{background:rgba(255,255,255,0.1);}
+.stat-btn:active{transform:scale(0.92);}
+
+/* YAMANOTE */
+.yamanote-section{background:var(--surface);border:1px solid rgba(255,215,0,0.2);border-radius:16px;padding:22px;margin-bottom:28px;position:relative;overflow:hidden;}
+.yamanote-section::before{content:’’;position:absolute;inset:0;background:radial-gradient(ellipse at 100% 0%,rgba(255,215,0,0.06),transparent 60%);pointer-events:none;}
+.yamanote-header{display:flex;align-items:center;gap:12px;margin-bottom:16px;}
+.yamanote-badge{background:rgba(255,215,0,0.15);border:1px solid rgba(255,215,0,0.4);border-radius:8px;padding:6px 12px;font-family:‘Bebas Neue’,sans-serif;font-size:13px;letter-spacing:0.1em;color:var(--gold);}
+.yamanote-title{font-family:‘Bebas Neue’,sans-serif;font-size:22px;letter-spacing:0.06em;}
+.station-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(120px,1fr));gap:8px;}
+.station-chip{background:var(--surface2);border:1px solid var(--border);border-radius:10px;padding:10px 8px;text-align:center;cursor:pointer;transition:all 0.2s;position:relative;}
+.station-chip:hover{border-color:rgba(255,255,255,0.15);transform:translateY(-1px);}
+.station-chip.diff-bronze{border-color:rgba(205,127,50,0.25);}
+.station-chip.diff-silver{border-color:rgba(184,192,204,0.25);}
+.station-chip.diff-gold{border-color:rgba(255,215,0,0.25);}
+.station-chip.done.diff-bronze{background:rgba(205,127,50,0.1);border-color:rgba(205,127,50,0.5);}
+.station-chip.done.diff-silver{background:rgba(184,192,204,0.1);border-color:rgba(184,192,204,0.5);}
+.station-chip.done.diff-gold{background:rgba(255,215,0,0.1);border-color:rgba(255,215,0,0.5);}
+.station-chip.done.diff-bronze .station-name{color:var(--bronze);}
+.station-chip.done.diff-silver .station-name{color:var(--silver);}
+.station-chip.done.diff-gold .station-name{color:var(--gold);}
+.station-icon{font-size:18px;display:block;margin-bottom:3px;}
+.station-name{font-size:11px;color:var(--muted);font-weight:700;transition:color 0.2s;}
+.station-diff-badge{display:inline-block;font-size:8px;font-family:‘Rajdhani’,sans-serif;font-weight:700;letter-spacing:0.05em;padding:1px 5px;border-radius:4px;margin-top:3px;}
+.diff-bronze .station-diff-badge{background:rgba(205,127,50,0.2);color:var(--bronze);}
+.diff-silver .station-diff-badge{background:rgba(184,192,204,0.2);color:var(--silver);}
+.diff-gold .station-diff-badge{background:rgba(255,215,0,0.2);color:var(--gold);}
+.station-check{position:absolute;top:5px;right:5px;font-size:10px;opacity:0;transition:opacity 0.2s;}
+.station-chip.done .station-check{opacity:1;}
+.yamanote-progress{margin-top:16px;display:flex;align-items:center;gap:12px;}
+.yamanote-bar-outer{flex:1;height:4px;background:var(--surface2);border-radius:100px;overflow:hidden;}
+.yamanote-bar-inner{height:100%;background:linear-gradient(90deg,var(--gold),#ffec80);border-radius:100px;transition:width 0.6s ease;box-shadow:0 0 8px var(--gold-glow);}
+.yamanote-count{font-family:‘Rajdhani’,sans-serif;font-size:14px;font-weight:700;color:var(--gold);white-space:nowrap;}
+
+/* CHAOS CHECK GRID */
+.chaos-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(280px,1fr));gap:10px;margin-bottom:28px;}
+.chaos-chip{background:var(--surface);border:1px solid var(--border);border-radius:14px;padding:14px 16px;display:flex;align-items:flex-start;gap:12px;cursor:pointer;transition:all 0.2s;position:relative;opacity:0.35;filter:grayscale(0.8);}
+.chaos-chip:hover{border-color:rgba(255,255,255,0.15);transform:translateY(-1px);opacity:0.5;filter:grayscale(0.5);}
+.chaos-chip.done{opacity:1;filter:none;}
+.chaos-chip.done.bronze{background:rgba(205,127,50,0.07);border-color:rgba(205,127,50,0.4);}
+.chaos-chip.done.silver{background:rgba(184,192,204,0.07);border-color:rgba(184,192,204,0.4);}
+.chaos-chip.done.gold{background:rgba(255,215,0,0.07);border-color:rgba(255,215,0,0.4);}
+.chaos-chip.done.platinum{background:rgba(200,230,255,0.07);border-color:rgba(200,230,255,0.4);}
+.chaos-chip-icon{font-size:24px;flex-shrink:0;margin-top:2px;}
+.chaos-chip-info{flex:1;min-width:0;}
+.chaos-chip-name{font-size:13px;font-weight:700;margin-bottom:3px;}
+.chaos-chip.done.bronze .chaos-chip-name{color:var(--bronze);}
+.chaos-chip.done.silver .chaos-chip-name{color:var(--silver);}
+.chaos-chip.done.gold .chaos-chip-name{color:var(--gold);}
+.chaos-chip.done.platinum .chaos-chip-name{color:var(--platinum);}
+.chaos-chip-desc{font-size:11px;color:var(--muted);line-height:1.5;}
+.chaos-chip-type{position:absolute;top:10px;right:10px;font-size:9px;font-family:‘Rajdhani’,sans-serif;font-weight:700;letter-spacing:0.1em;padding:2px 7px;border-radius:5px;}
+.chaos-chip.bronze .chaos-chip-type{background:rgba(205,127,50,0.2);color:var(--bronze);}
+.chaos-chip.silver .chaos-chip-type{background:rgba(184,192,204,0.2);color:var(--silver);}
+.chaos-chip.gold .chaos-chip-type{background:rgba(255,215,0,0.2);color:var(--gold);}
+.chaos-chip.platinum .chaos-chip-type{background:rgba(200,230,255,0.2);color:var(--platinum);}
+.chaos-chip-check{position:absolute;bottom:10px;right:10px;font-size:11px;opacity:0;}
+.chaos-chip.done .chaos-chip-check{opacity:1;}
+
+/* TROPHY SECTION TITLE */
+.section-title{font-family:‘Rajdhani’,sans-serif;font-size:12px;letter-spacing:0.15em;text-transform:uppercase;color:var(--muted);margin-bottom:14px;padding-left:2px;}
+
+/* TROPHY CARD (for auto-unlocked display) */
+.chaos-chip:not(.done){opacity:0.3;filter:grayscale(0.85);}
+.chaos-chip:not(.done):hover{opacity:0.55;filter:grayscale(0.5);}
+.trophy-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(272px,1fr));gap:10px;margin-bottom:28px;}
+.trophy-card{background:var(--surface);border:1px solid var(--border);border-radius:14px;padding:16px;display:flex;gap:14px;align-items:flex-start;position:relative;overflow:hidden;transition:all 0.22s cubic-bezier(0.4,0,0.2,1);}
+.trophy-card::before{content:’’;position:absolute;inset:0;opacity:0;transition:opacity 0.3s;border-radius:14px;pointer-events:none;}
+.trophy-card.bronze::before{background:radial-gradient(ellipse at 0 0,rgba(205,127,50,0.12),transparent 55%);}
+.trophy-card.silver::before{background:radial-gradient(ellipse at 0 0,rgba(184,192,204,0.12),transparent 55%);}
+.trophy-card.gold::before{background:radial-gradient(ellipse at 0 0,rgba(255,215,0,0.12),transparent 55%);}
+.trophy-card.platinum::before{background:radial-gradient(ellipse at 0 0,rgba(200,230,255,0.14),transparent 55%);}
+.trophy-card.unlocked::before{opacity:1;}
+.trophy-card.locked{opacity:0.32;filter:grayscale(0.7);}
+.trophy-icon-wrap{flex-shrink:0;width:50px;height:50px;border-radius:12px;display:flex;align-items:center;justify-content:center;font-size:24px;position:relative;}
+.trophy-card.bronze .trophy-icon-wrap{background:rgba(205,127,50,0.14);box-shadow:0 0 0 1px rgba(205,127,50,0.3);}
+.trophy-card.silver .trophy-icon-wrap{background:rgba(184,192,204,0.14);box-shadow:0 0 0 1px rgba(184,192,204,0.3);}
+.trophy-card.gold .trophy-icon-wrap{background:rgba(255,215,0,0.14);box-shadow:0 0 0 1px rgba(255,215,0,0.35);}
+.trophy-card.platinum .trophy-icon-wrap{background:rgba(200,230,255,0.12);box-shadow:0 0 0 1px rgba(200,230,255,0.35);}
+.trophy-card.unlocked.bronze .trophy-icon-wrap{box-shadow:0 0 18px var(--bronze-glow),0 0 0 1px rgba(205,127,50,0.5);}
+.trophy-card.unlocked.silver .trophy-icon-wrap{box-shadow:0 0 18px var(--silver-glow),0 0 0 1px rgba(184,192,204,0.5);}
+.trophy-card.unlocked.gold .trophy-icon-wrap{box-shadow:0 0 18px var(--gold-glow),0 0 0 1px rgba(255,215,0,0.6);}
+.trophy-card.unlocked.platinum .trophy-icon-wrap{box-shadow:0 0 28px var(--platinum-glow),0 0 0 1px rgba(200,230,255,0.7);}
+.trophy-card.unlocked.platinum .trophy-icon-wrap{animation:platGlow 2.2s ease-in-out infinite alternate;}
+@keyframes platGlow{from{box-shadow:0 0 18px var(--platinum-glow),0 0 0 1px rgba(200,230,255,0.45);}to{box-shadow:0 0 44px rgba(200,230,255,0.9),0 0 0 1px rgba(200,230,255,0.8);}}
+.trophy-type-badge{position:absolute;bottom:-4px;right:-4px;width:17px;height:17px;border-radius:50%;font-size:8px;display:flex;align-items:center;justify-content:center;font-family:‘Rajdhani’,sans-serif;font-weight:700;border:2px solid var(--surface);}
+.bronze .trophy-type-badge{background:var(--bronze);color:#000;}
+.silver .trophy-type-badge{background:var(--silver);color:#000;}
+.gold .trophy-type-badge{background:var(--gold);color:#000;}
+.platinum .trophy-type-badge{background:var(--platinum);color:#000;}
+.trophy-info{flex:1;min-width:0;}
+.trophy-name{font-size:14px;font-weight:700;margin-bottom:3px;}
+.trophy-desc{font-size:11px;color:var(--muted);line-height:1.5;}
+.trophy-condition{font-size:10px;color:var(--accent2);margin-top:4px;font-family:‘Rajdhani’,sans-serif;}
+.trophy-time{font-size:10px;color:var(--accent2);margin-top:4px;font-family:‘Rajdhani’,sans-serif;opacity:0.8;}
+.trophy-lock-icon{position:absolute;top:11px;right:11px;font-size:12px;opacity:0.3;}
+@keyframes unlockPulse{0%{transform:scale(1);}35%{transform:scale(1.04);}65%{transform:scale(0.98);}100%{transform:scale(1);}}
+.just-unlocked{animation:unlockPulse 0.7s ease;}
+
+/* SYNC PANEL */
+.sync-panel{background:var(--surface);border:1px solid rgba(255,255,255,0.08);border-radius:16px;padding:20px 22px;margin-bottom:28px;}
+.sync-title{font-family:‘Bebas Neue’,sans-serif;font-size:16px;letter-spacing:0.08em;color:var(--text);margin-bottom:6px;}
+.sync-desc{font-size:12px;color:var(--muted);margin-bottom:14px;line-height:1.6;}
+.sync-buttons{display:flex;gap:10px;flex-wrap:wrap;}
+.sync-btn{flex:1;min-width:120px;padding:10px 16px;border-radius:10px;border:1px solid rgba(255,255,255,0.1);background:var(--surface2);color:var(--text);font-family:‘Rajdhani’,sans-serif;font-size:14px;font-weight:600;cursor:pointer;transition:all 0.2s;display:flex;align-items:center;justify-content:center;gap:6px;}
+.sync-btn:hover{background:rgba(255,255,255,0.07);border-color:rgba(255,255,255,0.2);}
+.sync-btn.primary{background:rgba(255,60,110,0.15);border-color:rgba(255,60,110,0.4);color:var(--accent2);}
+.sync-btn.primary:hover{background:rgba(255,60,110,0.25);}
+.sync-code-wrap{margin-top:14px;display:none;}
+.sync-code-wrap.open{display:block;}
+.sync-code{width:100%;background:#060a10;border:1px solid rgba(255,255,255,0.1);border-radius:8px;color:var(--accent2);font-family:monospace;font-size:11px;padding:10px 12px;resize:vertical;min-height:60px;word-break:break-all;}
+.sync-code-actions{display:flex;gap:8px;margin-top:8px;}
+
+/* SHARE BTN */
+/* BATTLE POWER CARD */
+.bp-card{background:rgba(8,10,18,0.98);border:1px solid rgba(255,255,255,0.07);border-radius:24px;margin-bottom:24px;position:relative;overflow:hidden;box-shadow:0 12px 48px rgba(0,0,0,0.7);}
+.bp-card::after{content:’’;position:absolute;top:0;left:0;right:0;height:1px;background:linear-gradient(90deg,transparent,rgba(255,255,255,0.12),transparent);}
+/* ヘッダー部：グレードバナー */
+.bp-header{padding:20px 20px 0;display:flex;align-items:flex-start;justify-content:space-between;gap:8px;}
+.bp-header-left{flex:1;min-width:0;}
+.bp-label{font-family:‘Rajdhani’,sans-serif;font-size:9px;letter-spacing:0.25em;text-transform:uppercase;color:rgba(255,255,255,0.3);margin-bottom:4px;}
+.bp-grade-text{font-family:‘Rajdhani’,sans-serif;font-size:11px;font-weight:700;letter-spacing:0.15em;text-transform:uppercase;opacity:0.7;margin-bottom:3px;transition:color 0.5s;}
+.bp-title{font-family:‘Bebas Neue’,sans-serif;font-size:32px;letter-spacing:0.05em;line-height:1;transition:color 0.5s;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
+/* スコアブロック */
+.bp-score-block{text-align:right;flex-shrink:0;}
+.bp-score-label{font-family:‘Rajdhani’,sans-serif;font-size:8px;letter-spacing:0.2em;text-transform:uppercase;color:rgba(255,255,255,0.3);display:block;margin-bottom:-2px;}
+.bp-score{font-family:‘Bebas Neue’,sans-serif;font-size:64px;line-height:1;letter-spacing:0.02em;transition:color 0.5s;}
+.bp-score-max{font-size:12px;color:rgba(255,255,255,0.25);font-family:‘Rajdhani’,sans-serif;font-weight:600;display:block;margin-top:-4px;}
+/* プログレスバー */
+.bp-progress-wrap{padding:14px 20px 0;}
+.bp-bar-outer{height:6px;background:rgba(255,255,255,0.06);border-radius:100px;overflow:hidden;margin-bottom:5px;}
+.bp-bar-inner{height:100%;border-radius:100px;transition:width 1s cubic-bezier(0.4,0,0.2,1),background 0.5s;}
+.bp-bar-labels{display:flex;justify-content:space-between;font-family:‘Rajdhani’,sans-serif;font-size:9px;color:rgba(255,255,255,0.2);}
+/* ブレークダウン */
+.bp-breakdown{display:grid;grid-template-columns:repeat(2,1fr);gap:1px;background:rgba(255,255,255,0.04);margin-top:14px;border-radius:0 0 24px 24px;overflow:hidden;}
+.bp-item{background:rgba(10,12,22,0.98);padding:12px 14px;}
+.bp-item:last-child:nth-child(odd){grid-column:1/-1;}
+.bp-item-top{display:flex;align-items:baseline;justify-content:space-between;margin-bottom:6px;}
+.bp-item-label{font-size:10px;color:rgba(255,255,255,0.35);font-family:‘Rajdhani’,sans-serif;letter-spacing:0.06em;}
+.bp-item-raw{font-family:‘Rajdhani’,sans-serif;font-size:12px;font-weight:700;color:rgba(255,255,255,0.8);}
+.bp-item-val{font-family:‘Bebas Neue’,sans-serif;font-size:22px;letter-spacing:0.04em;line-height:1;margin-bottom:5px;}
+.bp-item-max{font-size:10px;color:rgba(255,255,255,0.2);font-family:‘Rajdhani’,sans-serif;}
+.bp-item-bar{height:2px;background:rgba(255,255,255,0.06);border-radius:100px;overflow:hidden;}
+.bp-item-bar-inner{height:100%;border-radius:100px;transition:width 0.8s ease;}
+/* グレードカラー */
+.grade-f .bp-card,.grade-f{–gc:rgba(120,130,150,1);}
+.grade-f .bp-grade-text,.grade-f .bp-title,.grade-f .bp-score{color:rgba(120,130,150,0.8);}
+.grade-f .bp-bar-inner,.grade-f .bp-item-bar-inner{background:rgba(120,130,150,0.6);}
+.grade-d .bp-grade-text,.grade-d .bp-title,.grade-d .bp-score{color:#a0c0ff;}
+.grade-d .bp-bar-inner,.grade-d .bp-item-bar-inner{background:linear-gradient(90deg,#3a60cc,#a0c0ff);}
+.grade-d .bp-card{border-color:rgba(100,160,255,0.15);}
+.grade-c .bp-grade-text,.grade-c .bp-title,.grade-c .bp-score{color:var(--bronze);}
+.grade-c .bp-bar-inner,.grade-c .bp-item-bar-inner{background:linear-gradient(90deg,#5a2a08,var(--bronze));}
+.grade-c .bp-card,.grade-c{border-color:rgba(205,127,50,0.2);}
+.grade-b .bp-grade-text,.grade-b .bp-title,.grade-b .bp-score{color:var(--silver);}
+.grade-b .bp-bar-inner,.grade-b .bp-item-bar-inner{background:linear-gradient(90deg,#505860,var(--silver));}
+.grade-b .bp-card,.grade-b{border-color:rgba(184,192,204,0.2);}
+.grade-a .bp-grade-text,.grade-a .bp-title,.grade-a .bp-score{color:var(--gold);}
+.grade-a .bp-bar-inner,.grade-a .bp-item-bar-inner{background:linear-gradient(90deg,#805500,var(--gold));}
+.grade-a .bp-card,.grade-a{border-color:rgba(255,215,0,0.25);box-shadow:0 12px 48px rgba(255,180,0,0.08);}
+.grade-s .bp-grade-text,.grade-s .bp-title,.grade-s .bp-score{color:#ff9940;}
+.grade-s .bp-bar-inner,.grade-s .bp-item-bar-inner{background:linear-gradient(90deg,#882200,#ff9940);}
+.grade-s .bp-card,.grade-s{border-color:rgba(255,100,0,0.3);box-shadow:0 12px 48px rgba(255,100,0,0.12);}
+.grade-ss .bp-grade-text,.grade-ss .bp-title,.grade-ss .bp-score{color:var(--platinum);}
+.grade-ss .bp-bar-inner,.grade-ss .bp-item-bar-inner{background:linear-gradient(90deg,#4070a0,var(--platinum));box-shadow:0 0 8px var(--platinum-glow);}
+.grade-ss .bp-card,.grade-ss{border-color:rgba(180,220,255,0.3);box-shadow:0 12px 48px rgba(100,180,255,0.15);}
+.grade-sss .bp-grade-text,.grade-sss .bp-title,.grade-sss .bp-score{color:#fff;text-shadow:0 0 20px rgba(255,255,255,0.6);}
+.grade-sss .bp-bar-inner{background:linear-gradient(90deg,var(--accent),#ff9940,var(--gold),var(--platinum));background-size:200%;animation:bpRainbow 2s linear infinite;box-shadow:0 0 12px var(--glow);}
+@keyframes bpRainbow{0%{background-position:0%;}100%{background-position:200%;}}
+.grade-sss .bp-item-bar-inner{background:linear-gradient(90deg,var(--accent),var(--gold));}
+.grade-sss .bp-card,.grade-sss{border-color:rgba(255,255,255,0.2);box-shadow:0 12px 48px rgba(255,180,80,0.2);}
+
+/* TROPHY UNLOCK BURST */
+.trophy-burst-overlay{position:fixed;inset:0;z-index:9999;pointer-events:none;display:flex;align-items:center;justify-content:center;opacity:0;transition:opacity 0.3s;}
+.trophy-burst-overlay.show{opacity:1;}
+.trophy-burst-card{background:rgba(8,10,18,0.96);border-radius:28px;padding:28px 32px;text-align:center;position:relative;overflow:hidden;transform:scale(0.8);transition:transform 0.35s cubic-bezier(0.34,1.56,0.64,1);max-width:88vw;box-shadow:0 24px 80px rgba(0,0,0,0.8);}
+.trophy-burst-overlay.show .trophy-burst-card{transform:scale(1);}
+.trophy-burst-card::before{content:’’;position:absolute;inset:0;pointer-events:none;border-radius:28px;}
+.trophy-burst-card.bronze-burst{border:2px solid rgba(205,127,50,0.6);background:linear-gradient(135deg,rgba(8,10,18,0.97),rgba(40,20,5,0.97));box-shadow:0 0 60px rgba(205,127,50,0.25),0 24px 80px rgba(0,0,0,0.8);}
+.trophy-burst-card.silver-burst{border:2px solid rgba(184,192,204,0.6);background:linear-gradient(135deg,rgba(8,10,18,0.97),rgba(20,25,35,0.97));box-shadow:0 0 60px rgba(184,192,204,0.2),0 24px 80px rgba(0,0,0,0.8);}
+.trophy-burst-card.gold-burst{border:2px solid rgba(255,215,0,0.7);background:linear-gradient(135deg,rgba(8,10,18,0.97),rgba(40,30,0,0.97));box-shadow:0 0 80px rgba(255,215,0,0.3),0 24px 80px rgba(0,0,0,0.8);}
+.trophy-burst-card.platinum-burst{border:2px solid rgba(200,230,255,0.7);background:linear-gradient(135deg,rgba(8,10,18,0.97),rgba(10,20,40,0.97));box-shadow:0 0 100px rgba(180,220,255,0.4),0 24px 80px rgba(0,0,0,0.8);}
+.burst-unlock-label{font-family:‘Rajdhani’,sans-serif;font-size:10px;letter-spacing:0.3em;text-transform:uppercase;color:rgba(255,255,255,0.35);margin-bottom:10px;}
+.burst-icon{font-size:60px;line-height:1;margin-bottom:8px;animation:burstIconPop 0.4s cubic-bezier(0.34,1.56,0.64,1) 0.15s both;}
+@keyframes burstIconPop{from{transform:scale(0) rotate(-20deg);}to{transform:scale(1) rotate(0deg);}}
+.burst-type{font-family:‘Rajdhani’,sans-serif;font-size:12px;font-weight:700;letter-spacing:0.2em;text-transform:uppercase;padding:3px 12px;border-radius:20px;display:inline-block;margin-bottom:10px;}
+.bronze-burst .burst-type{background:rgba(205,127,50,0.2);color:var(--bronze);border:1px solid rgba(205,127,50,0.4);}
+.silver-burst .burst-type{background:rgba(184,192,204,0.2);color:var(--silver);border:1px solid rgba(184,192,204,0.4);}
+.gold-burst .burst-type{background:rgba(255,215,0,0.15);color:var(--gold);border:1px solid rgba(255,215,0,0.4);}
+.platinum-burst .burst-type{background:rgba(200,230,255,0.15);color:var(--platinum);border:1px solid rgba(200,230,255,0.5);}
+.burst-name{font-family:‘Bebas Neue’,sans-serif;font-size:36px;letter-spacing:0.06em;line-height:1;color:#fff;margin-bottom:6px;}
+.burst-desc{font-size:12px;color:rgba(255,255,255,0.5);line-height:1.5;max-width:240px;margin:0 auto;}
+.burst-particle{position:absolute;width:6px;height:6px;border-radius:50%;pointer-events:none;animation:burstParticleFly 0.9s ease-out forwards;}
+@keyframes burstParticleFly{0%{transform:translate(0,0) scale(1);opacity:1;}100%{transform:translate(var(--bx),var(--by)) scale(0);opacity:0;}}
+.bottom-actions{max-width:420px;margin:0 auto;}
+.share-btn{display:flex;align-items:center;justify-content:center;gap:10px;width:100%;padding:13px;background:var(--surface);border:1px solid rgba(255,255,255,0.1);border-radius:12px;color:var(--text);font-family:‘Rajdhani’,sans-serif;font-size:16px;font-weight:600;cursor:pointer;transition:all 0.2s;margin-bottom:10px;text-decoration:none;}
+.share-btn:hover{background:var(--surface2);border-color:rgba(255,255,255,0.18);}
+
+/* TOAST */
+.toast{position:fixed;bottom:28px;left:50%;transform:translateX(-50%) translateY(130px);background:var(--surface);border:1px solid rgba(255,255,255,0.1);border-radius:16px;padding:14px 20px;display:flex;align-items:center;gap:14px;z-index:1000;transition:transform 0.38s cubic-bezier(0.34,1.56,0.64,1);min-width:290px;max-width:90vw;box-shadow:0 16px 48px rgba(0,0,0,0.5);}
+.toast.show{transform:translateX(-50%) translateY(0);}
+.toast-icon{font-size:32px;flex-shrink:0;}
+.toast-text strong{display:block;font-size:15px;margin-bottom:2px;}
+.toast-text small{font-size:11px;color:var(--muted);}
+.toast-type{font-family:‘Rajdhani’,sans-serif;font-size:10px;letter-spacing:0.15em;text-transform:uppercase;padding:3px 8px;border-radius:6px;font-weight:700;margin-left:auto;flex-shrink:0;}
+.toast.bronze-toast{border-color:rgba(205,127,50,0.4);}
+.toast.silver-toast{border-color:rgba(184,192,204,0.4);}
+.toast.gold-toast{border-color:rgba(255,215,0,0.4);}
+.toast.platinum-toast{border-color:rgba(200,230,255,0.5);}
+.toast.bronze-toast .toast-type{background:rgba(205,127,50,0.2);color:var(--bronze);}
+.toast.silver-toast .toast-type{background:rgba(184,192,204,0.2);color:var(--silver);}
+.toast.gold-toast .toast-type{background:rgba(255,215,0,0.2);color:var(--gold);}
+.toast.platinum-toast .toast-type{background:rgba(200,230,255,0.2);color:var(--platinum);}
+
+/* RANK MODALS */
+.rank-modal-overlay,.chaos-modal-overlay{position:fixed;inset:0;background:rgba(0,0,0,0.78);z-index:8000;display:flex;align-items:center;justify-content:center;opacity:0;pointer-events:none;transition:opacity 0.3s;}
+.rank-modal-overlay.show,.chaos-modal-overlay.show{opacity:1;pointer-events:all;}
+.rank-modal{background:var(--surface);border-radius:24px;padding:44px 36px;text-align:center;max-width:340px;width:90%;transform:scale(0.85);transition:transform 0.4s cubic-bezier(0.34,1.56,0.64,1);position:relative;overflow:hidden;}
+.rank-modal-overlay.show .rank-modal{transform:scale(1);}
+.rank-modal.bronze-modal{border:1px solid rgba(205,127,50,0.5);}
+.rank-modal.bronze-modal::before{content:’’;position:absolute;inset:0;background:radial-gradient(ellipse at 50% 0%,rgba(205,127,50,0.15),transparent 60%);pointer-events:none;}
+.rank-modal.silver-modal{border:1px solid rgba(184,192,204,0.5);}
+.rank-modal.silver-modal::before{content:’’;position:absolute;inset:0;background:radial-gradient(ellipse at 50% 0%,rgba(184,192,204,0.15),transparent 60%);pointer-events:none;}
+.rank-modal.gold-modal{border:1px solid rgba(255,215,0,0.55);}
+.rank-modal.gold-modal::before{content:’’;position:absolute;inset:0;background:radial-gradient(ellipse at 50% 0%,rgba(255,215,0,0.18),transparent 60%);pointer-events:none;}
+.rank-modal.platinum-modal{border:1px solid rgba(200,230,255,0.6);}
+.rank-modal.platinum-modal::before{content:’’;position:absolute;inset:0;background:radial-gradient(ellipse at 50% 0%,rgba(200,230,255,0.2),transparent 60%);pointer-events:none;}
+.rank-modal-emoji{font-size:64px;display:block;margin-bottom:12px;animation:rankBounce 0.6s cubic-bezier(0.34,1.56,0.64,1);}
+@keyframes rankBounce{0%{transform:scale(0.2);}100%{transform:scale(1);}}
+.rank-modal-label{font-family:‘Rajdhani’,sans-serif;font-size:12px;letter-spacing:0.2em;text-transform:uppercase;color:var(--muted);margin-bottom:8px;}
+.rank-modal-title{font-family:‘Bebas Neue’,sans-serif;font-size:36px;letter-spacing:0.06em;margin-bottom:8px;}
+.rank-modal.bronze-modal .rank-modal-title{color:var(--bronze);}
+.rank-modal.silver-modal .rank-modal-title{color:var(--silver);}
+.rank-modal.gold-modal .rank-modal-title{color:var(--gold);}
+.rank-modal.platinum-modal .rank-modal-title{color:var(--platinum);}
+.rank-modal-desc{font-size:13px;color:var(--muted);line-height:1.6;margin-bottom:24px;}
+.rank-modal-close{padding:12px 32px;border-radius:10px;border:none;background:var(--surface2);color:var(--text);font-family:‘Rajdhani’,sans-serif;font-size:15px;font-weight:700;cursor:pointer;letter-spacing:0.05em;transition:background 0.2s;}
+.rank-modal-close:hover{background:rgba(255,255,255,0.1);}
+
+/* CHAOS MODAL */
+.chaos-modal{background:#0c0808;border:1px solid rgba(255,60,60,0.5);border-radius:24px;padding:44px 36px;text-align:center;max-width:340px;width:90%;transform:scale(0.85);transition:transform 0.4s cubic-bezier(0.34,1.56,0.64,1);position:relative;overflow:hidden;box-shadow:0 0 60px rgba(255,40,40,0.3);}
+.chaos-modal::before{content:’’;position:absolute;inset:0;background:radial-gradient(ellipse at 50% 0%,rgba(255,40,40,0.15),transparent 60%);pointer-events:none;}
+.chaos-modal-overlay.show .chaos-modal{transform:scale(1);}
+.chaos-modal-emoji{font-size:64px;display:block;margin-bottom:12px;animation:chaosEmojiBounce 0.5s cubic-bezier(0.34,1.56,0.64,1);}
+@keyframes chaosEmojiBounce{0%{transform:scale(0.2) rotate(20deg);opacity:0;}100%{transform:scale(1) rotate(0deg);opacity:1;}}
+.chaos-modal-label{font-family:‘Rajdhani’,sans-serif;font-size:11px;letter-spacing:0.25em;text-transform:uppercase;color:#ff4444;margin-bottom:8px;}
+.chaos-modal-title{font-family:‘Bebas Neue’,sans-serif;font-size:34px;letter-spacing:0.06em;color:#ff5555;margin-bottom:10px;text-shadow:0 0 20px rgba(255,60,60,0.6);}
+.chaos-modal-desc{font-size:13px;color:#886666;line-height:1.7;margin-bottom:24px;}
+.chaos-modal-close{padding:12px 32px;border-radius:10px;border:1px solid rgba(255,60,60,0.3);background:rgba(255,40,40,0.1);color:#ff7777;font-family:‘Rajdhani’,sans-serif;font-size:15px;font-weight:700;cursor:pointer;letter-spacing:0.05em;transition:all 0.2s;}
+.chaos-modal-close:hover{background:rgba(255,40,40,0.2);}
+
+/* PARTICLES */
+@keyframes particleFly{0%{transform:translateY(0) scale(1);opacity:1;}100%{transform:translateY(-120px) scale(0);opacity:0;}}
+.particle{position:absolute;width:6px;height:6px;border-radius:50%;pointer-events:none;animation:particleFly 1s ease forwards;}
+@keyframes chaosParticleFly{0%{transform:translateY(0) translateX(0) scale(1);opacity:1;}100%{transform:translateY(-100px) translateX(var(--dx)) scale(0);opacity:0;}}
+.chaos-particle{position:absolute;width:5px;height:5px;border-radius:2px;pointer-events:none;animation:chaosParticleFly 0.9s ease forwards;}
+
+/* LOCK */
+.lock-overlay{position:fixed;inset:0;background:var(--bg);z-index:9999;display:flex;align-items:center;justify-content:center;flex-direction:column;padding:24px;transition:opacity 0.4s ease,transform 0.4s ease;}
+.lock-overlay.unlocking{opacity:0;transform:scale(1.04);pointer-events:none;}
+.lock-overlay::before{content:’’;position:absolute;inset:0;background:radial-gradient(ellipse 60% 50% at 50% 30%,rgba(255,60,110,0.1) 0%,transparent 60%);pointer-events:none;}
+.lock-box{position:relative;background:var(--surface);border:1px solid rgba(255,255,255,0.08);border-radius:24px;padding:40px 36px;max-width:380px;width:100%;text-align:center;box-shadow:0 32px 80px rgba(0,0,0,0.6);}
+.lock-icon-big{font-size:56px;margin-bottom:16px;display:block;animation:lockFloat 3s ease-in-out infinite;}
+@keyframes lockFloat{0%,100%{transform:translateY(0);}50%{transform:translateY(-8px);}}
+.lock-title{font-family:‘Bebas Neue’,sans-serif;font-size:32px;letter-spacing:0.06em;color:#fff;margin-bottom:6px;}
+.lock-subtitle{font-size:13px;color:var(--muted);margin-bottom:28px;line-height:1.6;}
+.lock-input-wrap{position:relative;margin-bottom:16px;}
+.lock-input{width:100%;padding:14px 50px 14px 18px;background:var(--surface2);border:1px solid rgba(255,255,255,0.1);border-radius:12px;color:var(--text);font-size:20px;letter-spacing:0.3em;font-family:‘Rajdhani’,sans-serif;font-weight:700;text-align:center;outline:none;transition:border-color 0.2s;}
+.lock-input:focus{border-color:var(--accent);box-shadow:0 0 0 3px rgba(255,60,110,0.15);}
+.lock-input.error{border-color:#ff4444;animation:shake 0.4s ease;}
+@keyframes shake{0%,100%{transform:translateX(0);}20%{transform:translateX(-8px);}40%{transform:translateX(8px);}60%{transform:translateX(-5px);}80%{transform:translateX(5px);}}
+.lock-eye-btn{position:absolute;right:14px;top:50%;transform:translateY(-50%);background:none;border:none;color:var(--muted);cursor:pointer;font-size:18px;padding:4px;transition:color 0.2s;}
+.lock-eye-btn:hover{color:var(--text);}
+.lock-btn{width:100%;padding:14px;background:linear-gradient(135deg,var(--accent),#cc1144);border:none;border-radius:12px;color:#fff;font-family:‘Bebas Neue’,sans-serif;font-size:20px;letter-spacing:0.1em;cursor:pointer;transition:all 0.2s;box-shadow:0 4px 24px var(--glow);margin-bottom:16px;}
+.lock-btn:hover{transform:translateY(-1px);box-shadow:0 8px 32px var(--glow);}
+.lock-attempt-bar{display:flex;justify-content:center;gap:6px;margin-top:14px;}
+.attempt-dot{width:8px;height:8px;border-radius:50%;background:rgba(255,255,255,0.15);transition:all 0.3s;}
+.attempt-dot.fail{background:#ff4444;box-shadow:0 0 6px rgba(255,68,68,0.5);}
+.lock-hint{font-size:11px;color:var(--muted);margin-top:8px;}
+.lock-mode-badge{position:absolute;top:14px;right:14px;background:rgba(255,60,110,0.15);border:1px solid rgba(255,60,110,0.3);border-radius:8px;padding:3px 10px;font-family:‘Rajdhani’,sans-serif;font-size:11px;font-weight:700;letter-spacing:0.1em;color:var(--accent2);}
+
+.hidden{display:none!important;}
+@media(max-width:480px){.trophy-grid{grid-template-columns:1fr;}.station-grid{grid-template-columns:repeat(auto-fill,minmax(90px,1fr));}.stat-input-grid{grid-template-columns:1fr 1fr;}.chaos-grid{grid-template-columns:1fr;}}
+</style>
+
+</head>
+<body>
+
+<!-- Chaos Rank Modal -->
+
+<div class="chaos-modal-overlay" id="chaos-modal-overlay">
+  <div class="chaos-modal" id="chaos-modal">
+    <span class="chaos-modal-emoji" id="chaos-modal-emoji">💀</span>
+    <div class="chaos-modal-label">⚠️ カオス称号 獲得</div>
+    <div class="chaos-modal-title" id="chaos-modal-title"></div>
+    <div class="chaos-modal-desc" id="chaos-modal-desc"></div>
+    <button class="chaos-modal-close" id="chaos-modal-close">…なるほどな</button>
+  </div>
+</div>
+
+<!-- Rank Modal -->
+
+<div class="rank-modal-overlay" id="rank-modal-overlay">
+  <div class="rank-modal" id="rank-modal">
+    <span class="rank-modal-emoji" id="rank-modal-emoji">🏆</span>
+    <div class="rank-modal-label">称号獲得</div>
+    <div class="rank-modal-title" id="rank-modal-title"></div>
+    <div class="rank-modal-desc" id="rank-modal-desc"></div>
+    <button class="rank-modal-close" id="rank-modal-close">かっこいい！</button>
+  </div>
+</div>
+
+<!-- Password Lock -->
+
+<div class="lock-overlay" id="lock-overlay">
+  <div class="lock-box">
+    <div class="lock-mode-badge">🔐 OWNER ONLY</div>
+    <span class="lock-icon-big">🔒</span>
+    <div class="lock-title">TROPHY SYSTEM</div>
+    <p class="lock-subtitle">これは俺の戦績ページ。<br>オーナーのみ実績を操作できます。<br><span style="color:var(--text);font-weight:700;">閲覧だけなら「見るだけ」</span></p>
+    <div class="lock-input-wrap">
+      <input class="lock-input" type="password" id="lock-input" placeholder="••••••" maxlength="20" autocomplete="off">
+      <button class="lock-eye-btn" id="eye-btn">👁</button>
+    </div>
+    <button class="lock-btn" id="unlock-btn">🔓 UNLOCK</button>
+    <div class="lock-attempt-bar" id="attempt-bar">
+      <div class="attempt-dot" id="dot-1"></div><div class="attempt-dot" id="dot-2"></div>
+      <div class="attempt-dot" id="dot-3"></div><div class="attempt-dot" id="dot-4"></div>
+      <div class="attempt-dot" id="dot-5"></div>
+    </div>
+    <div class="lock-hint" id="lock-hint">パスワードを入力してください</div>
+    <div style="margin-top:20px;padding-top:16px;border-top:1px solid var(--border);">
+      <button id="view-mode-btn" style="background:none;border:none;color:var(--muted);font-size:12px;cursor:pointer;font-family:'Noto Sans JP',sans-serif;text-decoration:underline;">
+        👀 実績を見るだけ（操作不可）
+      </button>
+    </div>
+  </div>
+</div>
+
+<div class="container">
+  <div class="header">
+    <div class="header-inner">
+      <div class="header-icon">⚔️</div>
+      <div class="header-text">
+        <div class="header-eyebrow">Street Hunter</div>
+        <h1>NANPA<br>TROPHY</h1>
+        <div class="header-tagline">Achievement System</div>
+      </div>
+      <div class="header-badge">
+        <div class="header-badge-inner">
+          <span class="header-badge-label">TOTAL</span>
+          <span class="header-badge-val" id="header-trophy-count">0</span>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="view-mode-banner" id="view-banner">👀 閲覧モード（操作不可）— タップしてログイン</div>
+
+  <div class="tabs">
+    <div class="tab active" data-tab="all">すべて</div>
+    <div class="tab" data-tab="stats">📊 数値入力</div>
+    <div class="tab" data-tab="voice">🗣️ 声かけ</div>
+    <div class="tab" data-tab="contact">📱 連絡先</div>
+    <div class="tab" data-tab="date">☕ デート</div>
+    <div class="tab" data-tab="place">📍 場所</div>
+    <div class="tab" data-tab="yamanote">🚃 山手線</div>
+    <div class="tab" data-tab="chaos">💀 カオス</div>
+    <div class="tab" data-tab="legend">👑 伝説</div>
+  </div>
+
+  <div class="stats-bar">
+    <div class="stat-chip"><div class="stat-dot plat"></div><span id="stat-plat">0</span> プラチナ</div>
+    <div class="stat-chip"><div class="stat-dot gold"></div><span id="stat-gold">0</span> ゴールド</div>
+    <div class="stat-chip"><div class="stat-dot silver"></div><span id="stat-silver">0</span> シルバー</div>
+    <div class="stat-chip"><div class="stat-dot bronze"></div><span id="stat-bronze">0</span> ブロンズ</div>
+  </div>
+
+  <!-- 称号 -->
+
+  <div class="rank-section" id="rank-section">
+    <div class="rank-row">
+      <div class="rank-emblem" id="rank-emblem">🌱</div>
+      <div class="rank-info">
+        <div class="rank-label">現在の称号</div>
+        <div class="rank-title" id="rank-title">ナンパ未経験者</div>
+        <div class="rank-subtitle" id="rank-subtitle">まずは一歩踏み出せ</div>
+      </div>
+    </div>
+    <div class="rank-next" id="rank-next"></div>
+  </div>
+
+  <!-- カオス称号 -->
+
+  <div class="chaos-rank-section" id="chaos-rank-section">
+    <div class="chaos-rank-row">
+      <div class="chaos-rank-emblem" id="chaos-rank-emblem">💀</div>
+      <div class="chaos-rank-info">
+        <div class="chaos-rank-label">💀 カオス称号</div>
+        <div class="chaos-rank-title" id="chaos-rank-title">修羅場未経験</div>
+        <div class="chaos-rank-subtitle" id="chaos-rank-subtitle">カオス実績を解除すると称号が変わる</div>
+      </div>
+    </div>
+    <div class="chaos-progress-wrap">
+      <div class="chaos-progress-bar-outer"><div class="chaos-progress-bar-inner" id="chaos-progress-bar" style="width:0%"></div></div>
+      <div class="chaos-progress-label" id="chaos-progress-label">0 / 36</div>
+    </div>
+    <div class="chaos-rank-next" id="chaos-rank-next"></div>
+  </div>
+
+  <!-- Progress -->
+
+  <div class="progress-section">
+    <div class="progress-header">
+      <span class="progress-label">コンプリート率</span>
+      <span class="progress-count" id="progress-text">0 / 0</span>
+    </div>
+    <div class="progress-bar-outer"><div class="progress-bar-inner" id="progress-bar" style="width:0%"></div></div>
+  </div>
+
+  <!-- ストナン戦闘力カード -->
+
+  <div class="bp-card grade-f" id="bp-card">
+    <div class="bp-header">
+      <div class="bp-header-left">
+        <div class="bp-label">⚡ STREET NANPA — BATTLE POWER</div>
+        <div class="bp-grade-text" id="bp-grade-text">GRADE F — 未経験</div>
+        <div class="bp-title" id="bp-title">ナンパ未経験者</div>
+      </div>
+      <div class="bp-score-block">
+        <span class="bp-score-label">BATTLE POWER</span>
+        <div class="bp-score" id="bp-score">0</div>
+        <span class="bp-score-max">/ 10000</span>
+      </div>
+    </div>
+    <div class="bp-progress-wrap">
+      <div class="bp-bar-outer"><div class="bp-bar-inner" id="bp-bar" style="width:0%"></div></div>
+      <div class="bp-bar-labels">
+        <span>0</span><span>D</span><span>C</span><span>B</span><span>A</span><span>S</span><span>SS</span><span>SSS</span>
+      </div>
+    </div>
+    <div class="bp-breakdown" id="bp-breakdown"></div>
+  </div>
+
+  <!-- 数値入力パネル -->
+
+  <div id="section-stats">
+    <div class="stat-input-panel">
+      <div class="stat-input-panel-title">📊 戦績ダッシュボード</div>
+      <div class="stat-input-panel-sub">今日の活動を入力して「累計に追加」を押す。リセットしても累計は消えない。</div>
+      <div style="display:flex;justify-content:flex-end;margin-bottom:12px;">
+        <button onclick="resetStats()" style="background:none;border:1px solid rgba(255,255,255,0.1);border-radius:8px;color:var(--muted);font-size:12px;font-family:'Rajdhani',sans-serif;font-weight:600;padding:5px 14px;cursor:pointer;transition:all 0.2s;" onmouseover="this.style.borderColor='rgba(255,80,80,0.4)';this.style.color='#ff7777'" onmouseout="this.style.borderColor='rgba(255,255,255,0.1)';this.style.color='var(--muted)'">🔄 今日の入力をクリア</button>
+      </div>
+      <div class="stat-input-grid" id="stat-input-grid"></div>
+    </div>
+  </div>
+
+  <!-- 山手線 -->
+
+  <div id="section-yamanote">
+    <div class="yamanote-section">
+      <div class="yamanote-header">
+        <span class="yamanote-badge">🚃 SPECIAL</span>
+        <span class="yamanote-title">山手線一周ナンパ企画</span>
+      </div>
+      <p style="font-size:12px;color:var(--muted);margin-bottom:12px;">29駅すべてでナンパを敢行！タップして完了をマーク</p>
+      <div style="display:flex;gap:10px;flex-wrap:wrap;margin-bottom:14px;">
+        <span style="font-size:11px;font-family:'Rajdhani',sans-serif;font-weight:700;padding:3px 10px;border-radius:6px;background:rgba(255,215,0,0.12);color:var(--gold);border:1px solid rgba(255,215,0,0.3);">🥇 GOLD 激戦区</span>
+        <span style="font-size:11px;font-family:'Rajdhani',sans-serif;font-weight:700;padding:3px 10px;border-radius:6px;background:rgba(184,192,204,0.12);color:var(--silver);border:1px solid rgba(184,192,204,0.3);">🥈 SILVER 中級</span>
+        <span style="font-size:11px;font-family:'Rajdhani',sans-serif;font-weight:700;padding:3px 10px;border-radius:6px;background:rgba(205,127,50,0.12);color:var(--bronze);border:1px solid rgba(205,127,50,0.3);">🥉 BRONZE 穴場</span>
+      </div>
+      <div class="station-grid" id="station-grid"></div>
+      <div class="yamanote-progress">
+        <div class="yamanote-bar-outer"><div class="yamanote-bar-inner" id="yamanote-bar" style="width:0%"></div></div>
+        <div class="yamanote-count" id="yamanote-count">0 / 29駅</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- カオスチェック -->
+
+  <div id="section-chaos">
+    <div class="section-title">💀 カオス実績 — 体験したものをタップ</div>
+    <div class="chaos-grid" id="chaos-grid"></div>
+  </div>
+
+  <!-- Trophy Grid -->
+
+  <div class="section-title" id="trophy-section-label">トロフィーリスト</div>
+  <div class="trophy-grid" id="trophy-grid"></div>
+
+  <!-- Sync -->
+
+  <div class="sync-panel">
+    <div class="sync-title">📲 データ同期・バックアップ</div>
+    <p class="sync-desc">スマホ⇔PCでデータを共有できます。</p>
+    <div class="sync-buttons">
+      <button class="sync-btn primary" onclick="exportData()">📤 コードを出力</button>
+      <button class="sync-btn" onclick="openImport()">📥 コードを読み込む</button>
+    </div>
+    <div class="sync-code-wrap" id="export-wrap">
+      <textarea class="sync-code" id="export-code" readonly></textarea>
+      <div class="sync-code-actions">
+        <button class="sync-btn primary" onclick="copyCode()" style="flex:none;padding:8px 20px;">📋 コピー</button>
+        <button class="sync-btn" onclick="closeExport()" style="flex:none;padding:8px 16px;font-size:12px;">✕ 閉じる</button>
+      </div>
+    </div>
+    <div class="sync-code-wrap" id="import-wrap">
+      <textarea class="sync-code" id="import-code" placeholder="コードをここに貼り付け..."></textarea>
+      <div class="sync-code-actions">
+        <button class="sync-btn primary" onclick="importData()" style="flex:none;padding:8px 20px;">✅ 読み込む</button>
+        <button class="sync-btn" onclick="closeImport()" style="flex:none;padding:8px 16px;font-size:12px;">✕ 閉じる</button>
+      </div>
+    </div>
+  </div>
+
+  <div class="bottom-actions">
+    <button class="share-btn" onclick="shareToX()">
+      <span style="font-weight:900;font-size:18px;">𝕏</span> Xにシェアする
+    </button>
+  </div>
+</div>
+
+<!-- TROPHY BURST OVERLAY -->
+
+<div class="trophy-burst-overlay" id="trophy-burst-overlay" onclick="closeBurst()">
+  <div class="trophy-burst-card" id="trophy-burst-card">
+    <div class="burst-unlock-label">🏆 TROPHY UNLOCKED</div>
+    <div class="burst-icon" id="burst-icon">🏆</div>
+    <div class="burst-type" id="burst-type">BRONZE</div>
+    <div class="burst-name" id="burst-name">トロフィー名</div>
+    <div class="burst-desc" id="burst-desc">説明文</div>
+  </div>
+</div>
+
+<div class="toast" id="toast">
+  <div class="toast-icon" id="toast-icon">🏆</div>
+  <div class="toast-text"><strong id="toast-name"></strong><small id="toast-desc"></small></div>
+  <div class="toast-type" id="toast-type"></div>
+</div>
+
+<script>
+// ===== パスワード =====
+const OWNER_PASSWORD = '1102';
+const SESSION_KEY = 'nanpa-auth-v2';
+let isOwner = false;
+let failCount = 0;
+
+// ===== 数値ステータス定義 =====
+const STAT_DEFS = [
+  { id:'voice_total',       label:'総声かけ数',          icon:'🗣️', unit:'回',  default:0 },
+  { id:'voice_daily',       label:'1日最多声かけ',       icon:'⚡',  unit:'回',  default:0 },
+  { id:'line_total',        label:'総LINE獲得数',        icon:'📱', unit:'人',  default:0 },
+  { id:'apo_total',         label:'総アポ数',            icon:'📅', unit:'回',  default:0 },
+  { id:'soku_total',        label:'総即数',              icon:'🔥', unit:'回',  default:0 },
+  { id:'soku_daily',        label:'1日最多即数',         icon:'⚡', unit:'即',  default:0 },
+  { id:'soku_monthly',      label:'月最多即数',          icon:'📆', unit:'即',  default:0 },
+  { id:'soku_streak',       label:'連続新規即記録(日)',   icon:'🔥', unit:'日',  default:0 },
+  { id:'soku_monthly_new',  label:'月連続新規即記録(月)', icon:'🌙', unit:'ヶ月', default:0 },
+  { id:'venue_count',       label:'攻略エリア数',        icon:'📍', unit:'区',  default:0 },
+  { id:'continuous_days',   label:'連続活動日数',        icon:'📆', unit:'日',  default:0 },
+  { id:'rejection_streak',  label:'連続お断り記録',      icon:'💔', unit:'連続', default:0 },
+];
+
+// ===== 山手線駅 =====
+const STATIONS = [
+  {id:'osaki',       name:'大崎',     icon:'🌆', diff:'bronze'},
+  {id:'gotanda',     name:'五反田',   icon:'🏙️', diff:'silver'},
+  {id:'meguro',      name:'目黒',     icon:'🌸', diff:'silver'},
+  {id:'ebisu',       name:'恵比寿',   icon:'🍺', diff:'gold'},
+  {id:'shibuya',     name:'渋谷',     icon:'🔀', diff:'gold'},
+  {id:'harajuku',    name:'原宿',     icon:'👗', diff:'gold'},
+  {id:'yoyogi',      name:'代々木',   icon:'🌿', diff:'bronze'},
+  {id:'shinjuku',    name:'新宿',     icon:'🌃', diff:'gold'},
+  {id:'shin_okubo',  name:'新大久保', icon:'🌶️', diff:'silver'},
+  {id:'takadanobaba',name:'高田馬場', icon:'🎓', diff:'silver'},
+  {id:'mejiro',      name:'目白',     icon:'🏛️', diff:'bronze'},
+  {id:'ikebukuro',   name:'池袋',     icon:'🎡', diff:'gold'},
+  {id:'otsuka',      name:'大塚',     icon:'🏪', diff:'bronze'},
+  {id:'sugamo',      name:'巣鴨',     icon:'👘', diff:'bronze'},
+  {id:'komagome',    name:'駒込',     icon:'🌺', diff:'bronze'},
+  {id:'tabata',      name:'田端',     icon:'🌳', diff:'bronze'},
+  {id:'nishi_nippori',name:'西日暮里',icon:'🎶', diff:'bronze'},
+  {id:'nippori',     name:'日暮里',   icon:'✈️', diff:'silver'},
+  {id:'uguisudani',  name:'鶯谷',     icon:'🦜', diff:'silver'},
+  {id:'ueno',        name:'上野',     icon:'🐼', diff:'gold'},
+  {id:'okachimachi', name:'御徒町',   icon:'💍', diff:'silver'},
+  {id:'akihabara',   name:'秋葉原',   icon:'⚡', diff:'gold'},
+  {id:'kanda',       name:'神田',     icon:'⛩️', diff:'silver'},
+  {id:'tokyo',       name:'東京',     icon:'🗼', diff:'gold'},
+  {id:'yurakucho',   name:'有楽町',   icon:'🎭', diff:'silver'},
+  {id:'shimbashi',   name:'新橋',     icon:'🍶', diff:'silver'},
+  {id:'hamamatsucho',name:'浜松町',   icon:'🌊', diff:'bronze'},
+  {id:'tamachi',     name:'田町',     icon:'🏢', diff:'bronze'},
+  {id:'shinagawa',   name:'品川',     icon:'🚄', diff:'silver'},
+];
+
+// ===== トロフィー定義（数値ベース） =====
+// condition: 関数(stats, stationsDone) => bool
+const TROPHIES = [
+  // ── 声かけ：累計 ──
+  {id:1,  cat:'voice', icon:'🗣️', name:'はじめの一声',       desc:'初めて女性に声をかけた。すべての始まり',     type:'bronze',   cond:s=>s.voice_total>=1,      condLabel:'声かけ 1回以上'},
+  {id:2,  cat:'voice', icon:'🔥', name:'10回達成',           desc:'10回声をかけた。慣れの第一歩',              type:'bronze',   cond:s=>s.voice_total>=10,     condLabel:'声かけ 10回以上'},
+  {id:300,cat:'voice', icon:'🚶', name:'30回の壁を越えた',   desc:'30回達成。断られ慣れてきた証拠',             type:'bronze',   cond:s=>s.voice_total>=30,     condLabel:'声かけ 30回以上'},
+  {id:4,  cat:'voice', icon:'💪', name:'50回突破',           desc:'50回達成。ここから本当のスタート',           type:'bronze',   cond:s=>s.voice_total>=50,     condLabel:'声かけ 50回以上'},
+  {id:5,  cat:'voice', icon:'🌊', name:'100回の壁',          desc:'累計100回。メンタルが鍛えられてきた',        type:'silver',   cond:s=>s.voice_total>=100,    condLabel:'声かけ 100回以上'},
+  {id:301,cat:'voice', icon:'🎯', name:'200回の男',          desc:'200回達成。声かけが習慣になった証',          type:'silver',   cond:s=>s.voice_total>=200,    condLabel:'声かけ 200回以上'},
+  {id:7,  cat:'voice', icon:'💯', name:'300回の猛者',        desc:'300回達成。もはや街の空気になった',          type:'silver',   cond:s=>s.voice_total>=300,    condLabel:'声かけ 300回以上'},
+  {id:302,cat:'voice', icon:'🔱', name:'400回突破',          desc:'400回達成。断られることへの恐怖が消えた',    type:'gold',     cond:s=>s.voice_total>=400,    condLabel:'声かけ 400回以上'},
+  {id:8,  cat:'voice', icon:'🎤', name:'500回レジェンド',    desc:'500回達成。鉄のメンタルが完成した',          type:'gold',     cond:s=>s.voice_total>=500,    condLabel:'声かけ 500回以上'},
+  {id:303,cat:'voice', icon:'🌟', name:'700回の鬼',          desc:'700回達成。もはや別の生き物',               type:'gold',     cond:s=>s.voice_total>=700,    condLabel:'声かけ 700回以上'},
+  {id:9,  cat:'voice', icon:'🏆', name:'1000回の頂点',       desc:'1000回達成。ほぼ修行僧の域',                type:'platinum', cond:s=>s.voice_total>=1000,   condLabel:'声かけ 1000回以上'},
+  {id:304,cat:'voice', icon:'👑', name:'1500回の帝王',       desc:'1500回達成。声かけを芸術の域に昇華した',    type:'platinum', cond:s=>s.voice_total>=1500,   condLabel:'声かけ 1500回以上'},
+  {id:200,cat:'voice', icon:'✨', name:'2000回の神',         desc:'2000回達成。人類の可能性の限界に挑む',       type:'platinum', cond:s=>s.voice_total>=2000,   condLabel:'声かけ 2000回以上'},
+
+  // ── 声かけ：1日記録 ──
+  {id:3,  cat:'voice', icon:'⚡', name:'1日10本男',          desc:'1日で10人に声をかけた。集中力の証',          type:'bronze',   cond:s=>s.voice_daily>=10,     condLabel:'1日最多 10回以上'},
+  {id:305,cat:'voice', icon:'💥', name:'1日15本突破',        desc:'1日で15人。もはや声かけマシーン',            type:'silver',   cond:s=>s.voice_daily>=15,     condLabel:'1日最多 15回以上'},
+  {id:6,  cat:'voice', icon:'🌀', name:'1日20本の化物',      desc:'1日で20人。どんな精神力をしている',          type:'silver',   cond:s=>s.voice_daily>=20,     condLabel:'1日最多 20回以上'},
+  {id:13, cat:'voice', icon:'🔥', name:'1日30本の狂人',      desc:'1日30本以上。もはや修行の域',               type:'gold',     cond:s=>s.voice_daily>=30,     condLabel:'1日最多 30回以上'},
+  {id:306,cat:'voice', icon:'👹', name:'1日50本の怪物',      desc:'1日50本。1時間に6本以上のペース。何者だ',   type:'platinum', cond:s=>s.voice_daily>=50,     condLabel:'1日最多 50回以上'},
+
+  // ── 声かけ：連続活動 ──
+  {id:10, cat:'voice', icon:'📅', name:'3日連続活動',        desc:'3日連続で活動。継続の芽生え',               type:'bronze',   cond:s=>s.continuous_days>=3,  condLabel:'連続活動 3日以上'},
+  {id:307,cat:'voice', icon:'📆', name:'7日連続活動',        desc:'1週間ノンストップ。習慣になってきた',        type:'bronze',   cond:s=>s.continuous_days>=7,  condLabel:'連続活動 7日以上'},
+  {id:11, cat:'voice', icon:'🗓️', name:'30日連続活動',       desc:'1ヶ月休まず活動。鬼の継続力',               type:'silver',   cond:s=>s.continuous_days>=30, condLabel:'連続活動 30日以上'},
+  {id:308,cat:'voice', icon:'🔱', name:'60日連続活動',       desc:'2ヶ月連続。もはやライフスタイルになった',    type:'gold',     cond:s=>s.continuous_days>=60, condLabel:'連続活動 60日以上'},
+  {id:309,cat:'voice', icon:'🌋', name:'100日連続活動',      desc:'100日連続。メンタルも体も完全に鍛え上げた',  type:'platinum', cond:s=>s.continuous_days>=100,condLabel:'連続活動 100日以上'},
+
+  // ── 声かけ：メンタル ──
+  {id:310,cat:'voice', icon:'😤', name:'連続10断られ記録',   desc:'10連続で断られ続けた。これが現実だ',         type:'bronze',   cond:s=>s.rejection_streak>=10, condLabel:'連続お断り 10連続以上'},
+  {id:311,cat:'voice', icon:'💢', name:'連続30断られ記録',   desc:'30連続お断り。心が折れそうでも立っている',   type:'bronze',   cond:s=>s.rejection_streak>=30, condLabel:'連続お断り 30連続以上'},
+  {id:12, cat:'voice', icon:'🔥', name:'連続50断られ記録',   desc:'50連続お断り。それでも前を向いた猛者',        type:'silver',   cond:s=>s.rejection_streak>=50, condLabel:'連続お断り 50連続以上'},
+  {id:14, cat:'voice', icon:'👹', name:'連続100断られ記録',  desc:'100連続お断り。鉄壁のメンタルの持ち主',      type:'gold',     cond:s=>s.rejection_streak>=100,condLabel:'連続お断り 100連続以上'},
+  {id:312,cat:'voice', icon:'💀', name:'連続200断られ記録',  desc:'200連続お断り。もはや断られることへの免疫完成',type:'platinum',cond:s=>s.rejection_streak>=200,condLabel:'連続お断り 200連続以上'},
+
+  // ── 連絡先 ──
+  {id:15, cat:'contact', icon:'📱', name:'初LINE',           desc:'初めてLINEを交換した',                      type:'bronze',   cond:s=>s.line_total>=1,       condLabel:'LINE獲得 1人以上'},
+  {id:16, cat:'contact', icon:'💬', name:'10人コレクター',   desc:'累計10人のLINEを獲得',                      type:'bronze',   cond:s=>s.line_total>=10,      condLabel:'LINE獲得 10人以上'},
+  {id:17, cat:'contact', icon:'🔟', name:'30人突破',         desc:'累計30人のLINEを獲得',                      type:'silver',   cond:s=>s.line_total>=30,      condLabel:'LINE獲得 30人以上'},
+  {id:18, cat:'contact', icon:'📞', name:'50人コレクター',   desc:'累計50人のLINEを獲得',                      type:'silver',   cond:s=>s.line_total>=50,      condLabel:'LINE獲得 50人以上'},
+  {id:201,cat:'contact', icon:'💌', name:'声かけ10本に1本',  desc:'声かけ10本でLINE1本以上の効率を達成',       type:'silver',   cond:s=>s.voice_total>=10&&s.line_total>=Math.floor(s.voice_total/10), condLabel:'LINE獲得率 10%以上'},
+  {id:19, cat:'contact', icon:'🌹', name:'100人の帝王',      desc:'累計100人のLINEを獲得した猛者',             type:'gold',     cond:s=>s.line_total>=100,     condLabel:'LINE獲得 100人以上'},
+  {id:20, cat:'contact', icon:'🦁', name:'新宿の帝王',       desc:'声かけ300回＆LINE100人。渋谷・新宿を制す猛者',type:'gold',   cond:s=>s.line_total>=100&&s.voice_total>=300, condLabel:'声かけ300回 & LINE100人以上'},
+  {id:202,cat:'contact', icon:'👑', name:'LINE200人突破',    desc:'累計200人のLINEを獲得した伝説',             type:'platinum', cond:s=>s.line_total>=200,     condLabel:'LINE獲得 200人以上'},
+
+  // ── アポ ──
+  {id:22, cat:'date', icon:'📅', name:'初アポ',              desc:'初めてアポを取ることに成功した',             type:'bronze',   cond:s=>s.apo_total>=1,        condLabel:'アポ 1回以上'},
+  {id:23, cat:'date', icon:'🎬', name:'10回アポ男',          desc:'累計10回アポに成功',                        type:'silver',   cond:s=>s.apo_total>=10,       condLabel:'アポ 10回以上'},
+  {id:203,cat:'date', icon:'📊', name:'アポ率10%達成',       desc:'LINE10人以上かつアポ率10%以上',             type:'silver',   cond:s=>s.line_total>=10&&s.apo_total>=Math.ceil(s.line_total*0.1), condLabel:'LINE10人以上 & アポ率10%以上'},
+  {id:24, cat:'date', icon:'🍣', name:'30回アポの実力者',    desc:'累計30回アポに成功した猛者',                type:'gold',     cond:s=>s.apo_total>=30,       condLabel:'アポ 30回以上'},
+  {id:204,cat:'date', icon:'📈', name:'月10アポ男',          desc:'月換算10アポペースの超効率',                type:'gold',     cond:s=>s.apo_total>=50,       condLabel:'アポ 50回以上'},
+  {id:205,cat:'date', icon:'🎯', name:'100アポの帝王',       desc:'累計100回アポ達成。ほぼプロ',               type:'platinum', cond:s=>s.apo_total>=100,      condLabel:'アポ 100回以上'},
+
+  // ── 即：累計 ──
+  {id:25,  cat:'date', icon:'🔥', name:'初・即成功',          desc:'初めて即に成功した。真の狩人への第一歩',     type:'bronze',   cond:s=>s.soku_total>=1,            condLabel:'即 1回以上'},
+  {id:206, cat:'date', icon:'⚡', name:'即3回達成',           desc:'3回即成功。才能の片鱗が見えてきた',          type:'bronze',   cond:s=>s.soku_total>=3,            condLabel:'即 3回以上'},
+  {id:26,  cat:'date', icon:'🔑', name:'10即の修羅',          desc:'10回即成功。街の流れを読める男',             type:'silver',   cond:s=>s.soku_total>=10,           condLabel:'即 10回以上'},
+  {id:208, cat:'date', icon:'🌙', name:'夜の即師',            desc:'20回即成功。夜の街が庭になってきた',         type:'silver',   cond:s=>s.soku_total>=20,           condLabel:'即 20回以上'},
+  {id:207, cat:'date', icon:'💀', name:'30即の伝説',          desc:'30回即成功。もはや別次元の存在',            type:'gold',     cond:s=>s.soku_total>=30,           condLabel:'即 30回以上'},
+  {id:209, cat:'date', icon:'👑', name:'即エース',            desc:'40回即成功。声かけから即まで一瞬の男',       type:'gold',     cond:s=>s.soku_total>=40,           condLabel:'即 40回以上'},
+  {id:27,  cat:'date', icon:'👹', name:'50即の怪物',          desc:'50回即成功。ハンターの称号が相応しい',       type:'platinum', cond:s=>s.soku_total>=50,           condLabel:'即 50回以上'},
+  {id:210, cat:'date', icon:'🔱', name:'即の神域',            desc:'100回即成功。もはや人間を超えた存在',       type:'platinum', cond:s=>s.soku_total>=100,          condLabel:'即 100回以上'},
+  // ── 即：1日複数 ──
+  {id:211, cat:'date', icon:'✌️', name:'1日2即',              desc:'同じ日に2回即成功。信じられない密度',       type:'silver',   cond:s=>s.soku_daily>=2,            condLabel:'1日最多即 2回以上'},
+  {id:212, cat:'date', icon:'🎰', name:'1日3即の狂人',        desc:'同じ日に3回即成功。もはやバグ',             type:'gold',     cond:s=>s.soku_daily>=3,            condLabel:'1日最多即 3回以上'},
+  {id:213, cat:'date', icon:'🌋', name:'1日5即の神',          desc:'同じ日に5回即成功。時間をどう使った',       type:'platinum', cond:s=>s.soku_daily>=5,            condLabel:'1日最多即 5回以上'},
+  // ── 即：連続記録 ──
+  {id:214, cat:'date', icon:'📅', name:'3日連続新規即',       desc:'3日連続で毎日新しい即を達成。継続の鬼',     type:'silver',   cond:s=>s.soku_streak>=3,           condLabel:'連続新規即 3日以上'},
+  {id:215, cat:'date', icon:'🗓️', name:'7日連続新規即',       desc:'7日連続で毎日即成功。一週間ノンストップ',   type:'gold',     cond:s=>s.soku_streak>=7,           condLabel:'連続新規即 7日以上'},
+  {id:216, cat:'date', icon:'♾️', name:'14日連続新規即',      desc:'2週間毎日即成功。ほぼ職業として成立',       type:'platinum', cond:s=>s.soku_streak>=14,          condLabel:'連続新規即 14日以上'},
+  // ── 即：月次記録 ──
+  {id:217, cat:'date', icon:'📆', name:'月10即達成',          desc:'1ヶ月で10回即成功。月平均10即ペース',       type:'silver',   cond:s=>s.soku_monthly>=10,         condLabel:'月最多即 10回以上'},
+  {id:218, cat:'date', icon:'🏆', name:'月20即の王者',        desc:'1ヶ月で20回即成功。ほぼ隔日ペースの怪物',  type:'gold',     cond:s=>s.soku_monthly>=20,         condLabel:'月最多即 20回以上'},
+  {id:219, cat:'date', icon:'🔥', name:'月30即の化身',        desc:'1ヶ月で30回即成功。毎日1即ペースを超えた', type:'platinum', cond:s=>s.soku_monthly>=30,         condLabel:'月最多即 30回以上'},
+  {id:220, cat:'date', icon:'🌙', name:'2ヶ月連続新規即月',   desc:'2ヶ月連続で毎月新規即を達成した猛者',       type:'silver',   cond:s=>s.soku_monthly_new>=2,      condLabel:'月連続新規即 2ヶ月以上'},
+  {id:221, cat:'date', icon:'🌊', name:'月二桁即コンプ',      desc:'月10即を6ヶ月連続達成。即の継続力の塊',     type:'gold',     cond:s=>s.soku_monthly_new>=6,      condLabel:'月連続新規即 6ヶ月以上'},
+  {id:222, cat:'date', icon:'👑', name:'年間月次即帝王',      desc:'12ヶ月連続で毎月即成功。年間通じた伝説',    type:'platinum', cond:s=>s.soku_monthly_new>=12,     condLabel:'月連続新規即 12ヶ月以上'},
+
+  // ── 場所 ──
+  {id:28, cat:'place', icon:'📍', name:'3区制覇',            desc:'3つの異なる区でナンパ成功',                 type:'bronze',   cond:s=>s.venue_count>=3,      condLabel:'攻略エリア 3区以上'},
+  {id:29, cat:'place', icon:'🌆', name:'5区の猛者',          desc:'5つのエリアを制覇した',                     type:'silver',   cond:s=>s.venue_count>=5,      condLabel:'攻略エリア 5区以上'},
+  {id:30, cat:'place', icon:'🏙️', name:'10区コンプリート',   desc:'10エリア制覇。東京を知り尽くした男',        type:'gold',     cond:s=>s.venue_count>=10,     condLabel:'攻略エリア 10区以上'},
+  {id:31, cat:'place', icon:'🗾', name:'東京制覇',           desc:'23区すべてでナンパ成功した伝説',            type:'platinum', cond:s=>s.venue_count>=23,     condLabel:'攻略エリア 23区以上'},
+
+  // ── 山手線 ──
+  {id:36, cat:'yamanote', icon:'🚃', name:'山手線デビュー',  desc:'最初の駅でナンパ成功',                      type:'bronze',   cond:(s,st)=>st.size>=1,       condLabel:'山手線 1駅以上'},
+  {id:37, cat:'yamanote', icon:'🌀', name:'渋谷・新宿ダブル',desc:'渋谷と新宿の両方をクリア',                  type:'silver',   cond:(s,st)=>st.has('shibuya')&&st.has('shinjuku'), condLabel:'渋谷＆新宿クリア'},
+  {id:38, cat:'yamanote', icon:'⚡', name:'半周達成',        desc:'14駅以上でナンパ成功',                      type:'gold',     cond:(s,st)=>st.size>=14,      condLabel:'山手線 14駅以上'},
+  {id:39, cat:'yamanote', icon:'🏆', name:'山手線一周完走',  desc:'29駅すべてを制覇した伝説！',                type:'platinum', cond:(s,st)=>st.size>=29,      condLabel:'山手線 全29駅'},
+  // 各駅
+  {id:101,cat:'yamanote',icon:'🌆',stationId:'osaki',        name:'大崎クリア',      desc:'穴場をモノにした',                  type:'bronze',  cond:(s,st)=>st.has('osaki')},
+  {id:102,cat:'yamanote',icon:'🏪',stationId:'otsuka',       name:'大塚クリア',      desc:'下町ローカルを攻略',                type:'bronze',  cond:(s,st)=>st.has('otsuka')},
+  {id:103,cat:'yamanote',icon:'👘',stationId:'sugamo',       name:'巣鴨クリア',      desc:'若い女性レアな難所を突破',          type:'bronze',  cond:(s,st)=>st.has('sugamo')},
+  {id:104,cat:'yamanote',icon:'🌺',stationId:'komagome',     name:'駒込クリア',      desc:'閑静な住宅街を制した',              type:'bronze',  cond:(s,st)=>st.has('komagome')},
+  {id:105,cat:'yamanote',icon:'🌳',stationId:'tabata',       name:'田端クリア',      desc:'人通り最少の難所攻略',              type:'bronze',  cond:(s,st)=>st.has('tabata')},
+  {id:106,cat:'yamanote',icon:'🎶',stationId:'nishi_nippori',name:'西日暮里クリア',  desc:'通過駅での声かけを制した',          type:'bronze',  cond:(s,st)=>st.has('nishi_nippori')},
+  {id:107,cat:'yamanote',icon:'🌿',stationId:'yoyogi',       name:'代々木クリア',    desc:'公園前の穏やか空間を攻略',          type:'bronze',  cond:(s,st)=>st.has('yoyogi')},
+  {id:108,cat:'yamanote',icon:'🌊',stationId:'hamamatsucho', name:'浜松町クリア',    desc:'ビジネス街の難所を突破',            type:'bronze',  cond:(s,st)=>st.has('hamamatsucho')},
+  {id:109,cat:'yamanote',icon:'🏢',stationId:'tamachi',      name:'田町クリア',      desc:'オフィス街で奇跡を起こした',        type:'bronze',  cond:(s,st)=>st.has('tamachi')},
+  {id:110,cat:'yamanote',icon:'🏙️',stationId:'gotanda',     name:'五反田クリア',    desc:'歓楽街エリア制覇',                  type:'silver',  cond:(s,st)=>st.has('gotanda')},
+  {id:111,cat:'yamanote',icon:'🌸',stationId:'meguro',       name:'目黒クリア',      desc:'おしゃれ女性の警戒を突破',          type:'silver',  cond:(s,st)=>st.has('meguro')},
+  {id:112,cat:'yamanote',icon:'🌶️',stationId:'shin_okubo',  name:'新大久保クリア',  desc:'多国籍エリアを攻略',                type:'silver',  cond:(s,st)=>st.has('shin_okubo')},
+  {id:113,cat:'yamanote',icon:'🎓',stationId:'takadanobaba', name:'高田馬場クリア',  desc:'学生街のノリを掴んだ',              type:'silver',  cond:(s,st)=>st.has('takadanobaba')},
+  {id:114,cat:'yamanote',icon:'✈️',stationId:'nippori',     name:'日暮里クリア',    desc:'旅女子をゲットする猛者',            type:'silver',  cond:(s,st)=>st.has('nippori')},
+  {id:115,cat:'yamanote',icon:'🦜',stationId:'uguisudani',  name:'鶯谷クリア',      desc:'独特の雰囲気エリアをクリア',        type:'silver',  cond:(s,st)=>st.has('uguisudani')},
+  {id:116,cat:'yamanote',icon:'💍',stationId:'okachimachi', name:'御徒町クリア',    desc:'買い物女子の心を掴んだ',            type:'silver',  cond:(s,st)=>st.has('okachimachi')},
+  {id:117,cat:'yamanote',icon:'⛩️',stationId:'kanda',       name:'神田クリア',      desc:'サラリーマン街でアウェーを制した',  type:'silver',  cond:(s,st)=>st.has('kanda')},
+  {id:118,cat:'yamanote',icon:'🎭',stationId:'yurakucho',   name:'有楽町クリア',    desc:'映画帰り女子との共鳴に成功',        type:'silver',  cond:(s,st)=>st.has('yurakucho')},
+  {id:119,cat:'yamanote',icon:'🍶',stationId:'shimbashi',   name:'新橋クリア',      desc:'サラリーマン地帯で女性を発見',      type:'silver',  cond:(s,st)=>st.has('shimbashi')},
+  {id:120,cat:'yamanote',icon:'🚄',stationId:'shinagawa',   name:'品川クリア',      desc:'旅・出張女性を捕まえた',            type:'silver',  cond:(s,st)=>st.has('shinagawa')},
+  {id:121,cat:'yamanote',icon:'🍺',stationId:'ebisu',       name:'恵比寿クリア',    desc:'激戦おしゃれエリアを征服！',        type:'gold',    cond:(s,st)=>st.has('ebisu')},
+  {id:122,cat:'yamanote',icon:'🔀',stationId:'shibuya',     name:'渋谷クリア',      desc:'最大激戦区を制した猛者！',          type:'gold',    cond:(s,st)=>st.has('shibuya')},
+  {id:123,cat:'yamanote',icon:'👗',stationId:'harajuku',    name:'原宿クリア',      desc:'個性派女子の聖地を攻略！',          type:'gold',    cond:(s,st)=>st.has('harajuku')},
+  {id:124,cat:'yamanote',icon:'🌃',stationId:'shinjuku',    name:'新宿クリア',      desc:'伝説の激戦区を制した！',            type:'gold',    cond:(s,st)=>st.has('shinjuku')},
+  {id:125,cat:'yamanote',icon:'🎡',stationId:'ikebukuro',   name:'池袋クリア',      desc:'東西交差する激戦地を攻略！',        type:'gold',    cond:(s,st)=>st.has('ikebukuro')},
+  {id:126,cat:'yamanote',icon:'🏛️',stationId:'mejiro',     name:'目白クリア',      desc:'高級住宅街の静寂で女性を口説いた！',type:'gold',   cond:(s,st)=>st.has('mejiro')},
+  {id:127,cat:'yamanote',icon:'🐼',stationId:'ueno',        name:'上野クリア',      desc:'観光客混じりの激戦区を征服！',      type:'gold',    cond:(s,st)=>st.has('ueno')},
+  {id:128,cat:'yamanote',icon:'⚡',stationId:'akihabara',   name:'秋葉原クリア',    desc:'最難関文化圏を突破！',              type:'gold',    cond:(s,st)=>st.has('akihabara')},
+  {id:129,cat:'yamanote',icon:'🗼',stationId:'tokyo',       name:'東京クリア',      desc:'日本の玄関口でスピード勝負を制した！',type:'gold', cond:(s,st)=>st.has('tokyo')},
+
+  // ── カオス（チェック式） ──
+  {id:50, cat:'chaos', icon:'🤬', name:'初・暴言受領',         desc:'「キモい」「消えて」など洗礼の一撃をくらった',       type:'bronze'},
+  {id:51, cat:'chaos', icon:'💢', name:'フルコース暴言',        desc:'「気持ち悪い・近寄るな・通報するぞ」三段コンボ',     type:'silver'},
+  {id:52, cat:'chaos', icon:'📵', name:'通報予告',              desc:'「警察呼びますよ」と言われた。逃げ切り成功',         type:'silver'},
+  {id:53, cat:'chaos', icon:'👮', name:'実際に囲まれた',        desc:'警察に事情聴取された。本物の洗礼を受けた戦士',       type:'gold'},
+  {id:54, cat:'chaos', icon:'🖕', name:'指を立てられた',        desc:'中指を立てられた。外国人女性からが多い説',           type:'bronze'},
+  {id:55, cat:'chaos', icon:'👜', name:'バッグで叩かれた',      desc:'カバンでスマックされた。ある意味ボディタッチ成功',   type:'silver'},
+  {id:56, cat:'chaos', icon:'🥤', name:'飲み物かけられた',      desc:'飲み物をぶっかけられた。伝説の失敗談として語り継げ', type:'gold'},
+  {id:57, cat:'chaos', icon:'📸', name:'晒し写真を撮られた',    desc:'SNSに上げると脅された',                             type:'silver'},
+  {id:58, cat:'chaos', icon:'😤', name:'彼氏が登場',            desc:'彼氏が現れた。しかし動じなかったという記録',         type:'bronze'},
+  {id:59, cat:'chaos', icon:'👊', name:'彼氏に怒鳴られた',      desc:'彼氏に本気でガン飛ばされた。生きてるだけで丸儲け',   type:'silver'},
+  {id:60, cat:'chaos', icon:'🏃', name:'猛ダッシュで逃げられた',desc:'あの背中は忘れない',                               type:'bronze'},
+  {id:61, cat:'chaos', icon:'🙅', name:'完全スルーコンプリート',desc:'声かけ→無視→追いかけ→さらに無視の完全スルー',     type:'bronze'},
+  {id:62, cat:'chaos', icon:'😭', name:'泣かせてしまった',      desc:'声かけで相手を泣かせてしまった。深く反省しろ',       type:'gold'},
+  {id:63, cat:'chaos', icon:'🤣', name:'爆笑された',            desc:'声かけが爆笑ネタになった。笑いを取ったなら半分成功', type:'bronze'},
+  {id:64, cat:'chaos', icon:'💰', name:'奢ってもらった',        desc:'なぜか相手に飲み物・ご飯を奢ってもらった。下剋上',   type:'silver'},
+  {id:65, cat:'chaos', icon:'💳', name:'課金された',            desc:'Amazonギフト券などを貢いでもらった。逆ナンパ成立',   type:'gold'},
+  {id:66, cat:'chaos', icon:'👑', name:'女王様に変身した',      desc:'相手が急に上から目線になり完全に支配された',         type:'gold'},
+  {id:67, cat:'chaos', icon:'🎁', name:'プレゼントされた',      desc:'初対面なのにプレゼントをもらった。お前は何をした',   type:'gold'},
+  {id:68, cat:'chaos', icon:'💸', name:'割り勘を要求された',    desc:'声かけして喫茶店に入ったら「割り勘で」と言われた',   type:'bronze'},
+  {id:69, cat:'chaos', icon:'🥺', name:'逆に相談された',        desc:'ナンパしたら相手の恋愛相談が始まった',              type:'bronze'},
+  {id:70, cat:'chaos', icon:'💒', name:'結婚を申し込まれた',    desc:'声かけ10分以内にプロポーズされた。どっちがナンパ',   type:'platinum'},
+  {id:71, cat:'chaos', icon:'🐕', name:'犬に吠えられた',        desc:'相手の犬に本気で吠えられて撤退',                    type:'bronze'},
+  {id:72, cat:'chaos', icon:'🛒', name:'お使いを頼まれた',      desc:'道を聞かれたと思ったらコンビニのお使いを頼まれた',   type:'bronze'},
+  {id:73, cat:'chaos', icon:'👴', name:'おじさんに乱入された',  desc:'「兄ちゃんナンパか？コツ教えたろか」と乱入された',   type:'silver'},
+  {id:74, cat:'chaos', icon:'🎤', name:'路上ライブに巻き込まれた',desc:'ナンパ中に路上ライブが始まり相手が歌い出した',    type:'silver'},
+  {id:75, cat:'chaos', icon:'📺', name:'テレビカメラに映った',  desc:'ナンパ中に街頭取材のカメラが回っていた',             type:'gold'},
+  {id:76, cat:'chaos', icon:'🌧️', name:'土砂降りデビュー',      desc:'突然の土砂降り。2人で軒下に避難してLINEゲット',     type:'silver'},
+  {id:77, cat:'chaos', icon:'🕊️', name:'ハトに妨害された',      desc:'ハトの群れが突撃してきてムードをぶち壊された',       type:'bronze'},
+  {id:78, cat:'chaos', icon:'🎰', name:'なぜか金を借りられた',  desc:'声かけ相手に「1000円貸して」と言われた',             type:'silver'},
+  {id:79, cat:'chaos', icon:'🔮', name:'占いを始められた',      desc:'声かけたら相手が手相を読み始めた',                  type:'bronze'},
+  {id:80, cat:'chaos', icon:'🥊', name:'連れの友達に怒られた',  desc:'相手の友達に「やめてあげてください！」と庇われた',   type:'bronze'},
+  {id:81, cat:'chaos', icon:'🤯', name:'相手もナンパ師だった',  desc:'同じ本を持つナンパ師だった。魂の邂逅',              type:'gold'},
+  {id:82, cat:'chaos', icon:'🌈', name:'外国語しか話せなかった',desc:'日本語が通じなかったがなぜか盛り上がった',           type:'silver'},
+  {id:83, cat:'chaos', icon:'💍', name:'既婚者だったけどLINE',  desc:'指輪を見逃さなかったがLINEはもらえた',              type:'platinum'},
+  {id:84, cat:'chaos', icon:'🎭', name:'芸能人だった',          desc:'声かけ相手が芸能人・インフルエンサーだった',         type:'platinum'},
+  {id:85, cat:'chaos', icon:'😈', name:'カオスの申し子',        desc:'カオス系トロフィーを10個以上解除した伝説',           type:'platinum'},
+
+  // ── 伝説 ──
+  {id:47, cat:'legend', icon:'🧠', name:'効率の鬼',              desc:'声かけ100回でLINE20人・即5回以上。変換率の化物',    type:'bronze',   cond:s=>s.voice_total>=100&&s.line_total>=20&&s.soku_total>=5,  condLabel:'声かけ100回 & LINE20人 & 即5回'},
+  {id:42, cat:'legend', icon:'💫', name:'無双状態',              desc:'1日20回以上声かけ＆LINE50人以上。量と質を両立した鬼',type:'silver',   cond:s=>s.voice_daily>=20&&s.line_total>=50,    condLabel:'1日最多20回 & LINE50人'},
+  {id:43, cat:'legend', icon:'🗾', name:'東京マスター',          desc:'山手線全29駅制覇＆10区以上攻略。東京を知り尽くした男', type:'silver', cond:(s,st)=>st.size>=29&&s.venue_count>=10,    condLabel:'全29駅制覇 & 10区攻略'},
+  {id:41, cat:'legend', icon:'👑', name:'ストリートキング',      desc:'声かけ200回＆LINE50人。量も質も兼ね備えた実力者',    type:'gold',     cond:s=>s.voice_total>=200&&s.line_total>=50,   condLabel:'声かけ200回 & LINE50人'},
+  {id:46, cat:'legend', icon:'📊', name:'変換率の機械',          desc:'アポ100回＆LINE100人達成。ムダのない効率厨',         type:'gold',     cond:s=>s.apo_total>=100&&s.line_total>=100,    condLabel:'アポ100回 & LINE100人'},
+  {id:44, cat:'legend', icon:'🎖️', name:'真・ストリートの帝王',  desc:'声かけ500回＆即10回以上。街に君臨する王者',          type:'platinum', cond:s=>s.voice_total>=500&&s.soku_total>=10,   condLabel:'声かけ500回 & 即10回'},
+  {id:45, cat:'legend', icon:'✨', name:'ナンパの神',             desc:'声かけ1000回＆LINE100人＆即50回。真の頂点に立つ者', type:'platinum', cond:s=>s.voice_total>=1000&&s.line_total>=100&&s.soku_total>=50, condLabel:'声かけ1000回 & LINE100人 & 即50回'},
+];
+
+
+const TYPE_LABELS = {bronze:'ブロンズ', silver:'シルバー', gold:'ゴールド', platinum:'プラチナ'};
+
+// ===== 称号 =====
+const RANKS = [
+  {id:'none',   tier:'none',     emoji:'🌱', title:'ナンパ未経験者',    sub:'まずは一歩踏み出せ',                  bronze:0, silver:0,gold:0,platinum:0},
+  {id:'rookie', tier:'bronze',   emoji:'🥉', title:'ストリートルーキー', sub:'初めての声かけ、始まりの一歩',         bronze:1, silver:0,gold:0,platinum:0},
+  {id:'soldier',tier:'bronze',   emoji:'⚔️', title:'路上の兵士',         sub:'場数を踏み始めた男',                  bronze:5, silver:0,gold:0,platinum:0},
+  {id:'hunter', tier:'bronze',   emoji:'🎯', title:'ナンパハンター',      sub:'声かけが習慣になってきた',             bronze:10,silver:0,gold:0,platinum:0},
+  {id:'fighter',tier:'silver',   emoji:'🥈', title:'ストリートファイター',sub:'会話を繋げる技術が身につき始めた',     bronze:5, silver:3,gold:0,platinum:0},
+  {id:'connect',tier:'silver',   emoji:'📱', title:'LINEゲッター',       sub:'連絡先をモノにする男',                 bronze:8, silver:5,gold:0,platinum:0},
+  {id:'charmer',tier:'silver',   emoji:'😏', title:'チャーマー',          sub:'女性を笑顔にできる余裕が出てきた',     bronze:10,silver:8,gold:0,platinum:0},
+  {id:'veteran',tier:'gold',     emoji:'🥇', title:'ベテランナンパ師',    sub:'一流の域に近づいてきた猛者',           bronze:10,silver:8,gold:3,platinum:0},
+  {id:'king',   tier:'gold',     emoji:'👑', title:'ストリートキング',    sub:'街を我が物にする実力者',               bronze:12,silver:10,gold:6,platinum:0},
+  {id:'ace',    tier:'gold',     emoji:'🃏', title:'ナンパ師のエース',    sub:'誰もが認める実力の持ち主',             bronze:14,silver:12,gold:9,platinum:0},
+  {id:'legend', tier:'platinum', emoji:'💎', title:'レジェンドナンパ師',  sub:'その名は路上に刻まれた',               bronze:14,silver:12,gold:9,platinum:1},
+  {id:'emperor',tier:'platinum', emoji:'🌟', title:'ナンパ皇帝',          sub:'街に君臨する絶対王者',                 bronze:14,silver:12,gold:9,platinum:3},
+  {id:'god',    tier:'platinum', emoji:'✨', title:'ナンパの神',           sub:'もはや神の領域。伝説にして頂点',       bronze:14,silver:12,gold:9,platinum:5},
+];
+
+const CHAOS_RANKS = [
+  {id:'c0',emoji:'💀',title:'修羅場未経験',     sub:'カオスへの扉はまだ閉じている',                    need:0},
+  {id:'c1',emoji:'😬',title:'トラブル見習い',   sub:'洗礼の一撃を受けた。これが現実だ',                need:1},
+  {id:'c2',emoji:'🤕',title:'暴言コレクター',   sub:'罵倒を集め始めた男。メンタルは鍛えられている',    need:3},
+  {id:'c3',emoji:'🌀',title:'修羅場常連',       sub:'もはやトラブルが日常になってきた',                need:5},
+  {id:'c4',emoji:'🔥',title:'カオスの申し子',   sub:'炎上上等。どんな状況でも動じない男',              need:8},
+  {id:'c5',emoji:'☠️',title:'伝説の問題児',     sub:'警察・彼氏・暴言・貢ぎ全制覇。もはや才能',        need:12},
+  {id:'c6',emoji:'👹',title:'修羅場マイスター', sub:'トラブルを笑いに変える境地に達した',              need:16},
+  {id:'c7',emoji:'🌋',title:'カオスの化身',     sub:'存在自体がカオス。お前の周りだけ時空が歪む',      need:22},
+  {id:'c8',emoji:'🎪',title:'カオスサーカス団長',sub:'全36のカオスを制覇した唯一無二の伝説',           need:36},
+];
+
+// ===== STATE =====
+let stats = {};       // 累計（永続・リセット不可）
+let todayInput = {};  // 今日の入力（リセットOK・一時）
+STAT_DEFS.forEach(d => { stats[d.id] = d.default; todayInput[d.id] = 0; });
+let stationsDone = new Set();
+let chaosUnlocked = new Set();
+let trophyTimes = {};
+let currentTab = 'all';
+let currentRankId = 'none';
+let currentChaosRankId = 'c0';
+
+function save() {
+  localStorage.setItem('nanpa-stats-v4',    JSON.stringify(stats));
+  localStorage.setItem('nanpa-today-v1',    JSON.stringify(todayInput));
+  localStorage.setItem('nanpa-stations-v2', JSON.stringify([...stationsDone]));
+  localStorage.setItem('nanpa-chaos-v2',    JSON.stringify([...chaosUnlocked]));
+  localStorage.setItem('nanpa-times-v2',    JSON.stringify(trophyTimes));
+}
+function load() {
+  try {
+    // 配布リセット: このフラグがなければ全データ消去（配布版）
+    const DIST_FLAG = 'nanpa-dist-v5';
+    if(!localStorage.getItem(DIST_FLAG)) {
+      ['nanpa-stats-v4','nanpa-stats-v3','nanpa-today-v1',
+       'nanpa-stations-v2','nanpa-chaos-v2','nanpa-times-v2',
+       'nanpa-dist-v1','nanpa-dist-v2','nanpa-dist-v3','nanpa-dist-v4'].forEach(k=>localStorage.removeItem(k));
+      localStorage.setItem(DIST_FLAG, '1');
+    }
+    const s = JSON.parse(localStorage.getItem('nanpa-stats-v4') || '{}');
+    const today = JSON.parse(localStorage.getItem('nanpa-today-v1') || '{}');
+    STAT_DEFS.forEach(d => {
+      stats[d.id]      = (s[d.id] !== undefined) ? s[d.id] : d.default;
+      todayInput[d.id] = (today[d.id] !== undefined) ? today[d.id] : 0;
+    });
+    stationsDone  = new Set(JSON.parse(localStorage.getItem('nanpa-stations-v2') || '[]'));
+    chaosUnlocked = new Set(JSON.parse(localStorage.getItem('nanpa-chaos-v2')    || '[]').map(Number));
+    trophyTimes   = JSON.parse(localStorage.getItem('nanpa-times-v2') || '{}');
+  } catch(e) { console.error(e); }
+}
+
+// 全トロフィーの解除状態を計算
+function computeUnlocked() {
+  const result = new Set();
+  for(const t of TROPHIES) {
+    if(t.cat === 'chaos') {
+      if(chaosUnlocked.has(t.id)) result.add(t.id);
+    } else {
+      if(t.cond && t.cond(stats, stationsDone)) result.add(t.id);
+    }
+  }
+  return result;
+}
+
+function fmt(ts) {
+  if(!ts) return '';
+  const d = new Date(ts);
+  return `${d.getFullYear()}/${String(d.getMonth()+1).padStart(2,'0')}/${String(d.getDate()).padStart(2,'0')} ${String(d.getHours()).padStart(2,'0')}:${String(d.getMinutes()).padStart(2,'0')}`;
+}
+
+// ===== TAB =====
+function switchTab(tab) {
+  currentTab = tab;
+  document.querySelectorAll('.tab').forEach(el => {
+    el.classList.toggle('active', el.dataset.tab === tab);
+  });
+  renderAll();
+}
+
+// ===== RENDER STAT INPUTS =====
+function renderStatInputs() {
+  const grid = document.getElementById('stat-input-grid');
+  grid.innerHTML = STAT_DEFS.map(d => `
+    <div class="stat-input-item">
+      <div class="stat-input-label">${d.icon} ${d.label}</div>
+      <div class="stat-total-row">
+        <div class="stat-total-val" id="total-${d.id}">${stats[d.id]}</div>
+        <div class="stat-total-unit">${d.unit}</div>
+        <div class="stat-total-label">累計</div>
+      </div>
+      <div class="stat-today-label">+ 今日の記録</div>
+      <div class="stat-input-row">
+        <button class="stat-btn" onclick="adjustToday('${d.id}',-1)">−</button>
+        <input class="stat-input" type="number" min="0" id="input-${d.id}"
+               value="${todayInput[d.id]||0}" onchange="setToday('${d.id}',this.value)">
+        <button class="stat-btn" onclick="adjustToday('${d.id}',1)">＋</button>
+      </div>
+      <button class="stat-add-btn" onclick="commitStat('${d.id}')">✚ 累計に追加</button>
+    </div>
+  `).join('');
+}
+
+// 今日の入力欄を操作（累計には反映しない）
+function adjustToday(id, delta) {
+  if(!isOwner) return;
+  todayInput[id] = Math.max(0, (todayInput[id]||0) + delta);
+  const el = document.getElementById('input-'+id);
+  if(el) el.value = todayInput[id];
+}
+
+function setToday(id, val) {
+  if(!isOwner) return;
+  todayInput[id] = Math.max(0, parseInt(val)||0);
+}
+
+// 「累計に追加」ボタン：今日の入力を累計に加算してリセット
+function commitStat(id) {
+  if(!isOwner) return;
+  const add = todayInput[id] || 0;
+  if(add === 0) { showInfoToast('⚠️ 追加する数値を入力してください'); return; }
+  stats[id] = (stats[id]||0) + add;
+  todayInput[id] = 0;
+  const el = document.getElementById('input-'+id);
+  if(el) el.value = 0;
+  const totalEl = document.getElementById('total-'+id);
+  if(totalEl) { totalEl.textContent = stats[id]; totalEl.style.color='var(--accent2)'; setTimeout(()=>totalEl.style.color='',600); }
+  save();
+  checkAndNotify(true);
+  renderTrophies();
+  renderStatsBar();
+  renderBattlePower(true);
+  showInfoToast(`✅ ${add}回を累計に追加 → 合計${stats[id]}回`);
+}
+
+// 今日の入力欄だけクリア（累計は変わらない）
+function resetStats() {
+  if(!isOwner) return;
+  STAT_DEFS.forEach(d => { todayInput[d.id] = 0; });
+  renderStatInputs();
+  showInfoToast('🔄 今日の入力欄をクリアしました（累計はそのまま）');
+}
+
+// 累計を直接編集するモード（長押し or 直接修正用）
+function adjustStat(id, delta) {
+  if(!isOwner) return;
+  adjustToday(id, delta);
+}
+function setStat(id, val) {
+  if(!isOwner) return;
+  setToday(id, val);
+}
+
+// ===== STATIONS =====
+function renderStations() {
+  const grid = document.getElementById('station-grid');
+  const DIFF_LABEL = {bronze:'BRONZE',silver:'SILVER',gold:'GOLD'};
+  grid.innerHTML = STATIONS.map(s => `
+    <div class="station-chip diff-${s.diff} ${stationsDone.has(s.id)?'done':''}"
+         onclick="toggleStation('${s.id}')">
+      <span class="station-icon">${s.icon}</span>
+      <div class="station-name">${s.name}</div>
+      <div class="station-diff-badge">${DIFF_LABEL[s.diff]}</div>
+      <span class="station-check">✅</span>
+    </div>
+  `).join('');
+  const pct = (stationsDone.size/STATIONS.length)*100;
+  document.getElementById('yamanote-bar').style.width = pct+'%';
+  document.getElementById('yamanote-count').textContent = `${stationsDone.size} / ${STATIONS.length}駅`;
+}
+
+function toggleStation(id) {
+  if(!isOwner) return;
+  if(stationsDone.has(id)) stationsDone.delete(id);
+  else stationsDone.add(id);
+  save();
+  checkAndNotify(true);
+  renderStations();
+  renderTrophies();
+  renderStatsBar();
+  renderBattlePower(true);
+}
+
+// ===== CHAOS CHIPS =====
+function renderChaos() {
+  const chaosTrophies = TROPHIES.filter(t=>t.cat==='chaos');
+  const grid = document.getElementById('chaos-grid');
+  grid.innerHTML = chaosTrophies.map(t => `
+    <div class="chaos-chip ${t.type} ${chaosUnlocked.has(t.id)?'done':''}" onclick="toggleChaos(${t.id})">
+      <div class="chaos-chip-icon">${t.icon}</div>
+      <div class="chaos-chip-info">
+        <div class="chaos-chip-name">${t.name}</div>
+        <div class="chaos-chip-desc">${t.desc}</div>
+      </div>
+      <div class="chaos-chip-type">${TYPE_LABELS[t.type][0]}</div>
+      <div class="chaos-chip-check">✅</div>
+    </div>
+  `).join('');
+}
+
+function toggleChaos(id) {
+  if(!isOwner) return;
+  if(chaosUnlocked.has(id)) chaosUnlocked.delete(id);
+  else {
+    chaosUnlocked.add(id);
+    const t = TROPHIES.find(x=>x.id===id);
+    if(t) { trophyTimes[id] = trophyTimes[id] || Date.now(); showToast(t); }
+  }
+  // id:85 カオスの申し子 自動チェック
+  const chaosCount = [...chaosUnlocked].filter(uid => {
+    const tr = TROPHIES.find(x=>x.id===uid); return tr && tr.cat==='chaos' && uid!==85;
+  }).length;
+  if(chaosCount >= 10 && !chaosUnlocked.has(85)) {
+    setTimeout(()=>{
+      chaosUnlocked.add(85);
+      trophyTimes[85] = Date.now();
+      save();
+      showToast(TROPHIES.find(x=>x.id===85));
+      renderAll();
+    }, 800);
+  }
+  save();
+  checkAndNotify(true);
+  renderChaos();
+  renderTrophies();
+  renderStatsBar();
+  renderBattlePower(true);
+}
+
+// ===== TROPHY GRID =====
+function renderTrophies() {
+  const unlocked = computeUnlocked();
+  let trophies = TROPHIES;
+  if(currentTab === 'chaos') trophies = TROPHIES.filter(t=>t.cat==='chaos');
+  else if(currentTab !== 'all' && currentTab !== 'stats') trophies = TROPHIES.filter(t=>t.cat===currentTab);
+  if(currentTab === 'stats') { document.getElementById('trophy-grid').innerHTML=''; return; }
+
+  const grid = document.getElementById('trophy-grid');
+  grid.innerHTML = trophies.map(t => {
+    const isUnlocked = unlocked.has(t.id);
+    return `
+      <div class="trophy-card ${t.type} ${isUnlocked?'unlocked':'locked'}" id="card-${t.id}">
+        <div class="trophy-icon-wrap">
+          ${t.icon}
+          <div class="trophy-type-badge">${t.type[0].toUpperCase()}</div>
+        </div>
+        <div class="trophy-info">
+          <div class="trophy-name">${t.name}</div>
+          <div class="trophy-desc">${isUnlocked ? t.desc : '???'}</div>
+          ${isUnlocked ? '' : `<div class="trophy-condition">📋 ${t.condLabel || (t.cat==='chaos'?'体験したら解除':'')}</div>`}
+          ${isUnlocked && trophyTimes[t.id] ? `<div class="trophy-time">🕐 ${fmt(trophyTimes[t.id])}</div>` : ''}
+        </div>
+        ${!isUnlocked ? '<div class="trophy-lock-icon">🔒</div>' : ''}
+      </div>
+    `;
+  }).join('');
+}
+
+// ===== STATS BAR & RANK =====
+function renderStatsBar() {
+  const unlocked = computeUnlocked();
+  let counts = {bronze:0,silver:0,gold:0,platinum:0};
+  unlocked.forEach(id => { const t=TROPHIES.find(x=>x.id===id); if(t) counts[t.type]++; });
+  document.getElementById('stat-bronze').textContent = counts.bronze;
+  document.getElementById('stat-silver').textContent = counts.silver;
+  document.getElementById('stat-gold').textContent   = counts.gold;
+  document.getElementById('stat-plat').textContent   = counts.platinum;
+
+  const total = TROPHIES.length;
+  const pct   = Math.round((unlocked.size/total)*100);
+  document.getElementById('progress-text').textContent = `${unlocked.size} / ${total}`;
+  document.getElementById('progress-bar').style.width  = pct+'%';
+
+  updateRank(counts, true);
+
+  const chaosCount = [...chaosUnlocked].length;
+  updateChaosRank(chaosCount, true);
+  const hc = document.getElementById('header-trophy-count');
+  if(hc) hc.textContent = unlocked.size;
+}
+
+// ===== TROPHY UNLOCK NOTIFICATION =====
+let prevUnlocked = new Set();
+function checkAndNotify(animate) {
+  const now = computeUnlocked();
+  if(!animate) { prevUnlocked = now; return; }
+  now.forEach(id => {
+    if(!prevUnlocked.has(id)) {
+      const t = TROPHIES.find(x=>x.id===id);
+      if(t && t.cat !== 'chaos') { // カオスはtoggleChaosでトースト出すので除外
+        trophyTimes[id] = trophyTimes[id] || Date.now();
+        showToast(t);
+        setTimeout(()=>{
+          const card = document.getElementById('card-'+id);
+          if(card) { card.classList.add('just-unlocked'); setTimeout(()=>card.classList.remove('just-unlocked'),700); }
+        }, 100);
+      }
+    }
+  });
+  prevUnlocked = now;
+}
+
+// ===== RANK SYSTEM =====
+function calcRank(counts) {
+  let best = RANKS[0];
+  for(const r of RANKS) {
+    if(counts.bronze>=r.bronze&&counts.silver>=r.silver&&counts.gold>=r.gold&&counts.platinum>=r.platinum) best=r;
+  }
+  return best;
+}
+function updateRank(counts, animate) {
+  const rank = calcRank(counts);
+  const section = document.getElementById('rank-section');
+  section.className = `rank-section ${rank.tier!=='none'?rank.tier+'-rank':''}`;
+  document.getElementById('rank-emblem').textContent  = rank.emoji;
+  document.getElementById('rank-title').textContent   = rank.title;
+  document.getElementById('rank-subtitle').textContent= rank.sub;
+  if(animate && rank.id!==currentRankId && rank.id!=='none') setTimeout(()=>showRankModal(rank),600);
+  currentRankId = rank.id;
+  const idx=RANKS.findIndex(r=>r.id===rank.id);
+  const next=RANKS[idx+1];
+  const nextEl=document.getElementById('rank-next');
+  if(next){
+    const diff=[];
+    if(next.bronze>counts.bronze)   diff.push(`🥉ブロンズ あと${next.bronze-counts.bronze}個`);
+    if(next.silver>counts.silver)   diff.push(`🥈シルバー あと${next.silver-counts.silver}個`);
+    if(next.gold>counts.gold)       diff.push(`🥇ゴールド あと${next.gold-counts.gold}個`);
+    if(next.platinum>counts.platinum)diff.push(`💎プラチナ あと${next.platinum-counts.platinum}個`);
+    nextEl.innerHTML = diff.length ? `次の称号「<span>${next.title}</span>」まで：${diff.join(' / ')}` : '';
+  } else { nextEl.innerHTML='🏆 最高称号に到達した伝説の男'; }
+}
+function calcChaosRank(n) {
+  let best=CHAOS_RANKS[0];
+  for(const r of CHAOS_RANKS) { if(n>=r.need) best=r; }
+  return best;
+}
+function updateChaosRank(n, animate) {
+  const rank=calcChaosRank(n);
+  const section=document.getElementById('chaos-rank-section');
+  section.classList.toggle('chaos-active', n>0);
+  document.getElementById('chaos-rank-emblem').textContent  = rank.emoji;
+  document.getElementById('chaos-rank-title').textContent   = rank.title;
+  document.getElementById('chaos-rank-subtitle').textContent= rank.sub;
+  if(animate && rank.id!==currentChaosRankId && n>0) setTimeout(()=>showChaosModal(rank),900);
+  currentChaosRankId=rank.id;
+  const totalChaos=TROPHIES.filter(t=>t.cat==='chaos').length;
+  document.getElementById('chaos-progress-bar').style.width = Math.round((n/totalChaos)*100)+'%';
+  document.getElementById('chaos-progress-label').textContent = `${n} / ${totalChaos}`;
+  const idx=CHAOS_RANKS.findIndex(r=>r.id===rank.id);
+  const next=CHAOS_RANKS[idx+1];
+  const nextEl=document.getElementById('chaos-rank-next');
+  if(next) nextEl.innerHTML = `次「<span>${next.emoji} ${next.title}</span>」まで あと${next.need-n}個`;
+  else nextEl.innerHTML='🎪 最高カオス称号に到達。お前は一体何者だ';
+}
+
+// ===== MODALS =====
+function showRankModal(rank) {
+  const overlay=document.getElementById('rank-modal-overlay');
+  const modal=document.getElementById('rank-modal');
+  document.getElementById('rank-modal-emoji').textContent=rank.emoji;
+  document.getElementById('rank-modal-title').textContent=rank.title;
+  document.getElementById('rank-modal-desc').textContent=rank.sub;
+  modal.className=`rank-modal ${rank.tier}-modal`;
+  overlay.classList.add('show');
+  spawnParticles(modal,rank.tier);
+  document.getElementById('rank-modal-close').onclick=()=>overlay.classList.remove('show');
+}
+function showChaosModal(rank) {
+  const overlay=document.getElementById('chaos-modal-overlay');
+  const modal=document.getElementById('chaos-modal');
+  document.getElementById('chaos-modal-emoji').textContent=rank.emoji;
+  document.getElementById('chaos-modal-title').textContent=rank.title;
+  document.getElementById('chaos-modal-desc').textContent=rank.sub;
+  overlay.classList.add('show');
+  spawnChaosParticles(modal);
+  document.getElementById('chaos-modal-close').onclick=()=>overlay.classList.remove('show');
+}
+function spawnParticles(container,tier) {
+  const colors={bronze:['#cd7f32','#e8a040'],silver:['#b8c0cc','#d0d8e8'],gold:['#ffd700','#ffe840'],platinum:['#c8e6ff','#e0f0ff']};
+  const cols=colors[tier]||colors.gold;
+  for(let i=0;i<16;i++){
+    const p=document.createElement('div');p.className='particle';
+    p.style.left=(20+Math.random()*60)+'%';p.style.bottom='30%';
+    p.style.background=cols[Math.floor(Math.random()*cols.length)];
+    p.style.animationDelay=(Math.random()*0.4)+'s';p.style.animationDuration=(0.7+Math.random()*0.6)+'s';
+    container.appendChild(p);setTimeout(()=>p.remove(),1400);
+  }
+}
+function spawnChaosParticles(container) {
+  const colors=['#ff3333','#ff6644','#cc2222','#ff8855','#881111'];
+  for(let i=0;i<20;i++){
+    const p=document.createElement('div');p.className='chaos-particle';
+    p.style.left=(10+Math.random()*80)+'%';p.style.bottom='25%';
+    p.style.background=colors[Math.floor(Math.random()*colors.length)];
+    p.style.setProperty('--dx',(Math.random()*60-30)+'px');
+    p.style.animationDelay=(Math.random()*0.5)+'s';p.style.animationDuration=(0.6+Math.random()*0.5)+'s';
+    container.appendChild(p);setTimeout(()=>p.remove(),1600);
+  }
+}
+
+// ===== TOAST =====
+let toastTimer;
+function showToast(trophy) {
+  if(!trophy) return;
+  // フルスクリーン演出
+  showTrophyBurst(trophy);
+  // トースト（バックグラウンド通知）
+  const toast=document.getElementById('toast');
+  toast.className=`toast ${trophy.type}-toast`;
+  document.getElementById('toast-icon').textContent=trophy.icon;
+  document.getElementById('toast-name').textContent=trophy.name;
+  document.getElementById('toast-desc').textContent=trophy.desc;
+  document.getElementById('toast-type').textContent=TYPE_LABELS[trophy.type];
+  clearTimeout(toastTimer);
+  toast.classList.remove('show');
+  requestAnimationFrame(()=>requestAnimationFrame(()=>toast.classList.add('show')));
+  toastTimer=setTimeout(()=>toast.classList.remove('show'),3800);
+}
+let infoToastTimer;
+function showInfoToast(msg) {
+  const toast=document.getElementById('toast');
+  toast.className='toast silver-toast';
+  document.getElementById('toast-icon').textContent='💾';
+  document.getElementById('toast-name').textContent=msg;
+  document.getElementById('toast-desc').textContent='';
+  document.getElementById('toast-type').textContent='SYNC';
+  clearTimeout(infoToastTimer);
+  toast.classList.remove('show');
+  requestAnimationFrame(()=>requestAnimationFrame(()=>toast.classList.add('show')));
+  infoToastTimer=setTimeout(()=>toast.classList.remove('show'),2800);
+}
+
+// ===== SECTION VISIBILITY =====
+function renderSectionVisibility() {
+  const tab = currentTab;
+  document.getElementById('section-stats').style.display    = (tab==='all'||tab==='stats') ? '' : 'none';
+  document.getElementById('section-yamanote').style.display = (tab==='all'||tab==='yamanote') ? '' : 'none';
+  document.getElementById('section-chaos').style.display    = (tab==='all'||tab==='chaos') ? '' : 'none';
+  document.getElementById('trophy-section-label').style.display = (tab==='stats') ? 'none' : '';
+  document.getElementById('trophy-grid').style.display      = (tab==='stats') ? 'none' : '';
+}
+
+// ===== SHARE =====
+// ===== ストナン戦闘力システム =====
+// 最大10000点。各要素の配点:
+// 声かけ数 (最大2000), LINE数 (最大2000), デート (最大1000),
+// ホテル (最大1500), トロフィー数 (最大1500), カオス実績 (最大1000),
+// 山手線駅数 (最大1000)
+const BP_GRADES = [
+  {grade:'SSS', min:8500, label:'SSS — 神話級',         title:'ストリートの神'},
+  {grade:'SS',  min:6000, label:'SS — 伝説',             title:'レジェンドナンパ師'},
+  {grade:'S',   min:4000, label:'S — 猛者',              title:'ストリートキング'},
+  {grade:'A',   min:2500, label:'A — 上級者',            title:'ベテランナンパ師'},
+  {grade:'B',   min:1500, label:'B — 中級者',            title:'ストリートファイター'},
+  {grade:'C',   min:800,  label:'C — 初級者',            title:'ナンパハンター'},
+  {grade:'D',   min:300,  label:'D — 見習い',            title:'ルーキーナンパ師'},
+  {grade:'F',   min:0,    label:'F — 未経験',            title:'ナンパ未経験者'},
+];
+
+// ナンパ検定級（Xシェア用・共通言語）
+const KENTEI_GRADES = [
+  {min:8500, grade:'特級', label:'特級ナンパ師 🔱'},
+  {min:6000, grade:'1級', label:'ナンパ検定1級 💎'},
+  {min:4000, grade:'2級', label:'ナンパ検定2級 🥇'},
+  {min:2500, grade:'3級', label:'ナンパ検定3級 🥈'},
+  {min:1500, grade:'4級', label:'ナンパ検定4級 🥉'},
+  {min:800,  grade:'5級', label:'ナンパ検定5級'},
+  {min:300,  grade:'6級', label:'ナンパ検定6級'},
+  {min:0,    grade:'見習い', label:'ナンパ見習い'},
+];
+
+// トロフィー難易度ごとのポイント
+const TROPHY_PTS = {bronze:10, silver:30, gold:80, platinum:200};
+const TROPHY_SCORE_MAX = 2500;
+
+function calcTrophyScore() {
+  const unlocked = computeUnlocked();
+  let pts = 0;
+  unlocked.forEach(id => {
+    const t = TROPHIES.find(x => x.id === id);
+    if(t) pts += TROPHY_PTS[t.type] || 0;
+  });
+  // 理論最大値を計算
+  const maxPts = TROPHIES.reduce((a,t) => a + (TROPHY_PTS[t.type]||0), 0);
+  return { pts, maxPts, score: Math.min(TROPHY_SCORE_MAX, Math.floor(pts / maxPts * TROPHY_SCORE_MAX)) };
+}
+
+function calcBattlePower() {
+  const unlocked = computeUnlocked();
+  let counts = {bronze:0,silver:0,gold:0,platinum:0};
+  unlocked.forEach(id=>{const t=TROPHIES.find(x=>x.id===id);if(t)counts[t.type]++;});
+  const totalTrophies = unlocked.size;
+
+  // ── 各項目スコア（合計上限10000） ──
+  // 即(2200) > アポ=LINE(1400) > 山手線(1200) > 声かけ(1000) > トロフィー(1800) > カオス(600) > 連続ボーナス(400)
+  const sokuScore    = Math.min(2200, Math.floor(stats.soku_total  / 50   * 2200));
+  const apoScore     = Math.min(1400, Math.floor(stats.apo_total   / 100  * 1400));
+  const lineScore    = Math.min(1000, Math.floor(stats.line_total  / 200  * 1000));
+  const stationScore = Math.min(1200, Math.floor(stationsDone.size / 29   * 1200));
+  const voiceScore   = Math.min(1000, Math.floor(stats.voice_total / 1000 * 1000));
+  const { score: trophyScore, pts: trophyPts, maxPts: trophyMax } = calcTrophyScore();
+  const chaosScore   = Math.min(600,  Math.floor(chaosUnlocked.size / Math.max(1, TROPHIES.filter(t=>t.cat==='chaos').length) * 600));
+
+  // 連続記録ボーナス（400pt上限）
+  // 連続活動日数: 30日でMAX200pt
+  // 即連続記録: 14日でMAX100pt
+  // 月連続即記録: 12ヶ月でMAX100pt
+  const streakScore = Math.min(400,
+    Math.min(200, Math.floor(stats.continuous_days  / 30  * 200)) +
+    Math.min(100, Math.floor(stats.soku_streak      / 14  * 100)) +
+    Math.min(100, Math.floor(stats.soku_monthly_new / 12  * 100))
+  );
+
+  const total = sokuScore + apoScore + lineScore + stationScore + voiceScore + trophyScore + chaosScore + streakScore;
+  const capped = Math.min(10000, total);
+
+  return {
+    total: capped, sokuScore, apoScore, lineScore, stationScore, voiceScore,
+    trophyScore, trophyPts, trophyMax, chaosScore, streakScore, counts, totalTrophies,
+  };
+}
+
+function getKenteiGrade(score) {
+  return KENTEI_GRADES.find(g => score >= g.min) || KENTEI_GRADES[KENTEI_GRADES.length-1];
+}
+
+function renderBattlePower(animate) {
+  const bp = calcBattlePower();
+  const gradeInfo = BP_GRADES.find(g => bp.total >= g.min) || BP_GRADES[BP_GRADES.length-1];
+  const gradeKey = gradeInfo.grade.toLowerCase().replace('+','');
+  const pct = Math.min(100, Math.round(bp.total / 10000 * 100));
+
+  const card = document.getElementById('bp-card');
+  card.className = `bp-card grade-${gradeKey}`;
+  const kentei = getKenteiGrade(bp.total);
+  document.getElementById('bp-grade-text').textContent = gradeInfo.label;
+  document.getElementById('bp-title').textContent = kentei.label;
+
+  // スコアカウントアップ演出
+  if(animate) {
+    const scoreEl = document.getElementById('bp-score');
+    const start = parseInt(scoreEl.textContent) || 0;
+    const end = bp.total;
+    const duration = 800;
+    const step = (end - start) / (duration / 16);
+    let cur = start;
+    const timer = setInterval(() => {
+      cur = Math.min(end, cur + Math.abs(step) * (end >= start ? 1 : -1));
+      scoreEl.textContent = Math.round(cur);
+      if(Math.round(cur) === end) clearInterval(timer);
+    }, 16);
+  } else {
+    document.getElementById('bp-score').textContent = bp.total;
+  }
+
+  document.getElementById('bp-bar').style.width = pct + '%';
+
+  const breakdown = [
+    {label:'🔥 即',         val: bp.sokuScore,    max:2200, raw:`${stats.soku_total}回`},
+    {label:'📅 アポ',       val: bp.apoScore,     max:1400, raw:`${stats.apo_total}回`},
+    {label:'📱 LINE',       val: bp.lineScore,    max:1000, raw:`${stats.line_total}人`},
+    {label:'🚃 山手線',     val: bp.stationScore, max:1200, raw:`${stationsDone.size}駅`},
+    {label:'🗣️ 声かけ',    val: bp.voiceScore,   max:1000, raw:`${stats.voice_total}回`},
+    {label:'🏆 トロフィー', val: bp.trophyScore,  max:1800, raw:`${bp.trophyPts}pt獲得`},
+    {label:'💀 カオス',     val: bp.chaosScore,   max:600,  raw:`${chaosUnlocked.size}個`},
+    {label:'📆 連続記録',   val: bp.streakScore,  max:400,  raw:`連続${stats.continuous_days}日`},
+  ];
+
+  document.getElementById('bp-breakdown').innerHTML = breakdown.map(b => `
+    <div class="bp-item">
+      <div class="bp-item-top">
+        <span class="bp-item-label">${b.label}</span>
+        <span class="bp-item-raw">${b.raw}</span>
+      </div>
+      <div class="bp-item-val">${b.val}<span class="bp-item-max">pt /${b.max}pt</span></div>
+      <div class="bp-item-bar"><div class="bp-item-bar-inner" style="width:${Math.round(b.val/b.max*100)}%"></div></div>
+    </div>
+  `).join('');
+}
+
+// ===== TROPHY BURST =====
+let burstQueue = [];
+let burstActive = false;
+function showTrophyBurst(trophy) {
+  burstQueue.push(trophy);
+  if(!burstActive) processBurstQueue();
+}
+function processBurstQueue() {
+  if(burstQueue.length === 0) { burstActive = false; return; }
+  burstActive = true;
+  const trophy = burstQueue.shift();
+  const overlay = document.getElementById('trophy-burst-overlay');
+  const card = document.getElementById('trophy-burst-card');
+  card.className = `trophy-burst-card ${trophy.type}-burst`;
+  document.getElementById('burst-icon').textContent = trophy.icon;
+  document.getElementById('burst-type').textContent = ({bronze:'🥉 BRONZE',silver:'🥈 SILVER',gold:'🥇 GOLD',platinum:'💎 PLATINUM'})[trophy.type] || trophy.type;
+  document.getElementById('burst-name').textContent = trophy.name;
+  document.getElementById('burst-desc').textContent = trophy.desc;
+  // 既存パーティクル削除
+  card.querySelectorAll('.burst-particle').forEach(p=>p.remove());
+  // パーティクル生成
+  const colors = {bronze:['#cd7f32','#e8a040','#f0c060'],silver:['#b8c0cc','#d0d8e8','#ffffff'],gold:['#ffd700','#ffec40','#fff0a0'],platinum:['#c8e6ff','#e0f0ff','#a0d8ff']};
+  const cols = colors[trophy.type] || colors.gold;
+  const count = trophy.type==='platinum'?24:trophy.type==='gold'?20:16;
+  for(let i=0;i<count;i++){
+    const p=document.createElement('div'); p.className='burst-particle';
+    const angle=(i/count)*360; const dist=80+Math.random()*80;
+    p.style.setProperty('--bx', Math.cos(angle*Math.PI/180)*dist+'px');
+    p.style.setProperty('--by', -Math.abs(Math.sin(angle*Math.PI/180)*dist)-20+'px');
+    p.style.background=cols[i%cols.length];
+    p.style.left='50%'; p.style.top='40%';
+    p.style.width=(4+Math.random()*6)+'px'; p.style.height=(4+Math.random()*6)+'px';
+    p.style.animationDelay=(Math.random()*0.2)+'s';
+    p.style.animationDuration=(0.6+Math.random()*0.5)+'s';
+    card.appendChild(p);
+  }
+  overlay.classList.add('show');
+  setTimeout(closeBurst, trophy.type==='platinum'?3200:2400);
+}
+function closeBurst() {
+  const overlay = document.getElementById('trophy-burst-overlay');
+  overlay.classList.remove('show');
+  setTimeout(processBurstQueue, 400);
+}
+
+function shareToX() {
+  const bp = calcBattlePower();
+  const unlocked = computeUnlocked();
+  let counts = {bronze:0,silver:0,gold:0,platinum:0};
+  unlocked.forEach(id=>{const t=TROPHIES.find(x=>x.id===id);if(t)counts[t.type]++;});
+  const gradeInfo = BP_GRADES.find(g => bp.total >= g.min) || BP_GRADES[BP_GRADES.length-1];
+  const kentei = getKenteiGrade(bp.total);
+  const chaosCount = chaosUnlocked.size;
+  const goldDone = STATIONS.filter(s=>s.diff==='gold'&&stationsDone.has(s.id)).length;
+
+  let text = `⚔️ ストナン戦闘力 ${bp.total}/10000 [GRADE ${gradeInfo.grade}]\n`;
+  text += `🎌 ${kentei.label}\n`;
+  text += `\n`;
+  text += `🗣️ 声かけ${stats.voice_total}回 📱LINE${stats.line_total}人 🔥即${stats.soku_total}回 📅アポ${stats.apo_total}回\n`;
+  text += `✨ 💎${counts.platinum} 🥇${counts.gold} 🥈${counts.silver} 🥉${counts.bronze} (${unlocked.size}/${TROPHIES.length}個)\n`;
+  if(chaosCount > 0) text += `💀 カオス実績${chaosCount}個（修羅場経験値MAX）\n`;
+  if(stationsDone.size > 0) text += `🚃 山手線${stationsDone.size}/29駅（激戦区${goldDone}駅制覇）\n`;
+  text += `\n#ナンパ検定 #ストナン戦闘力 #ナンパ師Trophy`;
+
+  window.open(`https://x.com/intent/tweet?text=${encodeURIComponent(text)}&url=${encodeURIComponent(window.location.href)}`,'_blank','width=600,height=500');
+}
+
+// ===== SYNC =====
+function exportData() {
+  const data={v:3,stats,stations:[...stationsDone],chaos:[...chaosUnlocked],times:trophyTimes};
+  document.getElementById('export-code').value=btoa(encodeURIComponent(JSON.stringify(data)));
+  document.getElementById('export-wrap').classList.add('open');
+  document.getElementById('import-wrap').classList.remove('open');
+}
+function openImport() {
+  document.getElementById('import-wrap').classList.add('open');
+  document.getElementById('export-wrap').classList.remove('open');
+  document.getElementById('import-code').value='';
+  setTimeout(()=>document.getElementById('import-code').focus(),100);
+}
+function closeExport(){document.getElementById('export-wrap').classList.remove('open');}
+function closeImport(){document.getElementById('import-wrap').classList.remove('open');}
+function copyCode() {
+  const code=document.getElementById('export-code').value;
+  navigator.clipboard.writeText(code).then(()=>showInfoToast('📋 コピー完了！')).catch(()=>{
+    document.getElementById('export-code').select(); document.execCommand('copy'); showInfoToast('📋 コピー完了！');
+  });
+}
+function importData() {
+  const raw=document.getElementById('import-code').value.trim();
+  if(!raw){showInfoToast('⚠️ コードを貼り付けてください');return;}
+  try {
+    const data=JSON.parse(decodeURIComponent(atob(raw)));
+    if(data.stats) { STAT_DEFS.forEach(d=>{if(data.stats[d.id]!==undefined)stats[d.id]=data.stats[d.id];}); }
+    stationsDone=new Set(data.stations||[]);
+    chaosUnlocked=new Set((data.chaos||[]).map(Number));
+    trophyTimes=data.times||{};
+    save(); renderAll(false); closeImport(); showInfoToast('✅ データを読み込みました！');
+  } catch(e) { showInfoToast('❌ コードが正しくありません'); }
+}
+
+// ===== PASSWORD =====
+function hashPass(pw){let h=0;for(let i=0;i<pw.length;i++){h=((h<<5)-h)+pw.charCodeAt(i);h|=0;}return'np_'+Math.abs(h).toString(36)+'_'+pw.length;}
+function initLock() {
+  const session=sessionStorage.getItem(SESSION_KEY);
+  if(session===hashPass(OWNER_PASSWORD)) unlockApp(false);
+  else { const inp=document.getElementById('lock-input'); if(inp)inp.focus(); }
+}
+function tryUnlock() {
+  if(failCount>=5) return;
+  const input=document.getElementById('lock-input').value;
+  if(input===OWNER_PASSWORD) {
+    sessionStorage.setItem(SESSION_KEY,hashPass(OWNER_PASSWORD)); unlockApp(true);
+  } else {
+    failCount++;
+    const el=document.getElementById('lock-input');
+    el.classList.add('error'); el.value='';
+    for(let i=1;i<=5;i++){const d=document.getElementById('dot-'+i);if(d&&i<=failCount)d.classList.add('fail');}
+    setTimeout(()=>{el.classList.remove('error');el.placeholder=failCount>=5?'🔒 ロックされました':'••••••';},400);
+    if(failCount>=5){
+      document.getElementById('lock-hint').textContent='試行回数超過。ページを再読み込みしてください';
+      document.getElementById('lock-input').disabled=true;
+      document.getElementById('unlock-btn').disabled=true;
+    } else {
+      document.getElementById('lock-hint').textContent=`パスワードが違います（残り${5-failCount}回）`;
+    }
+  }
+}
+function unlockApp(animate) {
+  isOwner=true;
+  document.body.classList.remove('view-mode');
+  const banner=document.getElementById('view-banner');if(banner)banner.classList.remove('visible');
+  const overlay=document.getElementById('lock-overlay');
+  if(overlay){
+    if(animate){overlay.classList.add('unlocking');setTimeout(()=>overlay.style.display='none',420);}
+    else overlay.style.display='none';
+  }
+}
+function enterViewMode() {
+  isOwner=false;
+  document.body.classList.add('view-mode');
+  const overlay=document.getElementById('lock-overlay');if(overlay)overlay.style.display='none';
+  const banner=document.getElementById('view-banner');if(banner)banner.classList.add('visible');
+}
+function showLock() {
+  const overlay=document.getElementById('lock-overlay');if(!overlay)return;
+  overlay.style.display='flex';overlay.classList.remove('unlocking');
+  document.getElementById('lock-input').value='';document.getElementById('lock-input').focus();
+}
+function toggleEye() {
+  const input=document.getElementById('lock-input');const btn=document.getElementById('eye-btn');
+  input.type=input.type==='password'?'text':'password';
+  btn.textContent=input.type==='password'?'👁':'🙈';
+}
+
+// ===== MAIN RENDER =====
+function renderAll(animate=true) {
+  renderSectionVisibility();
+  renderStatInputs();
+  renderStations();
+  renderChaos();
+  renderTrophies();
+  if(!animate) {
+    prevUnlocked=computeUnlocked();
+    const unlocked=prevUnlocked;
+    let counts={bronze:0,silver:0,gold:0,platinum:0};
+    unlocked.forEach(id=>{const t=TROPHIES.find(x=>x.id===id);if(t)counts[t.type]++;});
+    document.getElementById('stat-bronze').textContent=counts.bronze;
+    document.getElementById('stat-silver').textContent=counts.silver;
+    document.getElementById('stat-gold').textContent=counts.gold;
+    document.getElementById('stat-plat').textContent=counts.platinum;
+    const pct=Math.round((unlocked.size/TROPHIES.length)*100);
+    document.getElementById('progress-text').textContent=`${unlocked.size} / ${TROPHIES.length}`;
+    document.getElementById('progress-bar').style.width=pct+'%';
+    const hc2=document.getElementById('header-trophy-count'); if(hc2) hc2.textContent=unlocked.size;
+    updateRank(counts,false); currentRankId=calcRank(counts).id;
+    const cc=chaosUnlocked.size; updateChaosRank(cc,false); currentChaosRankId=calcChaosRank(cc).id;
+    renderBattlePower(false);
+  } else {
+    renderStatsBar();
+    renderBattlePower(true);
+  }
+}
+
+// ===== BOOT =====
+document.addEventListener('DOMContentLoaded', () => {
+  load();
+  renderAll(false);
+  initLock();
+
+  document.getElementById('unlock-btn').addEventListener('click', tryUnlock);
+  document.getElementById('eye-btn').addEventListener('click', toggleEye);
+  document.getElementById('view-mode-btn').addEventListener('click', enterViewMode);
+  document.getElementById('lock-input').addEventListener('keydown', e=>{ if(e.key==='Enter') tryUnlock(); });
+  document.getElementById('view-banner').addEventListener('click', showLock);
+  document.querySelectorAll('.tab').forEach(el => {
+    el.addEventListener('click', ()=>switchTab(el.dataset.tab));
+  });
+});
+</script>
+
+</body>
+</html>
