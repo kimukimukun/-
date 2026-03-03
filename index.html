@@ -432,7 +432,11 @@ body.view-mode .chaos-chip.done{opacity:1;}
 /* GUIDE */
 .guide-section{display:flex;flex-direction:column;gap:16px;margin-bottom:28px;}
 .guide-block{background:var(--surface);border:1px solid var(--border);border-radius:16px;padding:22px 24px;}
-.guide-block-header{font-family:'Bebas Neue',sans-serif;font-size:22px;letter-spacing:0.07em;margin-bottom:14px;color:var(--accent2);}
+.guide-block-header{font-family:'Bebas Neue',sans-serif;font-size:22px;letter-spacing:0.07em;color:var(--accent2);cursor:pointer;display:flex;justify-content:space-between;align-items:center;user-select:none;-webkit-tap-highlight-color:transparent;}
+.guide-block-toggle{font-size:18px;color:rgba(255,126,179,0.5);transition:transform 0.3s;flex-shrink:0;}
+.guide-block.collapsed .guide-block-toggle{transform:rotate(-90deg);}
+.guide-block-body{overflow:hidden;max-height:2000px;transition:max-height 0.4s ease,padding-top 0.3s;padding-top:14px;}
+.guide-block.collapsed .guide-block-body{max-height:0;padding-top:0;}
 .guide-block p{font-size:13px;color:var(--muted);line-height:1.9;margin-bottom:6px;}
 .guide-block ul,.guide-block ol{padding-left:20px;}
 .guide-block li{font-size:13px;color:var(--muted);line-height:1.9;margin-bottom:4px;}
@@ -444,6 +448,7 @@ body.view-mode .chaos-chip.done{opacity:1;}
 .guide-step-num{flex-shrink:0;width:26px;height:26px;border-radius:50%;background:rgba(255,60,110,0.2);border:1px solid rgba(255,60,110,0.4);display:flex;align-items:center;justify-content:center;font-family:'Bebas Neue',sans-serif;font-size:14px;color:var(--accent2);}
 .guide-step-text{flex:1;font-size:13px;color:var(--muted);line-height:1.7;}
 .guide-step-text strong{color:var(--text);}
+.guide-sub-label{font-family:'Rajdhani',sans-serif;font-size:11px;letter-spacing:0.15em;text-transform:uppercase;color:var(--muted);margin-top:16px;margin-bottom:6px;}
 </style>
 
 </head>
@@ -536,42 +541,86 @@ body.view-mode .chaos-chip.done{opacity:1;}
   <!-- ガイドセクション -->
   <div id="section-guide" style="display:none">
     <div class="guide-section">
+
       <div class="guide-block">
-        <div class="guide-block-header">🎯 目的</div>
-        <p>ナンパ活動を記録・ゲーム化し、成長を可視化する個人用トラッキングツールです。</p>
-        <p>努力と経験をトロフィーで形にすることで、継続するモチベーションを高めます。失敗すら「実績」として積み上げていけるのがこのシステムの強みです。</p>
-      </div>
-      <div class="guide-block">
-        <div class="guide-block-header">💡 コンセプト</div>
-        <p>ゲームのトロフィーシステムを街頭活動に採用。4段階の難易度で成長を可視化します。</p>
-        <div class="guide-tier-row">
-          <div class="guide-tier" style="border-color:rgba(205,127,50,0.4);color:var(--bronze);">🥉 ブロンズ — 入門</div>
-          <div class="guide-tier" style="border-color:rgba(184,192,204,0.4);color:var(--silver);">🥈 シルバー — 中級</div>
-          <div class="guide-tier" style="border-color:rgba(255,215,0,0.4);color:var(--gold);">🥇 ゴールド — 上級</div>
-          <div class="guide-tier" style="border-color:rgba(200,230,255,0.4);color:var(--platinum);">💎 プラチナ — 伝説</div>
+        <div class="guide-block-header">🎯 目的 <span class="guide-block-toggle">▾</span></div>
+        <div class="guide-block-body">
+          <p>ナンパ活動を記録・ゲーム化し、成長を可視化する個人用トラッキングツールです。</p>
+          <p>努力と経験をトロフィーで形にすることで、継続するモチベーションを高めます。失敗すら「実績」として積み上げていけるのがこのシステムの強みです。</p>
         </div>
-        <ul style="margin-top:14px;">
-          <li>トロフィー獲得数に応じて <strong>称号</strong> が自動昇格</li>
-          <li><strong>ストナン戦闘力（Battle Power）</strong> で総合力を10000点満点で数値化</li>
-          <li><strong>山手線一周チャレンジ</strong> — 全29駅でナンパ敢行！難易度は駅ごとに設定</li>
-          <li><strong>カオス実績</strong> — 修羅場・珍事件もポジティブに記録。失敗も勲章に</li>
-        </ul>
       </div>
+
       <div class="guide-block">
-        <div class="guide-block-header">📋 使い方</div>
-        <div class="guide-step"><div class="guide-step-num">1</div><div class="guide-step-text"><strong>ログイン</strong>：パスワードを入力してオーナーモードへ。閲覧のみなら「見るだけ」をタップ</div></div>
-        <div class="guide-step"><div class="guide-step-num">2</div><div class="guide-step-text"><strong>数値入力</strong>：「📊 数値入力」タブで今日の声かけ・LINE・アポ・即の数を入力し「累計に追加」を押す</div></div>
-        <div class="guide-step"><div class="guide-step-num">3</div><div class="guide-step-text"><strong>山手線</strong>：「🚃 山手線」タブでナンパした駅をタップしてクリアマークを付ける</div></div>
-        <div class="guide-step"><div class="guide-step-num">4</div><div class="guide-step-text"><strong>カオス</strong>：「💀 カオス」タブで経験したエピソードをタップして解除</div></div>
-        <div class="guide-step"><div class="guide-step-num">5</div><div class="guide-step-text"><strong>称号確認</strong>：トップに表示される称号とストナン戦闘力で現在の実力を確認</div></div>
-        <div class="guide-step"><div class="guide-step-num">6</div><div class="guide-step-text"><strong>データ同期</strong>：「📤 コードを出力」→コピー→別デバイスで「📥 コードを読み込む」でスマホ↔PC共有</div></div>
-        <div class="guide-step"><div class="guide-step-num">7</div><div class="guide-step-text"><strong>シェア</strong>：「𝕏 Xにシェアする」で戦績を公開！</div></div>
+        <div class="guide-block-header">💡 コンセプト <span class="guide-block-toggle">▾</span></div>
+        <div class="guide-block-body">
+          <p>このシステムのテーマは<strong>「すべての行動を価値に変える」</strong>こと。声をかけること自体が実績になり、断られることも変なエピソードも、すべてトロフィーとして永久に刻まれます。</p>
+          <p>ゲームのアチーブメントシステムをナンパ活動に応用し、数値だけでは測れない「経験の質と深さ」を記録します。楽しみながら継続できる仕組みが、このシステムの核心です。</p>
+
+          <div class="guide-sub-label">4段階トロフィーシステム</div>
+          <div class="guide-tier-row">
+            <div class="guide-tier" style="border-color:rgba(205,127,50,0.4);color:var(--bronze);">🥉 ブロンズ — 入門</div>
+            <div class="guide-tier" style="border-color:rgba(184,192,204,0.4);color:var(--silver);">🥈 シルバー — 中級</div>
+            <div class="guide-tier" style="border-color:rgba(255,215,0,0.4);color:var(--gold);">🥇 ゴールド — 上級</div>
+            <div class="guide-tier" style="border-color:rgba(200,230,255,0.4);color:var(--platinum);">💎 プラチナ — 伝説</div>
+          </div>
+          <ul style="margin-top:10px;">
+            <li><strong>ブロンズ</strong>：誰もが最初に達成できる入門実績。まず一歩踏み出すことが目標</li>
+            <li><strong>シルバー</strong>：中級者の証。会話を繋げ、連絡先をゲットできるようになった段階</li>
+            <li><strong>ゴールド</strong>：上位層のみが到達できる高難易度実績。質と量のバランスが問われる</li>
+            <li><strong>プラチナ</strong>：伝説クラス。声かけ数百回・即多数など、真の頂点のみが解放できる</li>
+          </ul>
+
+          <div class="guide-sub-label">称号システム（13段階）</div>
+          <p>「ナンパ未経験者」から始まり、トロフィーの数・種類が増えるにつれ自動的に称号が昇格します。頂点の「ナンパの神」に至るまでにブロンズ14個・シルバー12個・ゴールド9個・プラチナ5個が必要です。</p>
+
+          <div class="guide-sub-label">ストナン戦闘力（Battle Power）</div>
+          <p>声かけ数・LINE獲得数・アポ数・即数・山手線攻略数・カオス経験などを総合スコア化した指標（10000点満点）。数値入力と実績解除をするほど戦闘力が上がり、自分の総合力を一目で把握できます。配点はSSS（8500点〜）〜F（0点）の8グレード。</p>
+
+          <div class="guide-sub-label">サイドコンテンツ</div>
+          <ul>
+            <li><strong>山手線一周チャレンジ</strong> — 全29駅それぞれでナンパし、全制覇を目指す。駅ごとに難易度（★〜★★★★）が設定されている</li>
+            <li><strong>カオス実績</strong> — 彼氏登場・警察来た・ハトに妨害など笑えるトラブル36種類。失敗を勲章に変えるカオスランクも別途存在する</li>
+            <li><strong>伝説トロフィー</strong> — 声かけ1000回・即50回など超高難易度の頂点実績。到達できる人間はひと握り</li>
+          </ul>
+        </div>
       </div>
+
       <div class="guide-block">
-        <div class="guide-block-header">⚙️ 注意事項</div>
-        <p>データはブラウザの <strong>localStorage</strong> に保存されます。ブラウザのキャッシュクリアや異なるブラウザでは引き継がれません。</p>
-        <p>大切なデータは定期的に「コードを出力」してバックアップしてください。</p>
+        <div class="guide-block-header">📋 使い方 <span class="guide-block-toggle">▾</span></div>
+        <div class="guide-block-body">
+          <div class="guide-step"><div class="guide-step-num">1</div><div class="guide-step-text"><strong>ログイン</strong>：パスワードを入力してオーナーモードへ。閲覧のみなら「見るだけ」をタップ。オーナーモードでないとデータの変更はできない</div></div>
+          <div class="guide-step"><div class="guide-step-num">2</div><div class="guide-step-text"><strong>数値入力</strong>：「📊 数値入力」タブで今日の声かけ・LINE・アポ・即の数を入力し「累計に追加」を押す。累計は永続で積み上がりリセット不可</div></div>
+          <div class="guide-step"><div class="guide-step-num">3</div><div class="guide-step-text"><strong>山手線</strong>：「🚃 山手線」タブでナンパした駅をタップしてクリアマークを付ける。難易度の高い駅ほど達成感あり</div></div>
+          <div class="guide-step"><div class="guide-step-num">4</div><div class="guide-step-text"><strong>カオス</strong>：「💀 カオス」タブで経験したエピソードをタップして解除。カオスランクが上がっていく</div></div>
+          <div class="guide-step"><div class="guide-step-num">5</div><div class="guide-step-text"><strong>称号確認</strong>：トップに表示される称号とストナン戦闘力で現在の実力を確認。トロフィーが増えるたびに自動更新される</div></div>
+          <div class="guide-step"><div class="guide-step-num">6</div><div class="guide-step-text"><strong>データ同期</strong>：「📤 コードを出力」→コピー→別デバイスで「📥 コードを読み込む」でスマホ↔PC共有。データはlocalStorageに保存されるためデバイスをまたぐ場合はこの操作が必要</div></div>
+          <div class="guide-step"><div class="guide-step-num">7</div><div class="guide-step-text"><strong>シェア</strong>：「𝕏 Xにシェアする」で戦績を公開！称号・トロフィー数・戦闘力が自動でツイート文に生成される</div></div>
+        </div>
       </div>
+
+      <div class="guide-block">
+        <div class="guide-block-header">📖 各タブの説明 <span class="guide-block-toggle">▾</span></div>
+        <div class="guide-block-body">
+          <div class="guide-step"><div class="guide-step-num" style="font-size:9px;letter-spacing:0;">ALL</div><div class="guide-step-text"><strong>すべて</strong>：全カテゴリのトロフィーを一覧表示。取得済み・未取得を問わず全実績を確認できる</div></div>
+          <div class="guide-step"><div class="guide-step-num" style="font-size:11px;">📊</div><div class="guide-step-text"><strong>数値入力</strong>：声かけ・LINE・アポ・即・1日最多などの数値を手動入力。「今日の入力」は任意タイミングでリセット可。累計は永続</div></div>
+          <div class="guide-step"><div class="guide-step-num" style="font-size:11px;">🗣️</div><div class="guide-step-text"><strong>声かけ</strong>：声かけ回数に関連するトロフィーを表示。1回〜500回以上まで段階的に実績が存在する</div></div>
+          <div class="guide-step"><div class="guide-step-num" style="font-size:11px;">📱</div><div class="guide-step-text"><strong>連絡先</strong>：LINE獲得数・アポ数に関連するトロフィーを表示。質の高さが求められる実績群</div></div>
+          <div class="guide-step"><div class="guide-step-num" style="font-size:11px;">☕</div><div class="guide-step-text"><strong>デート</strong>：デート・即（その場で進展）に関連するトロフィー。ゴールド・プラチナの高難易度実績が多い</div></div>
+          <div class="guide-step"><div class="guide-step-num" style="font-size:11px;">📍</div><div class="guide-step-text"><strong>場所</strong>：攻略エリア数・さまざまな場所でのナンパに関連するトロフィー。活動の幅広さを記録する</div></div>
+          <div class="guide-step"><div class="guide-step-num" style="font-size:11px;">🚃</div><div class="guide-step-text"><strong>山手線</strong>：29駅を地図形式で表示。攻略済み駅をタップしてマーク。全制覇でプラチナトロフィーが解放される</div></div>
+          <div class="guide-step"><div class="guide-step-num" style="font-size:11px;">💀</div><div class="guide-step-text"><strong>カオス</strong>：笑えるハプニング36種類を収録。タップで「体験済み」にマーク。カオストロフィーが増えるとカオスランクが昇格する</div></div>
+          <div class="guide-step"><div class="guide-step-num" style="font-size:11px;">👑</div><div class="guide-step-text"><strong>伝説</strong>：声かけ200回・LINE50人・即10回など超高難易度の実績。ナンパ師としての頂点を証明するトロフィーが並ぶ</div></div>
+        </div>
+      </div>
+
+      <div class="guide-block">
+        <div class="guide-block-header">⚙️ 注意事項 <span class="guide-block-toggle">▾</span></div>
+        <div class="guide-block-body">
+          <p>データはブラウザの <strong>localStorage</strong> に保存されます。ブラウザのキャッシュクリアや異なるブラウザでは引き継がれません。</p>
+          <p>大切なデータは定期的に「コードを出力」してバックアップしてください。</p>
+        </div>
+      </div>
+
     </div>
   </div>
 
@@ -1423,6 +1472,9 @@ function showInfoToast(msg) {
 // ===== SECTION VISIBILITY =====
 function renderSectionVisibility() {
   const tab = currentTab;
+  const isGuide = tab === 'guide';
+  document.getElementById('section-guide').style.display    = isGuide ? '' : 'none';
+  document.getElementById('main-dashboard').style.display   = isGuide ? 'none' : '';
   document.getElementById('section-stats').style.display    = (tab==='all'||tab==='stats') ? '' : 'none';
   document.getElementById('section-yamanote').style.display = (tab==='all'||tab==='yamanote') ? '' : 'none';
   document.getElementById('section-chaos').style.display    = (tab==='all'||tab==='chaos') ? '' : 'none';
@@ -1765,6 +1817,9 @@ document.addEventListener('DOMContentLoaded', () => {
   document.getElementById('view-banner').addEventListener('click', showLock);
   document.querySelectorAll('.tab').forEach(el => {
     el.addEventListener('click', ()=>switchTab(el.dataset.tab));
+  });
+  document.querySelectorAll('.guide-block-header').forEach(h => {
+    h.addEventListener('click', () => h.closest('.guide-block').classList.toggle('collapsed'));
   });
 });
 </script>
