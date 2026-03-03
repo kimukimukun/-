@@ -428,6 +428,22 @@ body.view-mode .chaos-chip.done{opacity:1;}
 
 .hidden{display:none!important;}
 @media(max-width:480px){.trophy-grid{grid-template-columns:1fr;}.station-grid{grid-template-columns:repeat(auto-fill,minmax(90px,1fr));}.stat-input-grid{grid-template-columns:1fr 1fr;}.chaos-grid{grid-template-columns:1fr;}}
+
+/* GUIDE */
+.guide-section{display:flex;flex-direction:column;gap:16px;margin-bottom:28px;}
+.guide-block{background:var(--surface);border:1px solid var(--border);border-radius:16px;padding:22px 24px;}
+.guide-block-header{font-family:'Bebas Neue',sans-serif;font-size:22px;letter-spacing:0.07em;margin-bottom:14px;color:var(--accent2);}
+.guide-block p{font-size:13px;color:var(--muted);line-height:1.9;margin-bottom:6px;}
+.guide-block ul,.guide-block ol{padding-left:20px;}
+.guide-block li{font-size:13px;color:var(--muted);line-height:1.9;margin-bottom:4px;}
+.guide-block strong{color:var(--text);}
+.guide-tier-row{display:flex;flex-wrap:wrap;gap:10px;margin-top:10px;}
+.guide-tier{display:flex;align-items:center;gap:8px;background:var(--surface2);border:1px solid var(--border);border-radius:10px;padding:8px 14px;font-size:12px;font-family:'Rajdhani',sans-serif;font-weight:700;}
+.guide-step{display:flex;gap:12px;align-items:flex-start;padding:10px 0;border-bottom:1px solid var(--border);}
+.guide-step:last-child{border-bottom:none;}
+.guide-step-num{flex-shrink:0;width:26px;height:26px;border-radius:50%;background:rgba(255,60,110,0.2);border:1px solid rgba(255,60,110,0.4);display:flex;align-items:center;justify-content:center;font-family:'Bebas Neue',sans-serif;font-size:14px;color:var(--accent2);}
+.guide-step-text{flex:1;font-size:13px;color:var(--muted);line-height:1.7;}
+.guide-step-text strong{color:var(--text);}
 </style>
 
 </head>
@@ -506,6 +522,7 @@ body.view-mode .chaos-chip.done{opacity:1;}
 
   <div class="tabs">
     <div class="tab active" data-tab="all">すべて</div>
+    <div class="tab" data-tab="guide">📖 使い方</div>
     <div class="tab" data-tab="stats">📊 数値入力</div>
     <div class="tab" data-tab="voice">🗣️ 声かけ</div>
     <div class="tab" data-tab="contact">📱 連絡先</div>
@@ -516,7 +533,50 @@ body.view-mode .chaos-chip.done{opacity:1;}
     <div class="tab" data-tab="legend">👑 伝説</div>
   </div>
 
-  <div class="stats-bar">
+  <!-- ガイドセクション -->
+  <div id="section-guide" style="display:none">
+    <div class="guide-section">
+      <div class="guide-block">
+        <div class="guide-block-header">🎯 目的</div>
+        <p>ナンパ活動を記録・ゲーム化し、成長を可視化する個人用トラッキングツールです。</p>
+        <p>努力と経験をトロフィーで形にすることで、継続するモチベーションを高めます。失敗すら「実績」として積み上げていけるのがこのシステムの強みです。</p>
+      </div>
+      <div class="guide-block">
+        <div class="guide-block-header">💡 コンセプト</div>
+        <p>ゲームのトロフィーシステムを街頭活動に採用。4段階の難易度で成長を可視化します。</p>
+        <div class="guide-tier-row">
+          <div class="guide-tier" style="border-color:rgba(205,127,50,0.4);color:var(--bronze);">🥉 ブロンズ — 入門</div>
+          <div class="guide-tier" style="border-color:rgba(184,192,204,0.4);color:var(--silver);">🥈 シルバー — 中級</div>
+          <div class="guide-tier" style="border-color:rgba(255,215,0,0.4);color:var(--gold);">🥇 ゴールド — 上級</div>
+          <div class="guide-tier" style="border-color:rgba(200,230,255,0.4);color:var(--platinum);">💎 プラチナ — 伝説</div>
+        </div>
+        <ul style="margin-top:14px;">
+          <li>トロフィー獲得数に応じて <strong>称号</strong> が自動昇格</li>
+          <li><strong>ストナン戦闘力（Battle Power）</strong> で総合力を10000点満点で数値化</li>
+          <li><strong>山手線一周チャレンジ</strong> — 全29駅でナンパ敢行！難易度は駅ごとに設定</li>
+          <li><strong>カオス実績</strong> — 修羅場・珍事件もポジティブに記録。失敗も勲章に</li>
+        </ul>
+      </div>
+      <div class="guide-block">
+        <div class="guide-block-header">📋 使い方</div>
+        <div class="guide-step"><div class="guide-step-num">1</div><div class="guide-step-text"><strong>ログイン</strong>：パスワードを入力してオーナーモードへ。閲覧のみなら「見るだけ」をタップ</div></div>
+        <div class="guide-step"><div class="guide-step-num">2</div><div class="guide-step-text"><strong>数値入力</strong>：「📊 数値入力」タブで今日の声かけ・LINE・アポ・即の数を入力し「累計に追加」を押す</div></div>
+        <div class="guide-step"><div class="guide-step-num">3</div><div class="guide-step-text"><strong>山手線</strong>：「🚃 山手線」タブでナンパした駅をタップしてクリアマークを付ける</div></div>
+        <div class="guide-step"><div class="guide-step-num">4</div><div class="guide-step-text"><strong>カオス</strong>：「💀 カオス」タブで経験したエピソードをタップして解除</div></div>
+        <div class="guide-step"><div class="guide-step-num">5</div><div class="guide-step-text"><strong>称号確認</strong>：トップに表示される称号とストナン戦闘力で現在の実力を確認</div></div>
+        <div class="guide-step"><div class="guide-step-num">6</div><div class="guide-step-text"><strong>データ同期</strong>：「📤 コードを出力」→コピー→別デバイスで「📥 コードを読み込む」でスマホ↔PC共有</div></div>
+        <div class="guide-step"><div class="guide-step-num">7</div><div class="guide-step-text"><strong>シェア</strong>：「𝕏 Xにシェアする」で戦績を公開！</div></div>
+      </div>
+      <div class="guide-block">
+        <div class="guide-block-header">⚙️ 注意事項</div>
+        <p>データはブラウザの <strong>localStorage</strong> に保存されます。ブラウザのキャッシュクリアや異なるブラウザでは引き継がれません。</p>
+        <p>大切なデータは定期的に「コードを出力」してバックアップしてください。</p>
+      </div>
+    </div>
+  </div>
+
+  <div id="main-dashboard">
+  <div class="stats-bar" id="stats-bar">
     <div class="stat-chip"><div class="stat-dot plat"></div><span id="stat-plat">0</span> プラチナ</div>
     <div class="stat-chip"><div class="stat-dot gold"></div><span id="stat-gold">0</span> ゴールド</div>
     <div class="stat-chip"><div class="stat-dot silver"></div><span id="stat-silver">0</span> シルバー</div>
@@ -557,7 +617,7 @@ body.view-mode .chaos-chip.done{opacity:1;}
 
   <!-- Progress -->
 
-  <div class="progress-section">
+  <div class="progress-section" id="progress-section">
     <div class="progress-header">
       <span class="progress-label">コンプリート率</span>
       <span class="progress-count" id="progress-text">0 / 0</span>
@@ -566,6 +626,8 @@ body.view-mode .chaos-chip.done{opacity:1;}
   </div>
 
   <!-- ストナン戦闘力カード -->
+
+  </div><!-- /main-dashboard -->
 
   <div class="bp-card grade-f" id="bp-card">
     <div class="bp-header">
@@ -638,7 +700,7 @@ body.view-mode .chaos-chip.done{opacity:1;}
 
   <!-- Sync -->
 
-  <div class="sync-panel">
+  <div class="sync-panel" id="sync-panel">
     <div class="sync-title">📲 データ同期・バックアップ</div>
     <p class="sync-desc">スマホ⇔PCでデータを共有できます。</p>
     <div class="sync-buttons">
@@ -661,7 +723,7 @@ body.view-mode .chaos-chip.done{opacity:1;}
     </div>
   </div>
 
-  <div class="bottom-actions">
+  <div class="bottom-actions" id="bottom-actions">
     <button class="share-btn" onclick="shareToX()">
       <span style="font-weight:900;font-size:18px;">𝕏</span> Xにシェアする
     </button>
@@ -706,7 +768,6 @@ const STAT_DEFS = [
   { id:'soku_monthly_new',  label:'月連続新規即記録(月)', icon:'🌙', unit:'ヶ月', default:0 },
   { id:'venue_count',       label:'攻略エリア数',        icon:'📍', unit:'区',  default:0 },
   { id:'continuous_days',   label:'連続活動日数',        icon:'📆', unit:'日',  default:0 },
-  { id:'rejection_streak',  label:'連続お断り記録',      icon:'💔', unit:'連続', default:0 },
 ];
 
 // ===== 山手線駅 =====
@@ -721,25 +782,25 @@ const STATIONS = [
   {id:'shinjuku',    name:'新宿',     icon:'🌃', diff:'gold'},
   {id:'shin_okubo',  name:'新大久保', icon:'🌶️', diff:'silver'},
   {id:'takadanobaba',name:'高田馬場', icon:'🎓', diff:'silver'},
-  {id:'mejiro',      name:'目白',     icon:'🏛️', diff:'bronze'},
+  {id:'mejiro',      name:'目白',     icon:'🏛️', diff:'silver'},
   {id:'ikebukuro',   name:'池袋',     icon:'🎡', diff:'gold'},
-  {id:'otsuka',      name:'大塚',     icon:'🏪', diff:'bronze'},
+  {id:'otsuka',      name:'大塚',     icon:'🏪', diff:'silver'},
   {id:'sugamo',      name:'巣鴨',     icon:'👘', diff:'bronze'},
   {id:'komagome',    name:'駒込',     icon:'🌺', diff:'bronze'},
   {id:'tabata',      name:'田端',     icon:'🌳', diff:'bronze'},
   {id:'nishi_nippori',name:'西日暮里',icon:'🎶', diff:'bronze'},
   {id:'nippori',     name:'日暮里',   icon:'✈️', diff:'silver'},
-  {id:'uguisudani',  name:'鶯谷',     icon:'🦜', diff:'silver'},
+  {id:'uguisudani',  name:'鶯谷',     icon:'🦜', diff:'bronze'},
   {id:'ueno',        name:'上野',     icon:'🐼', diff:'gold'},
   {id:'okachimachi', name:'御徒町',   icon:'💍', diff:'silver'},
-  {id:'akihabara',   name:'秋葉原',   icon:'⚡', diff:'gold'},
-  {id:'kanda',       name:'神田',     icon:'⛩️', diff:'silver'},
-  {id:'tokyo',       name:'東京',     icon:'🗼', diff:'gold'},
+  {id:'akihabara',   name:'秋葉原',   icon:'⚡', diff:'silver'},
+  {id:'kanda',       name:'神田',     icon:'⛩️', diff:'bronze'},
+  {id:'tokyo',       name:'東京',     icon:'🗼', diff:'silver'},
   {id:'yurakucho',   name:'有楽町',   icon:'🎭', diff:'silver'},
-  {id:'shimbashi',   name:'新橋',     icon:'🍶', diff:'silver'},
+  {id:'shimbashi',   name:'新橋',     icon:'🍶', diff:'bronze'},
   {id:'hamamatsucho',name:'浜松町',   icon:'🌊', diff:'bronze'},
   {id:'tamachi',     name:'田町',     icon:'🏢', diff:'bronze'},
-  {id:'shinagawa',   name:'品川',     icon:'🚄', diff:'silver'},
+  {id:'shinagawa',   name:'品川',     icon:'🚄', diff:'gold'},
 ];
 
 // ===== トロフィー定義（数値ベース） =====
@@ -773,13 +834,6 @@ const TROPHIES = [
   {id:11, cat:'voice', icon:'🗓️', name:'30日連続活動',       desc:'1ヶ月休まず活動。鬼の継続力',               type:'silver',   cond:s=>s.continuous_days>=30, condLabel:'連続活動 30日以上'},
   {id:308,cat:'voice', icon:'🔱', name:'60日連続活動',       desc:'2ヶ月連続。もはやライフスタイルになった',    type:'gold',     cond:s=>s.continuous_days>=60, condLabel:'連続活動 60日以上'},
   {id:309,cat:'voice', icon:'🌋', name:'100日連続活動',      desc:'100日連続。メンタルも体も完全に鍛え上げた',  type:'platinum', cond:s=>s.continuous_days>=100,condLabel:'連続活動 100日以上'},
-
-  // ── 声かけ：メンタル ──
-  {id:310,cat:'voice', icon:'😤', name:'連続10断られ記録',   desc:'10連続で断られ続けた。これが現実だ',         type:'bronze',   cond:s=>s.rejection_streak>=10, condLabel:'連続お断り 10連続以上'},
-  {id:311,cat:'voice', icon:'💢', name:'連続30断られ記録',   desc:'30連続お断り。心が折れそうでも立っている',   type:'bronze',   cond:s=>s.rejection_streak>=30, condLabel:'連続お断り 30連続以上'},
-  {id:12, cat:'voice', icon:'🔥', name:'連続50断られ記録',   desc:'50連続お断り。それでも前を向いた猛者',        type:'silver',   cond:s=>s.rejection_streak>=50, condLabel:'連続お断り 50連続以上'},
-  {id:14, cat:'voice', icon:'👹', name:'連続100断られ記録',  desc:'100連続お断り。鉄壁のメンタルの持ち主',      type:'gold',     cond:s=>s.rejection_streak>=100,condLabel:'連続お断り 100連続以上'},
-  {id:312,cat:'voice', icon:'💀', name:'連続200断られ記録',  desc:'200連続お断り。もはや断られることへの免疫完成',type:'platinum',cond:s=>s.rejection_streak>=200,condLabel:'連続お断り 200連続以上'},
 
   // ── 連絡先 ──
   {id:15, cat:'contact', icon:'📱', name:'初LINE',           desc:'初めてLINEを交換した',                      type:'bronze',   cond:s=>s.line_total>=1,       condLabel:'LINE獲得 1人以上'},
@@ -837,7 +891,7 @@ const TROPHIES = [
   {id:39, cat:'yamanote', icon:'🏆', name:'山手線一周完走',  desc:'29駅すべてを制覇した伝説！',                type:'platinum', cond:(s,st)=>st.size>=29,      condLabel:'山手線 全29駅'},
   // 各駅
   {id:101,cat:'yamanote',icon:'🌆',stationId:'osaki',        name:'大崎クリア',      desc:'穴場をモノにした',                  type:'bronze',  cond:(s,st)=>st.has('osaki')},
-  {id:102,cat:'yamanote',icon:'🏪',stationId:'otsuka',       name:'大塚クリア',      desc:'下町ローカルを攻略',                type:'bronze',  cond:(s,st)=>st.has('otsuka')},
+  {id:102,cat:'yamanote',icon:'🏪',stationId:'otsuka',       name:'大塚クリア',      desc:'下町ナイトエリアを攻略',            type:'silver',  cond:(s,st)=>st.has('otsuka')},
   {id:103,cat:'yamanote',icon:'👘',stationId:'sugamo',       name:'巣鴨クリア',      desc:'若い女性レアな難所を突破',          type:'bronze',  cond:(s,st)=>st.has('sugamo')},
   {id:104,cat:'yamanote',icon:'🌺',stationId:'komagome',     name:'駒込クリア',      desc:'閑静な住宅街を制した',              type:'bronze',  cond:(s,st)=>st.has('komagome')},
   {id:105,cat:'yamanote',icon:'🌳',stationId:'tabata',       name:'田端クリア',      desc:'人通り最少の難所攻略',              type:'bronze',  cond:(s,st)=>st.has('tabata')},
@@ -850,12 +904,12 @@ const TROPHIES = [
   {id:112,cat:'yamanote',icon:'🌶️',stationId:'shin_okubo',  name:'新大久保クリア',  desc:'多国籍エリアを攻略',                type:'silver',  cond:(s,st)=>st.has('shin_okubo')},
   {id:113,cat:'yamanote',icon:'🎓',stationId:'takadanobaba', name:'高田馬場クリア',  desc:'学生街のノリを掴んだ',              type:'silver',  cond:(s,st)=>st.has('takadanobaba')},
   {id:114,cat:'yamanote',icon:'✈️',stationId:'nippori',     name:'日暮里クリア',    desc:'旅女子をゲットする猛者',            type:'silver',  cond:(s,st)=>st.has('nippori')},
-  {id:115,cat:'yamanote',icon:'🦜',stationId:'uguisudani',  name:'鶯谷クリア',      desc:'独特の雰囲気エリアをクリア',        type:'silver',  cond:(s,st)=>st.has('uguisudani')},
+  {id:115,cat:'yamanote',icon:'🦜',stationId:'uguisudani',  name:'鶯谷クリア',      desc:'人通り少ない穴場エリアを攻略',      type:'bronze',  cond:(s,st)=>st.has('uguisudani')},
   {id:116,cat:'yamanote',icon:'💍',stationId:'okachimachi', name:'御徒町クリア',    desc:'買い物女子の心を掴んだ',            type:'silver',  cond:(s,st)=>st.has('okachimachi')},
-  {id:117,cat:'yamanote',icon:'⛩️',stationId:'kanda',       name:'神田クリア',      desc:'サラリーマン街でアウェーを制した',  type:'silver',  cond:(s,st)=>st.has('kanda')},
+  {id:117,cat:'yamanote',icon:'⛩️',stationId:'kanda',       name:'神田クリア',      desc:'ビジネス一色の街で女性を発見',      type:'bronze',  cond:(s,st)=>st.has('kanda')},
   {id:118,cat:'yamanote',icon:'🎭',stationId:'yurakucho',   name:'有楽町クリア',    desc:'映画帰り女子との共鳴に成功',        type:'silver',  cond:(s,st)=>st.has('yurakucho')},
-  {id:119,cat:'yamanote',icon:'🍶',stationId:'shimbashi',   name:'新橋クリア',      desc:'サラリーマン地帯で女性を発見',      type:'silver',  cond:(s,st)=>st.has('shimbashi')},
-  {id:120,cat:'yamanote',icon:'🚄',stationId:'shinagawa',   name:'品川クリア',      desc:'旅・出張女性を捕まえた',            type:'silver',  cond:(s,st)=>st.has('shinagawa')},
+  {id:119,cat:'yamanote',icon:'🍶',stationId:'shimbashi',   name:'新橋クリア',      desc:'ビジネス地帯の穴場で成果を出した',  type:'bronze',  cond:(s,st)=>st.has('shimbashi')},
+  {id:120,cat:'yamanote',icon:'🚄',stationId:'shinagawa',   name:'品川クリア',      desc:'大型ハブ駅の激流を制した！',        type:'gold',    cond:(s,st)=>st.has('shinagawa')},
   {id:121,cat:'yamanote',icon:'🍺',stationId:'ebisu',       name:'恵比寿クリア',    desc:'激戦おしゃれエリアを征服！',        type:'gold',    cond:(s,st)=>st.has('ebisu')},
   {id:122,cat:'yamanote',icon:'🔀',stationId:'shibuya',     name:'渋谷クリア',      desc:'最大激戦区を制した猛者！',          type:'gold',    cond:(s,st)=>st.has('shibuya')},
   {id:123,cat:'yamanote',icon:'👗',stationId:'harajuku',    name:'原宿クリア',      desc:'個性派女子の聖地を攻略！',          type:'gold',    cond:(s,st)=>st.has('harajuku')},
