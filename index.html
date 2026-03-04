@@ -1275,7 +1275,8 @@ function load() {
     if(!localStorage.getItem(DIST_FLAG)) {
       ['nanpa-stats-v4','nanpa-stats-v3','nanpa-today-v1',
        'nanpa-stations-v2','nanpa-chaos-v2','nanpa-times-v2',
-       'nanpa-dist-v1','nanpa-dist-v2','nanpa-dist-v3','nanpa-dist-v4','nanpa-dist-v5'].forEach(k=>localStorage.removeItem(k));
+       'nanpa-dist-v1','nanpa-dist-v2','nanpa-dist-v3','nanpa-dist-v4','nanpa-dist-v5',
+       'nanpa-master-revealed-v1'].forEach(k=>localStorage.removeItem(k));
       localStorage.setItem(DIST_FLAG, '1');
     }
     const s = JSON.parse(localStorage.getItem('nanpa-stats-v4') || '{}');
