@@ -695,7 +695,7 @@ body.view-mode .chaos-chip.done{opacity:1;}
 
           <div class="guide-sub-label">サイドコンテンツ</div>
           <ul>
-            <li><strong>山手線一周チャレンジ</strong> — 全29駅それぞれでナンパし、全制覇を目指す。駅ごとに難易度（★=簡単〜★★★★=高難度）が設定されており、繁華街は★、静かな住宅地駅は★★★★</li>
+            <li><strong>山手線一周チャレンジ</strong> — 全30駅それぞれでナンパし、全制覇を目指す。駅ごとに難易度（★=簡単〜★★★★=高難度）が設定されており、繁華街は★、静かな住宅地駅は★★★★</li>
             <li><strong>カオス実績</strong> — 彼氏登場・警察来た・ハトに妨害など笑えるトラブル36種類。失敗を勲章に変えるカオスランクも別途存在する</li>
             <li><strong>伝説トロフィー</strong> — 声かけ1000回・即50回など超高難易度の頂点実績。到達できる人間はひと握り</li>
           </ul>
@@ -724,7 +724,7 @@ body.view-mode .chaos-chip.done{opacity:1;}
           <div class="guide-step"><div class="guide-step-num" style="font-size:11px;">📱</div><div class="guide-step-text"><strong>連絡先</strong>：LINE獲得数・アポ数に関連するトロフィーを表示。質の高さが求められる実績群</div></div>
           <div class="guide-step"><div class="guide-step-num" style="font-size:11px;">☕</div><div class="guide-step-text"><strong>デート</strong>：デート・即（その場で進展）に関連するトロフィー。ゴールド・プラチナの高難易度実績が多い</div></div>
           <div class="guide-step"><div class="guide-step-num" style="font-size:11px;">📍</div><div class="guide-step-text"><strong>場所</strong>：攻略エリア数・さまざまな場所でのナンパに関連するトロフィー。活動の幅広さを記録する</div></div>
-          <div class="guide-step"><div class="guide-step-num" style="font-size:11px;">🚃</div><div class="guide-step-text"><strong>山手線</strong>：29駅を地図形式で表示。攻略済み駅をタップしてマーク。全制覇でプラチナトロフィーが解放される</div></div>
+          <div class="guide-step"><div class="guide-step-num" style="font-size:11px;">🚃</div><div class="guide-step-text"><strong>山手線</strong>：30駅を地図形式で表示。攻略済み駅をタップしてマーク。全制覇でプラチナトロフィーが解放される</div></div>
           <div class="guide-step"><div class="guide-step-num" style="font-size:11px;">💀</div><div class="guide-step-text"><strong>カオス</strong>：笑えるハプニング36種類を収録。タップで「体験済み」にマーク。カオストロフィーが増えるとカオスランクが昇格する</div></div>
           <div class="guide-step"><div class="guide-step-num" style="font-size:11px;">👑</div><div class="guide-step-text"><strong>伝説</strong>：声かけ200回・LINE50人・即10回など超高難易度の実績。ナンパ師としての頂点を証明するトロフィーが並ぶ</div></div>
         </div>
@@ -855,7 +855,7 @@ body.view-mode .chaos-chip.done{opacity:1;}
         <span class="yamanote-badge">🚃 SPECIAL</span>
         <span class="yamanote-title">山手線一周ナンパ企画</span>
       </div>
-      <p style="font-size:12px;color:var(--muted);margin-bottom:12px;">29駅すべてでナンパを敢行！タップして完了をマーク</p>
+      <p style="font-size:12px;color:var(--muted);margin-bottom:12px;">30駅すべてでナンパを敢行！タップして完了をマーク</p>
       <div style="display:flex;gap:10px;flex-wrap:wrap;margin-bottom:14px;">
         <span style="font-size:11px;font-family:'Rajdhani',sans-serif;font-weight:700;padding:3px 10px;border-radius:6px;background:rgba(255,215,0,0.12);color:var(--gold);border:1px solid rgba(255,215,0,0.3);">🥇 GOLD 激戦区</span>
         <span style="font-size:11px;font-family:'Rajdhani',sans-serif;font-weight:700;padding:3px 10px;border-radius:6px;background:rgba(184,192,204,0.12);color:var(--silver);border:1px solid rgba(184,192,204,0.3);">🥈 SILVER 中級</span>
@@ -864,7 +864,7 @@ body.view-mode .chaos-chip.done{opacity:1;}
       <div class="station-grid" id="station-grid"></div>
       <div class="yamanote-progress">
         <div class="yamanote-bar-outer"><div class="yamanote-bar-inner" id="yamanote-bar" style="width:0%"></div></div>
-        <div class="yamanote-count" id="yamanote-count">0 / 29駅</div>
+        <div class="yamanote-count" id="yamanote-count">0 / 30駅</div>
       </div>
     </div>
   </div>
@@ -998,6 +998,7 @@ const STATIONS = [
   {id:'yurakucho',   name:'有楽町',   icon:'🎭', diff:'silver'},   // ★★
   {id:'shimbashi',   name:'新橋',     icon:'🍶', diff:'silver'},   // ★★
   {id:'hamamatsucho',name:'浜松町',   icon:'🌊', diff:'gold'},     // ★
+  {id:'takanawa_gw', name:'高輪ゲートウェイ',icon:'🏗️', diff:'gold'},  // ★
   {id:'tamachi',     name:'田町',     icon:'🏢', diff:'gold'},     // ★
   {id:'shinagawa',   name:'品川',     icon:'🚄', diff:'silver'},   // ★★
 ];
@@ -1089,7 +1090,7 @@ const TROPHIES = [
   {id:36, cat:'yamanote', icon:'🚃', name:'山手線デビュー',  desc:'最初の駅でナンパ成功',                      type:'bronze',   cond:(s,st)=>st.size>=1,       condLabel:'山手線 1駅以上'},
   {id:37, cat:'yamanote', icon:'🌀', name:'渋谷・新宿ダブル',desc:'渋谷と新宿の両方をクリア',                  type:'silver',   cond:(s,st)=>st.has('shibuya')&&st.has('shinjuku'), condLabel:'渋谷＆新宿クリア'},
   {id:38, cat:'yamanote', icon:'⚡', name:'半周達成',        desc:'14駅以上でナンパ成功',                      type:'gold',     cond:(s,st)=>st.size>=14,      condLabel:'山手線 14駅以上'},
-  {id:39, cat:'yamanote', icon:'🏆', name:'山手線一周完走',  desc:'29駅すべてを制覇した伝説！',                type:'platinum', cond:(s,st)=>st.size>=29,      condLabel:'山手線 全29駅'},
+  {id:39, cat:'yamanote', icon:'🏆', name:'山手線一周完走',  desc:'30駅すべてを制覇した伝説！',                type:'platinum', cond:(s,st)=>st.size>=30,      condLabel:'山手線 全30駅'},
   // 各駅
   // 各駅トロフィー：難易度＝駅の★に対応（★=gold,★★=silver,★★★/★★★★=bronze）
   {id:101,cat:'yamanote',icon:'🌆',stationId:'osaki',        name:'大崎クリア',      desc:'ビジネス・住宅混在エリアを制した',          type:'silver', cond:(s,st)=>st.has('osaki')},
@@ -1101,6 +1102,7 @@ const TROPHIES = [
   {id:107,cat:'yamanote',icon:'🌿',stationId:'yoyogi',       name:'代々木クリア',    desc:'小さな街の少ない人口を制した',              type:'gold',   cond:(s,st)=>st.has('yoyogi')},
   {id:108,cat:'yamanote',icon:'🌊',stationId:'hamamatsucho', name:'浜松町クリア',    desc:'ビジネス専用地区の砂漠で花を咲かせた',      type:'gold',   cond:(s,st)=>st.has('hamamatsucho')},
   {id:109,cat:'yamanote',icon:'🏢',stationId:'tamachi',      name:'田町クリア',      desc:'オフィス街の難所で奇跡を起こした',          type:'gold',   cond:(s,st)=>st.has('tamachi')},
+  {id:130,cat:'yamanote',icon:'🏗️',stationId:'takanawa_gw', name:'高輪GW クリア',   desc:'最新鋭の開発エリアで先駆者となった',        type:'gold',   cond:(s,st)=>st.has('takanawa_gw')},
   {id:110,cat:'yamanote',icon:'🏙️',stationId:'gotanda',     name:'五反田クリア',    desc:'歓楽街エリア制覇',                          type:'silver', cond:(s,st)=>st.has('gotanda')},
   {id:111,cat:'yamanote',icon:'🌸',stationId:'meguro',       name:'目黒クリア',      desc:'おしゃれ女性の多いエリアを攻略',            type:'silver', cond:(s,st)=>st.has('meguro')},
   {id:112,cat:'yamanote',icon:'🌶️',stationId:'shin_okubo',  name:'新大久保クリア',  desc:'多国籍エリアの独特な難しさを制した',        type:'gold',   cond:(s,st)=>st.has('shin_okubo')},
@@ -1163,7 +1165,7 @@ const TROPHIES = [
   // ── 伝説 ──
   {id:47, cat:'legend', icon:'🧠', name:'効率の鬼',              desc:'声かけ100回でLINE20人・即5回以上。変換率の化物',    type:'bronze',   cond:s=>s.voice_total>=100&&s.line_total>=20&&s.soku_total>=5,  condLabel:'声かけ100回 & LINE20人 & 即5回'},
   {id:42, cat:'legend', icon:'💫', name:'無双状態',              desc:'1日20回以上声かけ＆LINE50人以上。量と質を両立した鬼',type:'silver',   cond:s=>s.voice_daily>=20&&s.line_total>=50,    condLabel:'1日最多20回 & LINE50人'},
-  {id:43, cat:'legend', icon:'🗾', name:'東京マスター',          desc:'山手線全29駅制覇＆10区以上攻略。東京を知り尽くした男', type:'silver', cond:(s,st)=>st.size>=29&&s.venue_count>=10,    condLabel:'全29駅制覇 & 10区攻略'},
+  {id:43, cat:'legend', icon:'🗾', name:'東京マスター',          desc:'山手線全30駅制覇＆10区以上攻略。東京を知り尽くした男', type:'silver', cond:(s,st)=>st.size>=30&&s.venue_count>=10,    condLabel:'全30駅制覇 & 10区攻略'},
   {id:41, cat:'legend', icon:'👑', name:'ストリートキング',      desc:'声かけ200回＆LINE50人。量も質も兼ね備えた実力者',    type:'gold',     cond:s=>s.voice_total>=200&&s.line_total>=50,   condLabel:'声かけ200回 & LINE50人'},
   {id:46, cat:'legend', icon:'📊', name:'変換率の機械',          desc:'アポ100回＆LINE100人達成。ムダのない効率厨',         type:'gold',     cond:s=>s.apo_total>=100&&s.line_total>=100,    condLabel:'アポ100回 & LINE100人'},
   {id:44, cat:'legend', icon:'🎖️', name:'真・ストリートの帝王',  desc:'声かけ500回＆即10回以上。街に君臨する王者',          type:'platinum', cond:s=>s.voice_total>=500&&s.soku_total>=10,   condLabel:'声かけ500回 & 即10回'},
@@ -2003,7 +2005,7 @@ function shareToX() {
   text += `🗣️ 声かけ${stats.voice_total}回 📱LINE${stats.line_total}人 🔥即${stats.soku_total}回 📅アポ${stats.apo_total}回\n`;
   text += `✨ 💎${counts.platinum} 🥇${counts.gold} 🥈${counts.silver} 🥉${counts.bronze} (${unlocked.size}/${TROPHIES.length}個)\n`;
   if(chaosCount > 0) text += `💀 カオス実績${chaosCount}個（修羅場経験値MAX）\n`;
-  if(stationsDone.size > 0) text += `🚃 山手線${stationsDone.size}/29駅（激戦区${goldDone}駅制覇）\n`;
+  if(stationsDone.size > 0) text += `🚃 山手線${stationsDone.size}/30駅（激戦区${goldDone}駅制覇）\n`;
   text += `\n#ナンパ検定 #ストナン戦闘力 #ナンパ師Trophy`;
 
   const urlParam = /^https?:/.test(window.location.href) ? `&url=${encodeURIComponent(window.location.href)}` : '';
