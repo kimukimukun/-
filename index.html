@@ -713,6 +713,78 @@ body.view-mode .chaos-chip.done{opacity:1;}
     </div>
     <div class="bp-breakdown" id="bp-breakdown"></div>
   </div>
+  <div class="master-card hidden" id="master-card">
+    <div class="master-header">
+      <div class="master-label">👑 MASTER RANK — HALL OF FAME</div>
+      <div class="master-title">真のストリートマスター</div>
+      <div class="master-desc">圧倒的な量と確かな関係構築力。すべてを極めし者のみに与えられる特級の証。</div>
+    </div>
+    <div class="master-stats">
+      <div class="m-stat"><span>総即数</span><b id="m-soku">0</b></div>
+      <div class="m-stat"><span>月最高即</span><b id="m-msoku">0</b></div>
+      <div class="m-stat"><span>継続関係</span><b id="m-keep">0</b></div>
+      <div class="m-stat"><span>本命化</span><b id="m-lover">0</b></div>
+    </div>
+    <button class="master-share-btn" onclick="shareMasterToX()">
+      <span style="font-weight:900;font-size:16px;">𝕏</span> 伝説の到達をシェアする
+    </button>
+  </div>
+/* ===== MASTER RANK CARD (SECRET) ===== */
+.master-card {
+  background: linear-gradient(135deg, #1a1500, #332600);
+  border: 1px solid rgba(255,215,0,0.6);
+  border-radius: 24px;
+  margin-bottom: 24px;
+  padding: 24px;
+  box-shadow: 0 12px 40px rgba(255,215,0,0.2), inset 0 0 20px rgba(255,215,0,0.1);
+  position: relative;
+  overflow: hidden;
+  animation: masterGlow 3s ease-in-out infinite alternate;
+}
+@keyframes masterGlow {
+  0% { box-shadow: 0 12px 30px rgba(255,215,0,0.1), inset 0 0 10px rgba(255,215,0,0.05); }
+  100% { box-shadow: 0 12px 60px rgba(255,215,0,0.4), inset 0 0 30px rgba(255,215,0,0.2); }
+}
+.master-card::before {
+  content: 'MASTER';
+  position: absolute;
+  top: -15px; right: -20px;
+  font-family: 'Bebas Neue', sans-serif;
+  font-size: 120px;
+  color: rgba(255,215,0,0.04);
+  pointer-events: none;
+  line-height: 1;
+}
+.master-header { margin-bottom: 20px; position: relative; z-index: 1; }
+.master-label { font-family: 'Rajdhani', sans-serif; font-size: 11px; letter-spacing: 0.3em; color: var(--gold); margin-bottom: 6px; font-weight: 700; }
+.master-title { font-family: 'Bebas Neue', sans-serif; font-size: 38px; letter-spacing: 0.08em; color: #fff; text-shadow: 0 0 15px rgba(255,215,0,0.8); line-height: 1; margin-bottom: 8px; }
+.master-desc { font-size: 12px; color: rgba(255,255,255,0.7); line-height: 1.6; }
+.master-stats { display: flex; gap: 10px; position: relative; z-index: 1; flex-wrap: wrap; margin-bottom: 16px; }
+.m-stat { flex: 1; min-width: 70px; background: rgba(0,0,0,0.5); border: 1px solid rgba(255,215,0,0.3); border-radius: 12px; padding: 12px 8px; text-align: center; }
+.m-stat span { display: block; font-family: 'Noto Sans JP', sans-serif; font-size: 10px; color: var(--gold); margin-bottom: 4px; font-weight: 700; }
+.m-stat b { display: block; font-family: 'Bebas Neue', sans-serif; font-size: 28px; color: #fff; line-height: 1; }
+
+/* マスター専用Xシェアボタン */
+.master-share-btn {
+  display: flex; align-items: center; justify-content: center; gap: 8px;
+  width: 100%; padding: 12px;
+  background: linear-gradient(135deg, #ffd700, #ff8c00);
+  border: none; border-radius: 12px;
+  color: #000; font-family: 'Rajdhani', sans-serif; font-size: 15px; font-weight: 800;
+  cursor: pointer; transition: all 0.2s; position: relative; z-index: 1;
+  box-shadow: 0 4px 15px rgba(255,215,0,0.4);
+}
+.master-share-btn:hover { transform: translateY(-2px); box-shadow: 0 6px 20px rgba(255,215,0,0.6); }
+
+/* ド派手な登場アニメーション */
+@keyframes masterReveal {
+  0% { transform: scale(0.5) translateY(100px); opacity: 0; filter: brightness(3); }
+  50% { transform: scale(1.05) translateY(-10px); opacity: 1; filter: brightness(1.5); }
+  100% { transform: scale(1) translateY(0); opacity: 1; filter: brightness(1); }
+}
+.master-reveal-anim {
+  animation: masterReveal 1.2s cubic-bezier(0.34, 1.56, 0.64, 1) forwards, masterGlow 3s ease-in-out infinite alternate 1.2s;
+}
 
   <!-- 数値入力パネル -->
 
@@ -1033,6 +1105,14 @@ const TROPHIES = [
   {id:45, cat:'legend', icon:'✨', name:'ナンパの神',             desc:'声かけ1000回＆LINE100人＆即50回。真の頂点に立つ者', type:'platinum', cond:s=>s.voice_total>=1000&&s.line_total>=100&&s.soku_total>=50, condLabel:'声かけ1000回 & LINE100人 & 即50回'},
 ];
 
+const STAT_DEFS = [
+  // ... (既存の項目) ...
+  { id:'venue_count',       label:'攻略エリア数',        icon:'📍', unit:'区',  default:0 },
+  { id:'continuous_days',   label:'連続活動日数',        icon:'📆', unit:'日',  default:0 },
+  // 👇この2行を追加👇
+  { id:'keep_total',        label:'継続関係(キープ)',    icon:'🥂', unit:'人',  default:0 },
+  { id:'lover_total',       label:'本命化(彼女)',        icon:'💍', unit:'人',  default:0 },
+];
 
 const TYPE_LABELS = {bronze:'ブロンズ', silver:'シルバー', gold:'ゴールド', platinum:'プラチナ'};
 
@@ -1514,6 +1594,42 @@ const BP_GRADES = [
   {grade:'D',   min:300,  label:'D — 見習い',            title:'ルーキーナンパ師'},
   {grade:'F',   min:0,    label:'F — 未経験',            title:'ナンパ未経験者'},
 ];
+// 👇マスターランクカードの判定と表示
+function renderMasterCard() {
+  const soku = stats.soku_total || 0;
+  const msoku = stats.soku_monthly || 0;
+  const keep = stats.keep_total || 0;
+  const lover = stats.lover_total || 0;
+
+  // 👑 解放条件: 総即200以上 ＆ 月最高20即 ＆ キープ10人 ＆ 本命彼女1人
+  const isMaster = (soku >= 200 && msoku >= 20 && keep >= 10 && lover >= 1);
+
+  const card = document.getElementById('master-card');
+  if(!card) return;
+
+  if(isMaster) {
+    if(card.classList.contains('hidden')) {
+      card.classList.remove('hidden');
+      card.classList.add('master-reveal-anim'); // ド派手な登場
+      setTimeout(() => {
+        showInfoToast('👑 【SECRET UNLOCKED】真のマスターランクが解放されました！');
+      }, 800);
+    }
+    document.getElementById('m-soku').textContent = soku;
+    document.getElementById('m-msoku').textContent = msoku;
+    document.getElementById('m-keep').textContent = keep;
+    document.getElementById('m-lover').textContent = lover;
+  } else {
+    card.classList.add('hidden');
+    card.classList.remove('master-reveal-anim');
+  }
+}
+
+// 👇マスターランク到達時の専用シェアボタン処理
+function shareMasterToX() {
+  const text = `👑 【SECRET UNLOCKED】真のマスターランク到達 👑\n\n圧倒的な量と質を極めし「ストリートの伝説」に名を刻みました。\n\n🔥総即数：${stats.soku_total || 0}回\n🌙月最高：${stats.soku_monthly || 0}即\n🥂継続関係：${stats.keep_total || 0}人\n💍本命化：${stats.lover_total || 0}人\n\n#ナンパ検定 #真のストリートマスター`;
+  window.open(`https://x.com/intent/tweet?text=${encodeURIComponent(text)}&url=${encodeURIComponent(window.location.href)}`,'_blank','width=600,height=500');
+}
 
 // ナンパ検定級（Xシェア用・共通言語）
 const KENTEI_GRADES = [
@@ -1734,7 +1850,20 @@ function importData() {
     stationsDone=new Set(data.stations||[]);
     chaosUnlocked=new Set((data.chaos||[]).map(Number));
     trophyTimes=data.times||{};
-    save(); renderAll(false); closeImport(); showInfoToast('✅ データを読み込みました！');
+    save(); renderAll(false); closeImport(); showInfoToast('✅ データを読み込みました！');function renderAll(animate=true) {
+  // ... (既存のコード) ...
+  if(!animate) {
+    // ...
+    renderBattlePower(false);
+  } else {
+    renderStatsBar();
+    renderBattlePower(true);
+  }
+  
+  // 👇この1行を最後に追加👇
+  renderMasterCard();
+}
+
   } catch(e) { showInfoToast('❌ コードが正しくありません'); }
 }
 
