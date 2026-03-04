@@ -242,8 +242,10 @@ body.view-mode .chaos-chip.done{opacity:1;}
 .trophy-info{flex:1;min-width:0;}
 .trophy-name{font-size:14px;font-weight:700;margin-bottom:3px;}
 .trophy-desc{font-size:11px;color:var(--muted);line-height:1.5;}
-.trophy-condition{font-size:10px;color:var(--accent2);margin-top:4px;font-family:‘Rajdhani’,sans-serif;}
-.trophy-time{font-size:10px;color:var(--accent2);margin-top:4px;font-family:‘Rajdhani’,sans-serif;opacity:0.8;}
+.trophy-condition{font-size:10px;color:var(--accent2);margin-top:4px;font-family:’Rajdhani’,sans-serif;}
+.trophy-time{font-size:10px;color:var(--accent2);margin-top:4px;font-family:’Rajdhani’,sans-serif;opacity:0.8;}
+.trophy-near-hint{font-size:10px;color:#ffd700;background:rgba(255,215,0,0.1);border:1px solid rgba(255,215,0,0.35);border-radius:4px;padding:2px 7px;margin-top:5px;display:inline-block;font-family:’Rajdhani’,sans-serif;letter-spacing:0.04em;animation:nearHintPulse 2.2s ease-in-out infinite;}
+@keyframes nearHintPulse{0%,100%{opacity:0.65;box-shadow:0 0 0 rgba(255,215,0,0);}50%{opacity:1;box-shadow:0 0 7px rgba(255,215,0,0.35);}}
 .trophy-lock-icon{position:absolute;top:11px;right:11px;font-size:12px;opacity:0.3;}
 @keyframes unlockPulse{0%{transform:scale(1);}35%{transform:scale(1.04);}65%{transform:scale(0.98);}100%{transform:scale(1);}}
 .just-unlocked{animation:unlockPulse 0.7s ease;}
@@ -1155,15 +1157,42 @@ const TROPHIES = [
   {id:45, cat:'legend', icon:'✨', name:'ナンパの神',             desc:'声かけ1000回＆LINE100人＆即50回。真の頂点に立つ者', type:'platinum', cond:s=>s.voice_total>=1000&&s.line_total>=100&&s.soku_total>=50, condLabel:'声かけ1000回 & LINE100人 & 即50回'},
 
   // ── 関係構築 ──
-  {id:200, cat:'relation', icon:'🥂', name:'初キープ',           desc:'ナンパ発で継続関係を築いた。また会える男になった証', type:'bronze',   cond:s=>s.keep_total>=1,                               condLabel:'継続関係 1人'},
-  {id:201, cat:'relation', icon:'💍', name:'初彼女ゲット',        desc:'ナンパ発で本命関係に発展。最高の成果',              type:'bronze',   cond:s=>s.lover_total>=1,                              condLabel:'本命化 1人'},
-  {id:202, cat:'relation', icon:'🗓️', name:'キープ3人体制',       desc:'3人と継続関係を維持できる男の余裕。管理力も実力',   type:'silver',   cond:s=>s.keep_total>=3,                               condLabel:'継続関係 3人'},
-  {id:203, cat:'relation', icon:'⚖️',  name:'攻守最強',           desc:'キープも本命も両立。ナンパを人生に活かした真のモテ男',type:'silver',  cond:s=>s.keep_total>=3&&s.lover_total>=1,             condLabel:'継続関係3人 & 本命1人'},
-  {id:204, cat:'relation', icon:'🎯', name:'キープ職人',          desc:'5人と継続関係を構築。人を惹きつける磁力がある',     type:'gold',     cond:s=>s.keep_total>=5,                               condLabel:'継続関係 5人'},
-  {id:205, cat:'relation', icon:'💘', name:'本命量産型',          desc:'2人以上と本命関係に発展した真のモテ男',             type:'gold',     cond:s=>s.lover_total>=2,                              condLabel:'本命化 2人'},
-  {id:206, cat:'relation', icon:'👑', name:'関係構築マスター',    desc:'キープ10人＆本命1人。ナンパを人生に変えた段階',     type:'gold',     cond:s=>s.keep_total>=10&&s.lover_total>=1,            condLabel:'継続関係10人 & 本命1人'},
-  {id:207, cat:'relation', icon:'💎', name:'彼女3人クリア',       desc:'3人以上と本命関係。ナンパが人生の武器になった',     type:'platinum', cond:s=>s.lover_total>=3,                              condLabel:'本命化 3人'},
-  {id:208, cat:'relation', icon:'✨', name:'関係構築の神',        desc:'キープ20人＆本命2人以上。ストリートが人生になった男',type:'platinum', cond:s=>s.keep_total>=20&&s.lover_total>=2,            condLabel:'継続関係20人 & 本命2人'},
+  {id:500, cat:'relation', icon:'🥂', name:'初キープ',
+    desc:'ナンパ発で継続関係を築いた。また会える男になった証', type:'bronze',
+    cond:s=>s.keep_total>=1, condLabel:'継続関係 1人',
+    nearHint:s=>s.keep_total===0?'✦ 初めての継続関係まであと1人！':null},
+  {id:501, cat:'relation', icon:'💍', name:'初彼女ゲット',
+    desc:'ナンパ発で本命関係に発展。最高の成果', type:'bronze',
+    cond:s=>s.lover_total>=1, condLabel:'本命化 1人',
+    nearHint:s=>s.lover_total===0?'✦ 初本命まであと1人！':null},
+  {id:502, cat:'relation', icon:'🗓️', name:'キープ3人体制',
+    desc:'3人と継続関係を維持できる男の余裕。管理力も実力', type:'silver',
+    cond:s=>s.keep_total>=3, condLabel:'継続関係 3人',
+    nearHint:s=>s.keep_total>=1&&s.keep_total<3?`✦ あと${3-s.keep_total}人で解放！`:null},
+  {id:503, cat:'relation', icon:'⚖️', name:'攻守最強',
+    desc:'キープも本命も両立。ナンパを人生に活かした真のモテ男', type:'silver',
+    cond:s=>s.keep_total>=3&&s.lover_total>=1, condLabel:'継続関係3人 & 本命1人',
+    nearHint:s=>{const k=3-s.keep_total,l=1-s.lover_total;if(k<=0&&l<=0)return null;if(s.keep_total>=1||s.lover_total>=1){const parts=[];if(k>0)parts.push(`キープあと${k}人`);if(l>0)parts.push(`本命あと${l}人`);return`✦ ${parts.join('＆')}で解放！`;}return null;}},
+  {id:504, cat:'relation', icon:'🎯', name:'キープ職人',
+    desc:'5人と継続関係を構築。人を惹きつける磁力がある', type:'gold',
+    cond:s=>s.keep_total>=5, condLabel:'継続関係 5人',
+    nearHint:s=>s.keep_total>=2&&s.keep_total<5?`✦ あと${5-s.keep_total}人で解放！`:null},
+  {id:505, cat:'relation', icon:'💘', name:'本命量産型',
+    desc:'2人以上と本命関係に発展した真のモテ男', type:'gold',
+    cond:s=>s.lover_total>=2, condLabel:'本命化 2人',
+    nearHint:s=>s.lover_total===1?'✦ あと1人の本命で解放！':null},
+  {id:506, cat:'relation', icon:'👑', name:'関係構築マスター',
+    desc:'キープ10人＆本命1人。ナンパを人生に変えた段階', type:'gold',
+    cond:s=>s.keep_total>=10&&s.lover_total>=1, condLabel:'継続関係10人 & 本命1人',
+    nearHint:s=>{const k=10-s.keep_total,l=1-s.lover_total;if(k<=0&&l<=0)return null;const parts=[];if(k>0&&s.keep_total>=5)parts.push(`キープあと${k}人`);if(l>0&&(s.keep_total>=5||s.lover_total>=1))parts.push(`本命あと${l}人`);return parts.length?`✦ ${parts.join('＆')}で解放！`:null;}},
+  {id:507, cat:'relation', icon:'💎', name:'彼女3人クリア',
+    desc:'3人以上と本命関係。ナンパが人生の武器になった', type:'platinum',
+    cond:s=>s.lover_total>=3, condLabel:'本命化 3人',
+    nearHint:s=>s.lover_total===2?'✦ あと1人の本命で解放！':null},
+  {id:508, cat:'relation', icon:'✨', name:'関係構築の神',
+    desc:'キープ20人＆本命2人以上。ストリートが人生になった男', type:'platinum',
+    cond:s=>s.keep_total>=20&&s.lover_total>=2, condLabel:'継続関係20人 & 本命2人',
+    nearHint:s=>{const k=20-s.keep_total,l=2-s.lover_total;if(k<=0&&l<=0)return null;const parts=[];if(k>0&&s.keep_total>=10)parts.push(`キープあと${k}人`);if(l>0&&(s.keep_total>=10||s.lover_total>=1))parts.push(`本命あと${l}人`);return parts.length?`✦ ${parts.join('＆')}で解放！`:null;}},
 ];
 
 const TYPE_LABELS = {bronze:'ブロンズ', silver:'シルバー', gold:'ゴールド', platinum:'プラチナ'};
@@ -1436,6 +1465,7 @@ function renderTrophies() {
           <div class="trophy-name">${t.name}</div>
           <div class="trophy-desc">${isUnlocked ? t.desc : '???'}</div>
           ${isUnlocked ? '' : `<div class="trophy-condition">📋 ${t.condLabel || (t.cat==='chaos'?'体験したら解除':'')}</div>`}
+          ${!isUnlocked && t.nearHint && t.nearHint(stats) ? `<div class="trophy-near-hint">${t.nearHint(stats)}</div>` : ''}
           ${isUnlocked && trophyTimes[t.id] ? `<div class="trophy-time">🕐 ${fmt(trophyTimes[t.id])}</div>` : ''}
         </div>
         ${!isUnlocked ? '<div class="trophy-lock-icon">🔒</div>' : ''}
