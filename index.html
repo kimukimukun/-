@@ -223,6 +223,7 @@ body.view-mode .chaos-chip.done{opacity:1;}
 .trophy-card.platinum::before{background:radial-gradient(ellipse at 0 0,rgba(200,230,255,0.14),transparent 55%);}
 .trophy-card.unlocked::before{opacity:1;}
 .trophy-card.locked{opacity:0.32;filter:grayscale(0.7);}
+.trophy-card.near-unlock{opacity:0.72;filter:grayscale(0.15);}
 .trophy-icon-wrap{flex-shrink:0;width:50px;height:50px;border-radius:12px;display:flex;align-items:center;justify-content:center;font-size:24px;position:relative;}
 .trophy-card.bronze .trophy-icon-wrap{background:rgba(205,127,50,0.14);box-shadow:0 0 0 1px rgba(205,127,50,0.3);}
 .trophy-card.silver .trophy-icon-wrap{background:rgba(184,192,204,0.14);box-shadow:0 0 0 1px rgba(184,192,204,0.3);}
@@ -1050,6 +1051,8 @@ const TROPHIES = [
   {id:209, cat:'date', icon:'👑', name:'即エース',            desc:'40回即成功。声かけから即まで一瞬の男',       type:'gold',     cond:s=>s.soku_total>=40,           condLabel:'即 40回以上'},
   {id:27,  cat:'date', icon:'👹', name:'50即の怪物',          desc:'50回即成功。ハンターの称号が相応しい',       type:'platinum', cond:s=>s.soku_total>=50,           condLabel:'即 50回以上'},
   {id:210, cat:'date', icon:'🔱', name:'即の神域',            desc:'100回即成功。もはや人間を超えた存在',       type:'platinum', cond:s=>s.soku_total>=100,          condLabel:'即 100回以上'},
+  {id:211, cat:'date', icon:'💀', name:'200即の覇者',         desc:'200回即成功。ストリートの絶対王者。この数字は伝説になる', type:'platinum', cond:s=>s.soku_total>=200, condLabel:'即 200回以上',
+    nearHint:s=>s.soku_total>=100&&s.soku_total<200?`✦ あと${200-s.soku_total}回で解放！`:null},
   // ── 即：1日複数 ──
   {id:211, cat:'date', icon:'✌️', name:'1日2即',              desc:'同じ日に2回即成功。信じられない密度',       type:'silver',   cond:s=>s.soku_daily>=2,            condLabel:'1日最多即 2回以上'},
   {id:212, cat:'date', icon:'🎰', name:'1日3即の狂人',        desc:'同じ日に3回即成功。もはやバグ',             type:'gold',     cond:s=>s.soku_daily>=3,            condLabel:'1日最多即 3回以上'},
@@ -1455,8 +1458,10 @@ function renderTrophies() {
   const grid = document.getElementById('trophy-grid');
   grid.innerHTML = trophies.map(t => {
     const isUnlocked = unlocked.has(t.id);
+    const nearText = !isUnlocked && t.nearHint ? t.nearHint(stats) : null;
+    const stateClass = isUnlocked ? 'unlocked' : nearText ? 'near-unlock' : 'locked';
     return `
-      <div class="trophy-card ${t.type} ${isUnlocked?'unlocked':'locked'}" id="card-${t.id}">
+      <div class="trophy-card ${t.type} ${stateClass}" id="card-${t.id}">
         <div class="trophy-icon-wrap">
           ${t.icon}
           <div class="trophy-type-badge">${t.type[0].toUpperCase()}</div>
@@ -1465,7 +1470,7 @@ function renderTrophies() {
           <div class="trophy-name">${t.name}</div>
           <div class="trophy-desc">${isUnlocked ? t.desc : '???'}</div>
           ${isUnlocked ? '' : `<div class="trophy-condition">📋 ${t.condLabel || (t.cat==='chaos'?'体験したら解除':'')}</div>`}
-          ${!isUnlocked && t.nearHint && t.nearHint(stats) ? `<div class="trophy-near-hint">${t.nearHint(stats)}</div>` : ''}
+          ${nearText ? `<div class="trophy-near-hint">${nearText}</div>` : ''}
           ${isUnlocked && trophyTimes[t.id] ? `<div class="trophy-time">🕐 ${fmt(trophyTimes[t.id])}</div>` : ''}
         </div>
         ${!isUnlocked ? '<div class="trophy-lock-icon">🔒</div>' : ''}
@@ -1786,8 +1791,8 @@ function calcBattlePower() {
   const totalTrophies = unlocked.size;
 
   // ── 各項目スコア（合計上限10000） ──
-  // 即(2200) > アポ=LINE(1400) > 山手線(1200) > 声かけ(1000) > トロフィー(1800) > カオス(600) > 連続ボーナス(400)
-  const sokuScore    = Math.min(2200, Math.floor(stats.soku_total  / 200  * 2200));
+  // 即(2200) > アポ(1400) > LINE(1000) > 山手線(1200) > 声かけ(1000) > トロフィー(2500) > カオス(600) > 連続ボーナス(400) > 関係構築(400)
+  const sokuScore    = Math.min(2200, Math.floor(stats.soku_total  / 300  * 2200)); // 300即でMAX（200即前に上限しないよう調整）
   const apoScore     = Math.min(1400, Math.floor(stats.apo_total   / 100  * 1400));
   const lineScore    = Math.min(1000, Math.floor(stats.line_total  / 200  * 1000));
   const stationScore = Math.min(1200, Math.floor(stationsDone.size / 29   * 1200));
@@ -1805,12 +1810,17 @@ function calcBattlePower() {
     Math.min(100, Math.floor(stats.soku_monthly_new / 12  * 100))
   );
 
-  const total = sokuScore + apoScore + lineScore + stationScore + voiceScore + trophyScore + chaosScore + streakScore;
+  // 関係構築スコア（400pt上限）: キープ20人でMAX200pt・本命5人でMAX200pt
+  const keepScore   = Math.min(200, Math.floor(stats.keep_total  / 20 * 200));
+  const loverScore  = Math.min(200, Math.floor(stats.lover_total / 5  * 200));
+  const relationScore = Math.min(400, keepScore + loverScore);
+
+  const total = sokuScore + apoScore + lineScore + stationScore + voiceScore + trophyScore + chaosScore + streakScore + relationScore;
   const capped = Math.min(10000, total);
 
   return {
     total: capped, sokuScore, apoScore, lineScore, stationScore, voiceScore,
-    trophyScore, trophyPts, trophyMax, chaosScore, streakScore, counts, totalTrophies,
+    trophyScore, trophyPts, trophyMax, chaosScore, streakScore, relationScore, counts, totalTrophies,
   };
 }
 
@@ -1851,14 +1861,15 @@ function renderBattlePower(animate) {
   document.getElementById('bp-bar').style.width = pct + '%';
 
   const breakdown = [
-    {label:'🔥 即',         val: bp.sokuScore,    max:2200, raw:`${stats.soku_total}回`},
-    {label:'📅 アポ',       val: bp.apoScore,     max:1400, raw:`${stats.apo_total}回`},
-    {label:'📱 LINE',       val: bp.lineScore,    max:1000, raw:`${stats.line_total}人`},
-    {label:'🚃 山手線',     val: bp.stationScore, max:1200, raw:`${stationsDone.size}駅`},
-    {label:'🗣️ 声かけ',    val: bp.voiceScore,   max:1000, raw:`${stats.voice_total}回`},
-    {label:'🏆 トロフィー', val: bp.trophyScore,  max:1800, raw:`${bp.trophyPts}pt獲得`},
-    {label:'💀 カオス',     val: bp.chaosScore,   max:600,  raw:`${chaosUnlocked.size}個`},
-    {label:'📆 連続記録',   val: bp.streakScore,  max:400,  raw:`連続${stats.continuous_days}日`},
+    {label:'🔥 即',         val: bp.sokuScore,     max:2200, raw:`${stats.soku_total}回`},
+    {label:'📅 アポ',       val: bp.apoScore,      max:1400, raw:`${stats.apo_total}回`},
+    {label:'📱 LINE',       val: bp.lineScore,     max:1000, raw:`${stats.line_total}人`},
+    {label:'🚃 山手線',     val: bp.stationScore,  max:1200, raw:`${stationsDone.size}駅`},
+    {label:'🗣️ 声かけ',    val: bp.voiceScore,    max:1000, raw:`${stats.voice_total}回`},
+    {label:'🏆 トロフィー', val: bp.trophyScore,   max:2500, raw:`${bp.trophyPts}pt獲得`},
+    {label:'💀 カオス',     val: bp.chaosScore,    max:600,  raw:`${chaosUnlocked.size}個`},
+    {label:'📆 連続記録',   val: bp.streakScore,   max:400,  raw:`連続${stats.continuous_days}日`},
+    {label:'🥂 関係構築',  val: bp.relationScore, max:400,  raw:`キープ${stats.keep_total}人・本命${stats.lover_total}人`},
   ];
 
   document.getElementById('bp-breakdown').innerHTML = breakdown.map(b => `
