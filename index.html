@@ -616,6 +616,7 @@ body.view-mode .chaos-chip.done{opacity:1;}
     <div class="tab" data-tab="yamanote">🚃 山手線</div>
     <div class="tab" data-tab="chaos">💀 カオス</div>
     <div class="tab" data-tab="legend">👑 伝説</div>
+    <div class="tab" data-tab="relation">💑 関係構築</div>
   </div>
 
   <!-- ガイドセクション -->
@@ -1130,6 +1131,17 @@ const TROPHIES = [
   {id:46, cat:'legend', icon:'📊', name:'変換率の機械',          desc:'アポ100回＆LINE100人達成。ムダのない効率厨',         type:'gold',     cond:s=>s.apo_total>=100&&s.line_total>=100,    condLabel:'アポ100回 & LINE100人'},
   {id:44, cat:'legend', icon:'🎖️', name:'真・ストリートの帝王',  desc:'声かけ500回＆即10回以上。街に君臨する王者',          type:'platinum', cond:s=>s.voice_total>=500&&s.soku_total>=10,   condLabel:'声かけ500回 & 即10回'},
   {id:45, cat:'legend', icon:'✨', name:'ナンパの神',             desc:'声かけ1000回＆LINE100人＆即50回。真の頂点に立つ者', type:'platinum', cond:s=>s.voice_total>=1000&&s.line_total>=100&&s.soku_total>=50, condLabel:'声かけ1000回 & LINE100人 & 即50回'},
+
+  // ── 関係構築 ──
+  {id:200, cat:'relation', icon:'🥂', name:'初キープ',           desc:'ナンパ発で継続関係を築いた。また会える男になった証', type:'bronze',   cond:s=>s.keep_total>=1,                               condLabel:'継続関係 1人'},
+  {id:201, cat:'relation', icon:'💍', name:'初彼女ゲット',        desc:'ナンパ発で本命関係に発展。最高の成果',              type:'bronze',   cond:s=>s.lover_total>=1,                              condLabel:'本命化 1人'},
+  {id:202, cat:'relation', icon:'🗓️', name:'キープ3人体制',       desc:'3人と継続関係を維持できる男の余裕。管理力も実力',   type:'silver',   cond:s=>s.keep_total>=3,                               condLabel:'継続関係 3人'},
+  {id:203, cat:'relation', icon:'⚖️',  name:'攻守最強',           desc:'キープも本命も両立。ナンパを人生に活かした真のモテ男',type:'silver',  cond:s=>s.keep_total>=3&&s.lover_total>=1,             condLabel:'継続関係3人 & 本命1人'},
+  {id:204, cat:'relation', icon:'🎯', name:'キープ職人',          desc:'5人と継続関係を構築。人を惹きつける磁力がある',     type:'gold',     cond:s=>s.keep_total>=5,                               condLabel:'継続関係 5人'},
+  {id:205, cat:'relation', icon:'💘', name:'本命量産型',          desc:'2人以上と本命関係に発展した真のモテ男',             type:'gold',     cond:s=>s.lover_total>=2,                              condLabel:'本命化 2人'},
+  {id:206, cat:'relation', icon:'👑', name:'関係構築マスター',    desc:'キープ10人＆本命1人。ナンパを人生に変えた段階',     type:'gold',     cond:s=>s.keep_total>=10&&s.lover_total>=1,            condLabel:'継続関係10人 & 本命1人'},
+  {id:207, cat:'relation', icon:'💎', name:'彼女3人クリア',       desc:'3人以上と本命関係。ナンパが人生の武器になった',     type:'platinum', cond:s=>s.lover_total>=3,                              condLabel:'本命化 3人'},
+  {id:208, cat:'relation', icon:'✨', name:'関係構築の神',        desc:'キープ20人＆本命2人以上。ストリートが人生になった男',type:'platinum', cond:s=>s.keep_total>=20&&s.lover_total>=2,            condLabel:'継続関係20人 & 本命2人'},
 ];
 
 const TYPE_LABELS = {bronze:'ブロンズ', silver:'シルバー', gold:'ゴールド', platinum:'プラチナ'};
