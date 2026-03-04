@@ -889,6 +889,7 @@ body.view-mode .chaos-chip.done{opacity:1;}
     <div class="sync-buttons">
       <button class="sync-btn primary" onclick="exportData()">📤 コードを出力</button>
       <button class="sync-btn" onclick="openImport()">📥 コードを読み込む</button>
+      <button class="sync-btn" onclick="resetAllData()" style="border-color:rgba(255,80,80,0.4);color:#ff6060;">🗑️ 全データ初期化</button>
     </div>
     <div class="sync-code-wrap" id="export-wrap">
       <textarea class="sync-code" id="export-code" readonly></textarea>
@@ -2009,6 +2010,13 @@ function shareToX() {
 }
 
 // ===== SYNC =====
+function resetAllData() {
+  if(!confirm('⚠️ 全データを初期化しますか？\nトロフィー・累計・マスターランク解放フラグがすべて消えます。\nこの操作は元に戻せません。')) return;
+  ['nanpa-stats-v4','nanpa-today-v1','nanpa-stations-v2','nanpa-chaos-v2',
+   'nanpa-times-v2','nanpa-dist-v5','nanpa-dist-v6',MASTER_FLAG].forEach(k=>localStorage.removeItem(k));
+  window.location.reload();
+}
+
 function exportData() {
   const data={v:3,stats,stations:[...stationsDone],chaos:[...chaosUnlocked],times:trophyTimes};
   document.getElementById('export-code').value=btoa(encodeURIComponent(JSON.stringify(data)));
