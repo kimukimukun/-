@@ -268,6 +268,14 @@ body.view-mode .chaos-chip.done{opacity:1;}
 /* SHARE BTN */
 /* BATTLE POWER CARD */
 .bp-card{background:rgba(8,10,18,0.98);border:1px solid rgba(255,255,255,0.07);border-radius:24px;margin-bottom:24px;position:relative;overflow:hidden;box-shadow:0 12px 48px rgba(0,0,0,0.7);}
+/* マスター近接時オーラ */
+.bp-card.master-near-l1{box-shadow:0 12px 48px rgba(0,0,0,0.7),0 0 48px rgba(255,215,0,0.07),inset 0 -2px 0 rgba(255,215,0,0.12);transition:box-shadow 1.5s ease;}
+.bp-card.master-near-l2{box-shadow:0 12px 48px rgba(0,0,0,0.7),0 0 72px rgba(255,215,0,0.2),inset 0 -2px 0 rgba(255,215,0,0.4);animation:masterNearPulse 2.8s ease-in-out infinite;}
+@keyframes masterNearPulse{0%,100%{box-shadow:0 12px 48px rgba(0,0,0,0.7),0 0 48px rgba(255,215,0,0.12),inset 0 -2px 0 rgba(255,215,0,0.25);}50%{box-shadow:0 12px 48px rgba(0,0,0,0.7),0 0 96px rgba(255,215,0,0.32),inset 0 -2px 0 rgba(255,215,0,0.55);}}
+/* 謎テキスト */
+#master-approaching{display:none;text-align:center;font-family:'Rajdhani',sans-serif;font-size:11px;letter-spacing:0.3em;text-transform:uppercase;color:rgba(255,215,0,0.55);padding:6px 0 20px;animation:masterApprText 3.2s ease-in-out infinite;}
+#master-approaching.active{display:block;}
+@keyframes masterApprText{0%,100%{opacity:0.25;text-shadow:none;}50%{opacity:1;text-shadow:0 0 12px rgba(255,215,0,0.6);}}
 .bp-card::after{content:’’;position:absolute;top:0;left:0;right:0;height:1px;background:linear-gradient(90deg,transparent,rgba(255,255,255,0.12),transparent);}
 /* ヘッダー部：グレードバナー */
 .bp-header{padding:20px 20px 0;display:flex;align-items:flex-start;justify-content:space-between;gap:8px;}
@@ -808,6 +816,7 @@ body.view-mode .chaos-chip.done{opacity:1;}
     </div>
     <div class="bp-breakdown" id="bp-breakdown"></div>
   </div>
+  <div id="master-approaching"></div>
   <div class="master-card hidden" id="master-card">
     <div class="master-header">
       <div class="master-label">👑 MASTER RANK — HALL OF FAME</div>
@@ -1684,6 +1693,13 @@ const BP_GRADES = [
 ];
 const MASTER_FLAG = 'nanpa-master-revealed-v1';
 
+const MASTER_APPROACHING_MSGS = [
+  '▓░░░ 何かが、うごめいている ░░░▓',
+  '▓░░░ ストリートに、新たな王が生まれようとしている ░░░▓',
+  '▓░░░ その男の記録が、限界に迫ろうとしている ░░░▓',
+  '▓░░░ もう少し、もう少しで — ░░░▓',
+];
+
 function renderMasterCard() {
   const soku = stats.soku_total || 0;
   const msoku = stats.soku_monthly || 0;
@@ -1691,6 +1707,34 @@ function renderMasterCard() {
   const lover = stats.lover_total || 0;
 
   const isMaster = (soku >= 200 && msoku >= 20 && keep >= 10 && lover >= 1);
+
+  // 近接レベル計算（解放後は非表示）
+  const bpCard = document.getElementById('bp-card');
+  const apprEl = document.getElementById('master-approaching');
+  if(!isMaster && bpCard && apprEl) {
+    const r = [soku/200, msoku/20, keep/10, lover>=1?1:0];
+    const minR = Math.min(...r);
+    const avgR = r.reduce((a,b)=>a+b,0) / r.length;
+    if(minR >= 0.8) {
+      // level 2: 全条件 80% 超え → 金オーラ強 + 謎テキスト点滅
+      bpCard.classList.remove('master-near-l1');
+      bpCard.classList.add('master-near-l2');
+      const msg = MASTER_APPROACHING_MSGS[Math.floor(Date.now()/8000) % MASTER_APPROACHING_MSGS.length];
+      apprEl.textContent = msg;
+      apprEl.classList.add('active');
+    } else if(avgR >= 0.3) {
+      // level 1: 平均 30% 以上 → うっすら金オーラのみ（テキストなし）
+      bpCard.classList.remove('master-near-l2');
+      bpCard.classList.add('master-near-l1');
+      apprEl.classList.remove('active');
+    } else {
+      bpCard.classList.remove('master-near-l1','master-near-l2');
+      apprEl.classList.remove('active');
+    }
+  } else if(bpCard && apprEl) {
+    bpCard.classList.remove('master-near-l1','master-near-l2');
+    apprEl.classList.remove('active');
+  }
 
   const card = document.getElementById('master-card');
   if(!card) return;
