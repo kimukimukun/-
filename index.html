@@ -508,26 +508,6 @@ body.view-mode .chaos-chip.done{opacity:1;}
 .master-reveal-anim {
   animation: masterReveal 1.2s cubic-bezier(0.34, 1.56, 0.64, 1) forwards, masterGlow 3s ease-in-out infinite alternate 1.2s;
 }
-/* ロック時：枠だけうっすら表示してやる気を煽る */
-.master-card.master-locked {
-  opacity: 0.35;
-  animation: masterLockedPulse 3.5s ease-in-out infinite alternate;
-}
-@keyframes masterLockedPulse {
-  0%   { border-color: rgba(255,215,0,0.15); box-shadow: 0 4px 12px rgba(255,215,0,0.04); }
-  100% { border-color: rgba(255,215,0,0.45); box-shadow: 0 8px 28px rgba(255,215,0,0.14); }
-}
-.master-card.master-locked .master-header,
-.master-card.master-locked .master-stats,
-.master-card.master-locked .master-share-btn { filter: blur(5px); pointer-events: none; user-select: none; }
-.master-locked-overlay { display: none; }
-.master-card.master-locked .master-locked-overlay {
-  display: flex; flex-direction: column; align-items: center; justify-content: center;
-  position: absolute; inset: 0; z-index: 2; pointer-events: none;
-}
-.master-lock-icon { font-size: 40px; margin-bottom: 6px; }
-.master-lock-title { font-family: 'Bebas Neue', sans-serif; font-size: 22px; letter-spacing: 0.2em; color: rgba(255,215,0,0.55); margin-bottom: 4px; }
-.master-lock-hint { font-family: 'Rajdhani', sans-serif; font-size: 11px; letter-spacing: 0.12em; color: rgba(255,255,255,0.35); }
 
 /* MASTER RANK BURST OVERLAY */
 .master-burst-overlay {
@@ -825,12 +805,7 @@ body.view-mode .chaos-chip.done{opacity:1;}
     </div>
     <div class="bp-breakdown" id="bp-breakdown"></div>
   </div>
-  <div class="master-card master-locked" id="master-card">
-    <div class="master-locked-overlay">
-      <div class="master-lock-icon">🔒</div>
-      <div class="master-lock-title">SECRET RANK</div>
-      <div class="master-lock-hint">頂点に立つ者のみが解放できる</div>
-    </div>
+  <div class="master-card hidden" id="master-card">
     <div class="master-header">
       <div class="master-label">👑 MASTER RANK — HALL OF FAME</div>
       <div class="master-title">真のストリートマスター</div>
@@ -1672,31 +1647,36 @@ const BP_GRADES = [
   {grade:'D',   min:300,  label:'D — 見習い',            title:'ルーキーナンパ師'},
   {grade:'F',   min:0,    label:'F — 未経験',            title:'ナンパ未経験者'},
 ];
-// 👇マスターランクカードの判定と表示
+const MASTER_FLAG = 'nanpa-master-revealed-v1';
+
 function renderMasterCard() {
   const soku = stats.soku_total || 0;
   const msoku = stats.soku_monthly || 0;
   const keep = stats.keep_total || 0;
   const lover = stats.lover_total || 0;
 
-  // 👑 解放条件: 総即200以上 ＆ 月最高20即 ＆ キープ10人 ＆ 本命彼女1人
   const isMaster = (soku >= 200 && msoku >= 20 && keep >= 10 && lover >= 1);
 
   const card = document.getElementById('master-card');
   if(!card) return;
 
   if(isMaster) {
-    if(card.classList.contains('master-locked')) {
-      card.classList.remove('master-locked');
-      card.classList.add('master-reveal-anim');
-      setTimeout(showMasterReveal, 600);
+    const alreadyRevealed = !!localStorage.getItem(MASTER_FLAG);
+    if(card.classList.contains('hidden')) {
+      card.classList.remove('hidden');
+      if(!alreadyRevealed) {
+        // 初回解放のみド派手な演出
+        card.classList.add('master-reveal-anim');
+        localStorage.setItem(MASTER_FLAG, '1');
+        setTimeout(showMasterReveal, 600);
+      }
     }
     document.getElementById('m-soku').textContent = soku;
     document.getElementById('m-msoku').textContent = msoku;
     document.getElementById('m-keep').textContent = keep;
     document.getElementById('m-lover').textContent = lover;
   } else {
-    card.classList.add('master-locked');
+    card.classList.add('hidden');
     card.classList.remove('master-reveal-anim');
   }
 }
