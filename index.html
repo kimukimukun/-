@@ -840,6 +840,17 @@ body.view-mode .chaos-chip.done{opacity:1;}
     <div class="stat-input-panel">
       <div class="stat-input-panel-title">📊 戦績ダッシュボード</div>
       <div class="stat-input-panel-sub">今日の活動を入力して「累計に追加」を押す。リセットしても累計は消えない。</div>
+
+      <!-- 活動開始日 -->
+      <div style="background:var(--surface2);border:1px solid var(--border);border-radius:12px;padding:14px 16px;margin-bottom:20px;display:flex;align-items:center;gap:14px;flex-wrap:wrap;">
+        <span style="font-size:13px;font-family:'Rajdhani',sans-serif;font-weight:700;letter-spacing:0.08em;color:var(--muted);white-space:nowrap;">📅 活動開始日</span>
+        <input type="date" id="start-date-input" value="2006-08-06"
+               style="background:var(--bg);border:1px solid rgba(255,255,255,0.1);border-radius:8px;color:var(--text);font-family:'Noto Sans JP',sans-serif;font-size:14px;padding:6px 12px;outline:none;cursor:pointer;transition:border-color 0.2s;"
+               onchange="setStartDate(this.value)"
+               onfocus="this.style.borderColor='var(--accent)'" onblur="this.style.borderColor='rgba(255,255,255,0.1)'">
+        <span id="activity-days-label" style="font-family:'Bebas Neue',sans-serif;font-size:22px;color:var(--accent);letter-spacing:0.05em;"></span>
+      </div>
+
       <div style="display:flex;justify-content:flex-end;margin-bottom:12px;">
         <button onclick="resetStats()" style="background:none;border:1px solid rgba(255,255,255,0.1);border-radius:8px;color:var(--muted);font-size:12px;font-family:'Rajdhani',sans-serif;font-weight:600;padding:5px 14px;cursor:pointer;transition:all 0.2s;" onmouseover="this.style.borderColor='rgba(255,80,80,0.4)';this.style.color='#ff7777'" onmouseout="this.style.borderColor='rgba(255,255,255,0.1)';this.style.color='var(--muted)'">🔄 今日の入力をクリア</button>
       </div>
@@ -1248,16 +1259,18 @@ STAT_DEFS.forEach(d => { stats[d.id] = d.default; todayInput[d.id] = 0; });
 let stationsDone = new Set();
 let chaosUnlocked = new Set();
 let trophyTimes = {};
+let startDate = '2006-08-06'; // 活動開始日
 let currentTab = 'all';
 let currentRankId = 'none';
 let currentChaosRankId = 'c0';
 
 function save() {
-  localStorage.setItem('nanpa-stats-v4',    JSON.stringify(stats));
-  localStorage.setItem('nanpa-today-v1',    JSON.stringify(todayInput));
-  localStorage.setItem('nanpa-stations-v2', JSON.stringify([...stationsDone]));
-  localStorage.setItem('nanpa-chaos-v2',    JSON.stringify([...chaosUnlocked]));
-  localStorage.setItem('nanpa-times-v2',    JSON.stringify(trophyTimes));
+  localStorage.setItem('nanpa-stats-v4',      JSON.stringify(stats));
+  localStorage.setItem('nanpa-today-v1',      JSON.stringify(todayInput));
+  localStorage.setItem('nanpa-stations-v2',   JSON.stringify([...stationsDone]));
+  localStorage.setItem('nanpa-chaos-v2',      JSON.stringify([...chaosUnlocked]));
+  localStorage.setItem('nanpa-times-v2',      JSON.stringify(trophyTimes));
+  localStorage.setItem('nanpa-start-date-v1', startDate);
 }
 function load() {
   try {
@@ -1290,6 +1303,7 @@ function load() {
     stationsDone  = new Set(JSON.parse(localStorage.getItem('nanpa-stations-v2') || '[]'));
     chaosUnlocked = new Set(JSON.parse(localStorage.getItem('nanpa-chaos-v2')    || '[]').map(Number));
     trophyTimes   = JSON.parse(localStorage.getItem('nanpa-times-v2') || '{}');
+    startDate     = localStorage.getItem('nanpa-start-date-v1') || '2006-08-06';
   } catch(e) { console.error(e); }
 }
 
@@ -1383,6 +1397,27 @@ function resetStats() {
   STAT_DEFS.forEach(d => { todayInput[d.id] = 0; });
   renderStatInputs();
   showInfoToast('🔄 今日の入力欄をクリアしました（累計はそのまま）');
+}
+
+// 活動開始日
+function setStartDate(val) {
+  if(!isOwner) return;
+  startDate = val;
+  save();
+  renderActivityDays();
+}
+
+function renderActivityDays() {
+  const el = document.getElementById('activity-days-label');
+  const input = document.getElementById('start-date-input');
+  if(!el) return;
+  if(input) input.value = startDate;
+  if(!startDate) { el.textContent = ''; return; }
+  const start = new Date(startDate);
+  const now = new Date();
+  const diff = Math.floor((now - start) / (1000 * 60 * 60 * 24));
+  if(isNaN(diff) || diff < 0) { el.textContent = ''; return; }
+  el.textContent = `活動 ${diff.toLocaleString()} 日目`;
 }
 
 // 累計を直接編集するモード（長押し or 直接修正用）
@@ -2016,7 +2051,7 @@ function shareToX() {
 function resetAllData() {
   if(!confirm('⚠️ 全データを初期化しますか？\nトロフィー・累計・マスターランク解放フラグがすべて消えます。\nこの操作は元に戻せません。')) return;
   ['nanpa-stats-v4','nanpa-today-v1','nanpa-stations-v2','nanpa-chaos-v2',
-   'nanpa-times-v2','nanpa-dist-v5','nanpa-dist-v6',MASTER_FLAG].forEach(k=>localStorage.removeItem(k));
+   'nanpa-times-v2','nanpa-start-date-v1','nanpa-dist-v5','nanpa-dist-v6',MASTER_FLAG].forEach(k=>localStorage.removeItem(k));
   window.location.reload();
 }
 
@@ -2111,6 +2146,7 @@ function toggleEye() {
 function renderAll(animate=true) {
   renderSectionVisibility();
   renderStatInputs();
+  renderActivityDays();
   renderStations();
   renderChaos();
   renderTrophies();
@@ -2145,6 +2181,7 @@ function renderAll(animate=true) {
 document.addEventListener('DOMContentLoaded', () => {
   load();
   renderAll(false);
+  renderActivityDays();
   initLock();
 
   document.getElementById('unlock-btn').addEventListener('click', tryUnlock);
